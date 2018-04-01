@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Dashboard</h1>
+    <small>Welcome {{session.name}}</small>
+    <div></div>
+    <a class="btn btn-success" href="/add_patient">Add New Patient</a>
+    <hr>
+
+    <table class="table table-striped">
+        <tr>
+            <th>Folder Number</th>
+            <th>MR number</th>
+            <th>Name</th>
+        </tr>
+        {% for patient in patients %}
+            <tr>
+                <td>{{patient.folder_number}}</td>
+                <td>{{patient.mr_number}}</td>
+                <td>{{patient.name}}</td>
+                <td><a href="edit_patient/{{patient.folder_number}}" class="btn btn-default pullright">Edit</a></td>
+                <td>
+                    <form action="{{url_for('delete_patient', folder_number=patient.folder_number)}}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="submit" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
