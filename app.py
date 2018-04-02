@@ -6,6 +6,8 @@ from log import Log
 from functools import wraps
 from patientsdb import  PatientsDb
 
+import models
+
 # Initialize logging
 log = Log()
 # Initialize DB
@@ -40,9 +42,9 @@ class RegisterForm(Form):
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
-        name = form.name.data
-        email = form.email.data
-        username = form.username.data
+        name=form.name.data
+        email=form.email.data
+        username=form.username.data
         password = sha256_crypt.encrypt(str(form.password.data))
 
         if db.add_user(name, email, username, password):
@@ -94,7 +96,6 @@ def is_logged_in(f):
 @is_logged_in
 def dashboard():
     patient_list = db.get_patients()
-    print(patient_list)
     if patient_list:
         return render_template('dashboard.html', patients=patient_list)
     else:
@@ -124,25 +125,33 @@ class PatientForm(Form):
 @is_logged_in
 def add_patient():
     form = PatientForm(request.form)
-    if request.method == 'POST' and form.validate():
-        folder_number = form.folder_number.data
-        mr_number = form.mr_number.data
-        name = form.name.data
-        aadhaar_card = form.aadhaar_card.data
-        date_first = form.date_first.data
-        permanent_address = form.permanent_address.data
-        current_address = form.current_address.data
-        phone = form.phone.data
-        email_id = form.email_id.data
-        gender = form.gender.data
-        age_yrs = form.age_yrs.data
-        date_of_birth = form.date_of_birth.data
-        place_birth = form.place_birth.data
-        height_cm = form.height_cm.data
-        weight_kg = form.weight_kg.data
+    if request.method == 'POST' and not form.validate():
+        errs = ""
+        for fieldName, errorMessages in form.errors.items():
+            for err in errorMessages:
+                errs = errs + err + " "
+        flash('Error adding patient: ' + errs, 'danger')
 
-        success_flag, error = db.add_patient(folder_number, mr_number, name, aadhaar_card, date_first, permanent_address,
-                               current_address, phone, email_id,gender, age_yrs, date_of_birth, place_birth, height_cm, weight_kg)
+    if request.method == 'POST' and form.validate():
+        patient = models.PatientInfo(
+            folder_number=form.folder_number.data,
+            mr_number=form.mr_number.data,
+            name=form.name.data,
+            aadhaar_card=form.aadhaar_card.data,
+            date_first=form.date_first.data,
+            permanent_address=form.permanent_address.data,
+            current_address=form.current_address.data,
+            phone=form.phone.data,
+            email_id=form.email_id.data,
+            gender=form.gender.data,
+            age_yrs=form.age_yrs.data,
+            date_of_birth=form.date_of_birth.data,
+            place_birth=form.place_birth.data,
+            height_cm=form.height_cm.data,
+            weight_kg=form.weight_kg.data
+        )
+
+        success_flag, error = db.add_patient(patient)
         if not success_flag:
             flash('Error adding patient: ' + str(error), 'danger')
         else:
@@ -177,20 +186,20 @@ def edit_patient(folder_number):
         form.weight_kg.data = patient['weight_kg']
 
         if request.method == 'POST' and form.validate():
-            mr_number = form.mr_number.data
-            name = form.name.data
-            aadhaar_card = form.aadhaar_card.data
-            date_first = form.date_first.data
-            permanent_address = form.permanent_address.data
-            current_address = form.current_address.data
-            phone = form.phone.data
-            email_id = form.email_id.data
-            gender = form.gender.data
-            age_yrs = form.age_yrs.data
-            date_of_birth = form.date_of_birth.data
-            place_birth = form.place_birth.data
-            height_cm = form.height_cm.data
-            weight_kg = form.weight_kg.data
+            mr_number=form.mr_number.data
+            name=form.name.data
+            aadhaar_card=form.aadhaar_card.data
+            date_first=form.date_first.data
+            permanent_address=form.permanent_address.data
+            current_address=form.current_address.data
+            phone=form.phone.data
+            email_id=form.email_id.data
+            gender=form.gender.data
+            age_yrs=form.age_yrs.data
+            date_of_birth=form.date_of_birth.data
+            place_birth=form.place_birth.data
+            height_cm=form.height_cm.data
+            weight_kg=form.weight_kg.data
 
             success_flag, error = db.update_patient(folder_number, mr_number, name, aadhaar_card, date_first,
                                                     permanent_address, current_address, phone, email_id,gender, age_yrs,
