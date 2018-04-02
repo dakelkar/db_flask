@@ -5,6 +5,8 @@ from passlib.hash import sha256_crypt
 from log import Log
 from functools import wraps
 from patientsdb import  PatientsDb
+from create_url import decodex, encodex
+from base64 import urlsafe_b64decode
 
 import models
 
@@ -148,8 +150,7 @@ def add_patient():
             date_of_birth=form.date_of_birth.data,
             place_birth=form.place_birth.data,
             height_cm=form.height_cm.data,
-            weight_kg=form.weight_kg.data
-        )
+            weight_kg=form.weight_kg.data)
 
         success_flag, error = db.add_patient(patient)
         if not success_flag:
@@ -162,19 +163,23 @@ def add_patient():
     return render_template('add_patient.html', form=form)
 
 
+
 #EDIT EVENT FOR SP NAME
-@app.route('/edit_patient/<string:folder_number>', methods=['GET', 'POST'])
+@app.route('/edit_patient/<folder_url>', methods=['GET', 'POST'])
 @is_logged_in
-def edit_patient(folder_number):
+def edit_patient(folder_url):
+    folder_number = decodex(folder_url)
+    print(folder_number, type(folder_number))
     patient = db.get_patient(folder_number)
+
     if patient:
         form = PatientForm(request.form)
-        form.folder_number.data = patient['File_number']
-        form.mr_number.data = patient['MR_number']
-        form.name.data = patient['Name']
-        form.aadhaar_card.data = patient['Aadhaar_Card']
-        form.date_first.data = patient['FirstVisit_Date'].date()
-        form.permanent_address.data = patient['Permanent_Address']
+        form.folder_number.data = patient['folder_number']
+        form.mr_number.data = patient['mr_number']
+        form.name.data = patient['name']
+        form.aadhaar_card.data = patient['aadhaar_card']
+        form.date_first.data = patient['date_first'].date()
+        form.permanent_address.data = patient['permanent_address']
         form.current_address.data = patient['current_address']
         form.phone.data = patient['phone']
         form.email_id.data = patient['email_id']
@@ -215,9 +220,11 @@ def edit_patient(folder_number):
     return render_template('edit_patient.html', form=form)
 
 
-@app.route('/delete_patient/<string:folder_number>', methods=['POST'])
+@app.route('/delete_patient/<folder_url>', methods=['POST'])
 @is_logged_in
-def delete_patient(folder_number):
+def delete_patient(folder_url):
+    folder_number = request.args.get('folder_url')
+
     success_flag, error = db.delete_patient(folder_number)
 
     if not success_flag:

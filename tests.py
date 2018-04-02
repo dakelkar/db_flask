@@ -31,7 +31,8 @@ class WidgetTestCase(unittest.TestCase):
 
     def test_dashboard_golden_path(self):
         patients = [
-            models.PatientInfo(123, 123, "someone", "123", "123", "123", "123", "123", "123", "123", "123", "123", "123", "123", "123"),
+            models.PatientInfo(123, 123, "someone", "123", "123", "123", "123", "123", "123", "123", "123", "123",
+                               "123", "123", "123"),
             models.PatientInfo(123, 123, "someoneElse", "123", "123", "123", "123", "123", "123", "123", "123", "123",
                                "123", "123", "123")
         ]
