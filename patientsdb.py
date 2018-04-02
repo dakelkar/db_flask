@@ -1,5 +1,6 @@
 import sys
 import pymongo
+import models
 from datetime import date
 
 
@@ -20,13 +21,55 @@ class PatientsDb(object):
         except:
             self.log.get_logger().error("Error connecting to database patients: %s", sys.exc_info())
 
+    @staticmethod
+    def from_patient_info(patient):
+        return {"File_number": patient.folder_number,
+         "MR_number": patient.mr_number,
+         "Name": patient.name,
+         "Aadhaar_Card": patient.aadhaar_card,
+         "FirstVisit_Date": str(patient.date_first),
+         "Permanent_Address": patient.permanent_address,
+         "Current_Address": patient.current_address,
+         "Phone": patient.phone,
+         "Email_ID": patient.email_id,
+         "Gender": patient.gender,
+         "Age_yrs": patient.age_yrs,
+         "Date_of_Birth": str(patient.date_of_birth),
+         "Place_Birth": patient.place_birth,
+         "Height_cm": patient.height_cm,
+         "Weight_kg": patient.weight_kg,
+         "BMI": (str(round(patient.weight_kg / (patient.height_cm * patient.height_cm))))}
+
+    @staticmethod
+    def to_patient_info(p):
+        patient_info = models.PatientInfo(
+            folder_number=p['File_number'],           
+            mr_number=p['MR_number'],
+            name=p['Name'],       
+            aadhaar_card=p['Aadhaar_Card'],
+            date_first=p['FirstVisit_Date'],
+            permanent_address=p['Permanent_Address'],
+            current_address=p['Current_Address'],
+            phone=p['Phone'],
+            email_id=p['Email_ID'],
+            gender=p['Gender'],
+            age_yrs=p['Age_yrs'],
+            date_of_birth=p['Date_of_Birth'],
+            place_birth=p['Place_Birth'],
+            height_cm=p['Height_cm'],
+            weight_kg=p['Weight_kg'])
+        return patient_info
+
     def get_patients(self):
-        try:
-            patients = self.db.patients.find()
-            return patients
-        except:
-            self.log.get_logger().error("Error retrieving patients from database: %s", sys.exc_info())
-            return
+        """
+        :returns list of models.PatientInfo
+        """
+        # try:
+        patients = self.db.patients.find()
+        return [self.to_patient_info(p) for p in patients]
+        # except:
+        #     self.log.get_logger().error("Error retrieving patients from database: %s", sys.exc_info())
+        #     return
 
     def get_patient(self, folder_number):
         try:
@@ -36,25 +79,13 @@ class PatientsDb(object):
             self.log.get_logger().error("Error retrieving patient %s from database: %s", folder_number, sys.exc_info())
             return
 
-    def add_patient(self, folder_number, mr_number, name, aadhaar_card, date_first, permanent_address, current_address,
-                    phone, email_id, gender, age_yrs, date_of_birth, place_birth, height_cm, weight_kg):
+    def add_patient(self, patient):
+        """
+        adds a patient to the db
+        :param models.PatientInfo patient: the patient to insert
+        """
         try:
-            self.db.patients.insert_one({"File_number": folder_number,
-                                        "MR_number": mr_number,
-                                        "Name": name,
-                                        "Aadhaar_Card": aadhaar_card,
-                                        "FirstVisit_Date": str(date_first),
-                                        "Permanent_Address": permanent_address,
-                                        "Current_Address": current_address,
-                                        "Phone": phone,
-                                        "Email_ID":email_id,
-                                        "Gender":gender,
-                                        "Age_yrs":age_yrs,
-                                        "Date_of_Birth":str(date_of_birth),
-                                        "Place_Birth":place_birth,
-                                        "Height_cm":height_cm,
-                                        "Weight_kg": weight_kg,
-                                        "BMI": (str(round(weight_kg / (height_cm * height_cm))))})
+            self.db.patients.insert_one(self.from_patient_info(patient))
             return True, None
         except:
             self.log.get_logger().error("Error adding event to database: %s", sys.exc_info())
