@@ -122,6 +122,44 @@ class PatientForm(Form):
     height_cm = FloatField('Height (in cm)', [validators.required()])
     weight_kg = FloatField('Weight (in kg)', [validators.required()])
 
+    def to_model(self):
+        patient = models.PatientInfo(folder_number= self.folder_number.data,
+            mr_number=self.mr_number.data,
+            name=self.name.data,
+            aadhaar_card=self.aadhaar_card.data,
+            date_first=self.date_first.data,
+            permanent_address=self.permanent_address.data,
+            current_address=self.current_address.data,
+            phone=self.phone.data,
+            email_id=self.email_id.data,
+            gender=self.gender.data,
+            age_yrs=self.age_yrs.data,
+            date_of_birth=self.date_of_birth.data,
+            place_birth=self.place_birth.data,
+            height_cm=self.height_cm.data,
+            weight_kg=self.weight_kg.data)
+        return patient
+
+    def from_model(self, patient):
+        """
+        :param models.PatientForm patient: initialize form based on the model
+        """
+        self.folder_number.data = patient.folder_number      
+        self.mr_number.data = patient.mr_number
+        self.name.data = patient.name        
+        self.aadhaar_card.data = patient.aadhaar_card
+        self.date_first.data = patient.date_first        
+        self.permanent_address.data = patient.permanent_address
+        self.current_address.data = patient.current_address        
+        self.phone.data = patient.phone
+        self.email_id.data = patient.email_id        
+        self.gender.data = patient.gender
+        self.age_yrs.data = patient.age_yrs        
+        self.date_of_birth.data = patient.date_of_birth
+        self.place_birth.data = patient.place_birth        
+        self.height_cm.data = patient.height_cm
+        self.weight_kg.data = patient.weight_kg
+
 
 @app.route('/add_patient', methods=['GET', 'POST'])
 @is_logged_in
@@ -135,23 +173,7 @@ def add_patient():
         flash('Error adding patient: ' + errs, 'danger')
 
     if request.method == 'POST' and form.validate():
-        patient = models.PatientInfo(
-            folder_number=form.folder_number.data,
-            mr_number=form.mr_number.data,
-            name=form.name.data,
-            aadhaar_card=form.aadhaar_card.data,
-            date_first=form.date_first.data,
-            permanent_address=form.permanent_address.data,
-            current_address=form.current_address.data,
-            phone=form.phone.data,
-            email_id=form.email_id.data,
-            gender=form.gender.data,
-            age_yrs=form.age_yrs.data,
-            date_of_birth=form.date_of_birth.data,
-            place_birth=form.place_birth.data,
-            height_cm=form.height_cm.data,
-            weight_kg=form.weight_kg.data)
-
+        patient = form.to_model()
         success_flag, error = db.add_patient(patient)
         if not success_flag:
             flash('Error adding patient: ' + str(error), 'danger')
@@ -168,54 +190,26 @@ def add_patient():
 @app.route('/edit_patient/<folder_url>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_patient(folder_url):
-    folder_number = decodex(folder_url)
-    print(folder_number, type(folder_number))
-    patient = db.get_patient(folder_number)
+    form = PatientForm(request.form)
 
-    if patient:
-        form = PatientForm(request.form)
-        form.folder_number.data = patient['folder_number']
-        form.mr_number.data = patient['mr_number']
-        form.name.data = patient['name']
-        form.aadhaar_card.data = patient['aadhaar_card']
-        form.date_first.data = patient['date_first'].date()
-        form.permanent_address.data = patient['permanent_address']
-        form.current_address.data = patient['current_address']
-        form.phone.data = patient['phone']
-        form.email_id.data = patient['email_id']
-        form.gender.data = patient['gender']
-        form.age_yrs.data = patient['age_yrs']
-        form.date_of_birth.data = patient['date_of_birth']
-        form.place_birth.data = patient['place_birth']
-        form.height_cm.data = patient['height_cm']
-        form.weight_kg.data = patient['weight_kg']
+    if request.method == 'GET':
+        folder_number = decodex(folder_url)
+        patient = db.get_patient(folder_number)
+        if patient is not None:
+            form.from_model(patient)
+        else:
+            flash('Patient not found for folder: ' + folder_number, 'danger')
 
-        if request.method == 'POST' and form.validate():
-            mr_number=form.mr_number.data
-            name=form.name.data
-            aadhaar_card=form.aadhaar_card.data
-            date_first=form.date_first.data
-            permanent_address=form.permanent_address.data
-            current_address=form.current_address.data
-            phone=form.phone.data
-            email_id=form.email_id.data
-            gender=form.gender.data
-            age_yrs=form.age_yrs.data
-            date_of_birth=form.date_of_birth.data
-            place_birth=form.place_birth.data
-            height_cm=form.height_cm.data
-            weight_kg=form.weight_kg.data
+    if request.method == 'POST' and form.validate():
+        patient = form.to_model()
+        success_flag, error = db.update_patient(patient)
 
-            success_flag, error = db.update_patient(folder_number, mr_number, name, aadhaar_card, date_first,
-                                                    permanent_address, current_address, phone, email_id,gender, age_yrs,
-                                                    date_of_birth, place_birth, height_cm, weight_kg)
+        if not success_flag:
+            flash('Error updating patient: ' + str(error), 'danger')
+        else:
+            flash('Patient Updated', 'success')
 
-            if not success_flag:
-                flash('Error updating patient: ' + str(error), 'danger')
-            else:
-                flash('Patient Updated', 'success')
-
-            return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard'))
 
     return render_template('edit_patient.html', form=form)
 
