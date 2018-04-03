@@ -6,30 +6,29 @@ from datetime import date
 
 class PatientsDb(object):
     # This class wraps the DB access for patients
-    key = self.key
+    key = "folder_number"
     
-    @staticmethod
     def from_patient_info(patient):
-        return {self.key: patient.folder_number,
-         "MR_number": patient.mr_number,
-         "Name": patient.name,
-         "Aadhaar_Card": patient.aadhaar_card,
-         "FirstVisit_Date": str(patient.date_first),
-         "Permanent_Address": patient.permanent_address,
-         "Current_Address": patient.current_address,
-         "Phone": patient.phone,
-         "Email_ID": patient.email_id,
-         "Gender": patient.gender,
-         "Age_yrs": patient.age_yrs,
-         "Date_of_Birth": str(patient.date_of_birth),
-         "Place_Birth": patient.place_birth,
-         "Height_cm": patient.height_cm,
-         "Weight_kg": patient.weight_kg,
-         "BMI": (str(round(patient.weight_kg / (patient.height_cm * patient.height_cm))))}
+        return {
+            self.key: patient.folder_number,
+            "MR_number": patient.mr_number,
+            "Name": patient.name,
+            "Aadhaar_Card": patient.aadhaar_card,
+            "FirstVisit_Date": str(patient.date_first),
+            "Permanent_Address": patient.permanent_address,
+            "Current_Address": patient.current_address,
+            "Phone": patient.phone,
+            "Email_ID": patient.email_id,
+            "Gender": patient.gender,
+            "Age_yrs": patient.age_yrs,
+            "Date_of_Birth": str(patient.date_of_birth),
+            "Place_Birth": patient.place_birth,
+            "Height_cm": patient.height_cm,
+            "Weight_kg": patient.weight_kg,
+            "BMI": (str(round(patient.weight_kg / (patient.height_cm * patient.height_cm))))}
 
-    @staticmethod
     def to_patient_info(p):
-        patient_info = models.PatientInfo(folder_number=p['folder_number'], mr_number=p['MR_number'], name=p['Name'],
+        patient_info = models.PatientInfo(folder_number=p[self.key], mr_number=p['MR_number'], name=p['Name'],
                                           aadhaar_card=p['Aadhaar_Card'], date_first=p['FirstVisit_Date'],
                                           permanent_address=p['Permanent_Address'],
                                           current_address=p['Current_Address'], phone=p['Phone'],
@@ -133,3 +132,4 @@ class PatientsDb(object):
         except:
             self.log.get_logger().error("Error adding user: %s", sys.exc_info())
             return False
+    
