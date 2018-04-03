@@ -1,7 +1,7 @@
 import sys
 import pymongo
 import models
-from datetime import date
+from datetime import datetime
 
 
 class PatientsDb(object):
@@ -14,26 +14,26 @@ class PatientsDb(object):
             "MR_number": patient.mr_number,
             "Name": patient.name,
             "Aadhaar_Card": patient.aadhaar_card,
-            "FirstVisit_Date": str(patient.date_first),
+            "FirstVisit_Date": datetime.combine(patient.date_first, datetime.min.time()),
             "Permanent_Address": patient.permanent_address,
             "Current_Address": patient.current_address,
             "Phone": patient.phone,
             "Email_ID": patient.email_id,
             "Gender": patient.gender,
             "Age_yrs": patient.age_yrs,
-            "Date_of_Birth": str(patient.date_of_birth),
-            "Place_Birth": patient.place_birth,
+            "Date_of_Birth": datetime.combine(patient.date_of_birth, datetime.min.time()),
+            "Place_Birth":  patient.place_birth,
             "Height_cm": patient.height_cm,
             "Weight_kg": patient.weight_kg,
             "BMI": (str(round(patient.weight_kg / (patient.height_cm * patient.height_cm))))}
 
     def to_patient_info(self, p):
         patient_info = models.PatientInfo(folder_number=p[self.key], mr_number=p['MR_number'], name=p['Name'],
-                                          aadhaar_card=p['Aadhaar_Card'], date_first=p['FirstVisit_Date'],
+                                          aadhaar_card=p['Aadhaar_Card'], date_first=p['FirstVisit_Date'].date(),
                                           permanent_address=p['Permanent_Address'],
                                           current_address=p['Current_Address'], phone=p['Phone'],
                                           email_id=p['Email_ID'], gender=p['Gender'], age_yrs=p['Age_yrs'],
-                                          date_of_birth=p['Date_of_Birth'], place_birth=p['Place_Birth'],
+                                          date_of_birth=p['Date_of_Birth'].date(), place_birth=p['Place_Birth'],
                                           height_cm=p['Height_cm'], weight_kg=p['Weight_kg'])
         return patient_info
 
@@ -63,26 +63,26 @@ class PatientsDb(object):
         #     return
 
     def get_patient(self, folder_number):
-         try:
-            patient_entry = self.db.patients.find_one({ self.key: folder_number })
-            patient = self.to_patient_info(patient_entry)
-            return patient
-         except:
-            self.log.get_logger().error("Error retrieving patient %s from database: %s", folder_number, sys.exc_info())
-            return
+         # try:
+        patient_entry = self.db.patients.find_one({ self.key: folder_number })
+        patient = self.to_patient_info(patient_entry)
+        return patient
+         # except:
+         #    self.log.get_logger().error("Error retrieving patient %s from database: %s", folder_number, sys.exc_info())
+         #    return
 
     def add_patient(self, patient):
         """
         adds a patient to the db
         :param models.PatientInfo patient: the patient to insert
         """
-        try:
-            patient_entry = self.from_patient_info(patient)
-            self.db.patients.insert_one(patient_entry)
-            return True, None
-        except:
-            self.log.get_logger().error("Error adding event to database: %s", sys.exc_info())
-            return False, sys.exc_info()
+        #try:
+        patient_entry = self.from_patient_info(patient)
+        self.db.patients.insert_one(patient_entry)
+        return True, None
+        # except:
+        #     self.log.get_logger().error("Error adding event to database: %s", sys.exc_info())
+        #     return False, sys.exc_info()
 
     def update_patient(self, patient):
         """
