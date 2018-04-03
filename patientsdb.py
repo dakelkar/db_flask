@@ -8,7 +8,7 @@ class PatientsDb(object):
     # This class wraps the DB access for patients
     key = "folder_number"
     
-    def from_patient_info(patient):
+    def from_patient_info(self, patient):
         return {
             self.key: patient.folder_number,
             "MR_number": patient.mr_number,
@@ -27,7 +27,7 @@ class PatientsDb(object):
             "Weight_kg": patient.weight_kg,
             "BMI": (str(round(patient.weight_kg / (patient.height_cm * patient.height_cm))))}
 
-    def to_patient_info(p):
+    def to_patient_info(self, p):
         patient_info = models.PatientInfo(folder_number=p[self.key], mr_number=p['MR_number'], name=p['Name'],
                                           aadhaar_card=p['Aadhaar_Card'], date_first=p['FirstVisit_Date'],
                                           permanent_address=p['Permanent_Address'],
@@ -132,4 +132,3 @@ class PatientsDb(object):
         except:
             self.log.get_logger().error("Error adding user: %s", sys.exc_info())
             return False
-    

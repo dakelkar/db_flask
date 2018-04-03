@@ -4,14 +4,16 @@ from wtforms.fields.html5 import DateField
 from passlib.hash import sha256_crypt
 from log import Log
 from functools import wraps
-from patientsdb import  PatientsDb
 from create_url import decodex, encodex
 from base64 import urlsafe_b64decode
 
-import models
+from patientsdb import PatientsDb
+from patient_form import PatientForm
+from models import PatientInfo
 
 # Initialize logging
 log = Log()
+
 # Initialize DB
 db = PatientsDb(log)
 db.connect()
@@ -19,6 +21,8 @@ db.connect()
 app = Flask(__name__)
 
 
+#########################################################
+# Login, registration and index
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -94,6 +98,15 @@ def is_logged_in(f):
     return wrap
 
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
+
+
+#########################################################
+# Main dashboard
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
@@ -105,62 +118,8 @@ def dashboard():
         return render_template('dashboard.html', msg=msg)
 
 
-class PatientForm(Form):
-    folder_number = StringField('Folder Number', [validators.required()])
-    mr_number = StringField('MR number', [validators.Length(min=1, max=50)])
-    name = StringField('Name', [validators.Length(min=1, max=50)])
-    aadhaar_card = StringField('Aadhaar Card Number (if available)')
-    date_first = DateField("Date of first visit")
-    permanent_address = TextAreaField('Permanent Address', [validators.Length(min=1, max=200)])
-    current_address = TextAreaField('Current Address', [validators.Length(min=1, max=200)])
-    phone = IntegerField ('Phone')
-    email_id = StringField('Email ID', [validators.optional()])
-    gender = SelectField('Gender', choices=[('F', 'Female'), ('M', 'Male')])
-    age_yrs = IntegerField('Age in years', [validators.required()])
-    date_of_birth = DateField('Date of Birth',[validators.required()])
-    place_birth = StringField('Place of Birth')
-    height_cm = FloatField('Height (in cm)', [validators.required()])
-    weight_kg = FloatField('Weight (in kg)', [validators.required()])
-
-    def to_model(self):
-        patient = models.PatientInfo(folder_number= self.folder_number.data,
-            mr_number=self.mr_number.data,
-            name=self.name.data,
-            aadhaar_card=self.aadhaar_card.data,
-            date_first=self.date_first.data,
-            permanent_address=self.permanent_address.data,
-            current_address=self.current_address.data,
-            phone=self.phone.data,
-            email_id=self.email_id.data,
-            gender=self.gender.data,
-            age_yrs=self.age_yrs.data,
-            date_of_birth=self.date_of_birth.data,
-            place_birth=self.place_birth.data,
-            height_cm=self.height_cm.data,
-            weight_kg=self.weight_kg.data)
-        return patient
-
-    def from_model(self, patient):
-        """
-        :param models.PatientForm patient: initialize form based on the model
-        """
-        self.folder_number.data = patient.folder_number      
-        self.mr_number.data = patient.mr_number
-        self.name.data = patient.name        
-        self.aadhaar_card.data = patient.aadhaar_card
-        self.date_first.data = patient.date_first        
-        self.permanent_address.data = patient.permanent_address
-        self.current_address.data = patient.current_address        
-        self.phone.data = patient.phone
-        self.email_id.data = patient.email_id        
-        self.gender.data = patient.gender
-        self.age_yrs.data = patient.age_yrs        
-        self.date_of_birth.data = patient.date_of_birth
-        self.place_birth.data = patient.place_birth        
-        self.height_cm.data = patient.height_cm
-        self.weight_kg.data = patient.weight_kg
-
-
+#########################################################
+# Patient CRUD
 @app.route('/add_patient', methods=['GET', 'POST'])
 @is_logged_in
 def add_patient():
@@ -228,12 +187,12 @@ def delete_patient(folder_url):
 
     return redirect(url_for('dashboard'))
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
+#########################################################
+# foo CRUD - should come here
+# TODO: implement here...
 
+#########################################################
+# MAIN
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'
