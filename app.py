@@ -176,8 +176,7 @@ def edit_patient(folder_url):
 @app.route('/delete_patient/<folder_url>', methods=['POST'])
 @is_logged_in
 def delete_patient(folder_url):
-    folder_number = request.args.get('folder_url')
-
+    folder_number = decodex(folder_url)
     success_flag, error = db.delete_patient(folder_number)
 
     if not success_flag:

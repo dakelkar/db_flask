@@ -97,12 +97,12 @@ class PatientsDb(object):
             return False, sys.exc_info()
 
     def delete_patient(self, folder_number):
-        try:
-            self.db.patients.delete_one({self.key: folder_number})
-            return True, None
-        except:
-            self.log.get_logger().error("Error deleting patient %s from database: %s", folder_number, sys.exc_info())
-            return False, sys.exc_info()
+        #try:
+        self.db.patients.delete_one({self.key: folder_number})
+        return True, None
+        # except:
+        #     self.log.get_logger().error("Error deleting patient %s from database: %s", folder_number, sys.exc_info())
+        #     return False, sys.exc_info()
 
     #################################
     # TODO: move users into their own db file
