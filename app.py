@@ -4,12 +4,16 @@ from wtforms.fields.html5 import DateField
 from passlib.hash import sha256_crypt
 from log import Log
 from functools import wraps
-from patientsdb import  PatientsDb
+from create_url import decodex, encodex
+from base64 import urlsafe_b64decode
 
-import models
+from patientsdb import PatientsDb
+from patient_form import PatientForm
+from models import PatientInfo
 
 # Initialize logging
 log = Log()
+
 # Initialize DB
 db = PatientsDb(log)
 db.connect()
@@ -17,6 +21,8 @@ db.connect()
 app = Flask(__name__)
 
 
+#########################################################
+# Login, registration and index
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -92,6 +98,15 @@ def is_logged_in(f):
     return wrap
 
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
+
+
+#########################################################
+# Main dashboard
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
@@ -103,24 +118,8 @@ def dashboard():
         return render_template('dashboard.html', msg=msg)
 
 
-class PatientForm(Form):
-    folder_number = StringField('Folder Number', [validators.required()])
-    mr_number = StringField('MR number', [validators.Length(min=1, max=50)])
-    name = StringField('Name', [validators.Length(min=1, max=50)])
-    aadhaar_card = StringField('Aadhaar Card Number (if available)')
-    date_first = DateField("Date of first visit")
-    permanent_address = TextAreaField('Permanent Address', [validators.Length(min=1, max=200)])
-    current_address = TextAreaField('Current Address', [validators.Length(min=1, max=200)])
-    phone = IntegerField ('Phone')
-    email_id = StringField('Email ID', [validators.optional()])
-    gender = SelectField('Gender', choices=[('F', 'Female'), ('M', 'Male')])
-    age_yrs = IntegerField('Age in years', [validators.required()])
-    date_of_birth = DateField('Date of Birth',[validators.required()])
-    place_birth = StringField('Place of Birth')
-    height_cm = FloatField('Height (in cm)', [validators.required()])
-    weight_kg = FloatField('Weight (in kg)', [validators.required()])
-
-
+#########################################################
+# Patient CRUD
 @app.route('/add_patient', methods=['GET', 'POST'])
 @is_logged_in
 def add_patient():
@@ -133,24 +132,7 @@ def add_patient():
         flash('Error adding patient: ' + errs, 'danger')
 
     if request.method == 'POST' and form.validate():
-        patient = models.PatientInfo(
-            folder_number=form.folder_number.data,
-            mr_number=form.mr_number.data,
-            name=form.name.data,
-            aadhaar_card=form.aadhaar_card.data,
-            date_first=form.date_first.data,
-            permanent_address=form.permanent_address.data,
-            current_address=form.current_address.data,
-            phone=form.phone.data,
-            email_id=form.email_id.data,
-            gender=form.gender.data,
-            age_yrs=form.age_yrs.data,
-            date_of_birth=form.date_of_birth.data,
-            place_birth=form.place_birth.data,
-            height_cm=form.height_cm.data,
-            weight_kg=form.weight_kg.data
-        )
-
+        patient = form.to_model()
         success_flag, error = db.add_patient(patient)
         if not success_flag:
             flash('Error adding patient: ' + str(error), 'danger')
@@ -162,62 +144,39 @@ def add_patient():
     return render_template('add_patient.html', form=form)
 
 
+
 #EDIT EVENT FOR SP NAME
-@app.route('/edit_patient/<string:folder_number>', methods=['GET', 'POST'])
+@app.route('/edit_patient/<folder_url>', methods=['GET', 'POST'])
 @is_logged_in
-def edit_patient(folder_number):
-    patient = db.get_patient(folder_number)
-    if patient:
-        form = PatientForm(request.form)
-        form.folder_number.data = patient['File_number']
-        form.mr_number.data = patient['MR_number']
-        form.name.data = patient['Name']
-        form.aadhaar_card.data = patient['Aadhaar_Card']
-        form.date_first.data = patient['FirstVisit_Date'].date()
-        form.permanent_address.data = patient['Permanent_Address']
-        form.current_address.data = patient['current_address']
-        form.phone.data = patient['phone']
-        form.email_id.data = patient['email_id']
-        form.gender.data = patient['gender']
-        form.age_yrs.data = patient['age_yrs']
-        form.date_of_birth.data = patient['date_of_birth']
-        form.place_birth.data = patient['place_birth']
-        form.height_cm.data = patient['height_cm']
-        form.weight_kg.data = patient['weight_kg']
+def edit_patient(folder_url):
+    form = PatientForm(request.form)
 
-        if request.method == 'POST' and form.validate():
-            mr_number=form.mr_number.data
-            name=form.name.data
-            aadhaar_card=form.aadhaar_card.data
-            date_first=form.date_first.data
-            permanent_address=form.permanent_address.data
-            current_address=form.current_address.data
-            phone=form.phone.data
-            email_id=form.email_id.data
-            gender=form.gender.data
-            age_yrs=form.age_yrs.data
-            date_of_birth=form.date_of_birth.data
-            place_birth=form.place_birth.data
-            height_cm=form.height_cm.data
-            weight_kg=form.weight_kg.data
+    if request.method == 'GET':
+        folder_number = decodex(folder_url)
+        patient = db.get_patient(folder_number)
+        if patient is not None:
+            form.from_model(patient)
+        else:
+            flash('Patient not found for folder: ' + folder_number, 'danger')
 
-            success_flag, error = db.update_patient(folder_number, mr_number, name, aadhaar_card, date_first,
-                                                    permanent_address, current_address, phone, email_id,gender, age_yrs,
-                                                    date_of_birth, place_birth, height_cm, weight_kg)
+    if request.method == 'POST' and form.validate():
+        patient = form.to_model()
+        success_flag, error = db.update_patient(patient)
 
-            if not success_flag:
-                flash('Error updating patient: ' + str(error), 'danger')
-            else:
-                flash('Patient Updated', 'success')
+        if not success_flag:
+            flash('Error updating patient: ' + str(error), 'danger')
+        else:
+            flash('Patient Updated', 'success')
 
-            return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard'))
 
     return render_template('edit_patient.html', form=form)
 
 
-@app.route('/delete_patient/<string:folder_number>', methods=['POST'])
+@app.route('/delete_patient/<folder_url>', methods=['POST'])
 @is_logged_in
-def delete_patient(folder_number):
+def delete_patient(folder_url):
+    folder_number = decodex(folder_url)
     success_flag, error = db.delete_patient(folder_number)
 
     if not success_flag:
@@ -227,12 +186,12 @@ def delete_patient(folder_number):
 
     return redirect(url_for('dashboard'))
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
+#########################################################
+# foo CRUD - should come here
+# TODO: implement here...
 
+#########################################################
+# MAIN
 
 if __name__ == '__main__':
     app.secret_key = 'secret123'
