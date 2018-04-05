@@ -1,6 +1,7 @@
 import unittest
 import jinja2
-import models
+from schema_forms import models
+
 
 class FakeSession:
     def __init__(self):

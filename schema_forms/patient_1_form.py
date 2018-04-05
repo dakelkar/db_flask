@@ -1,9 +1,9 @@
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators, IntegerField, SelectField, FloatField
+from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField
 from wtforms.fields.html5 import DateField
-from models import PatientInfo
+from schema_forms.models import Patient_1_Info
 
 
-class PatientForm(Form):
+class Patient_1_Form(Form):
     folder_number = StringField('Folder Number', [validators.required()])
     mr_number = StringField('MR number', [validators.Length(min=1, max=50)])
     name = StringField('Name', [validators.Length(min=1, max=50)])
@@ -24,7 +24,7 @@ class PatientForm(Form):
         """
         :returns PatientForm: model for the form
         """
-        patient = PatientInfo(folder_number= self.folder_number.data,
+        patient = Patient_1_Info(folder_number= self.folder_number.data,
             mr_number=self.mr_number.data,
             name=self.name.data,
             aadhaar_card=self.aadhaar_card.data,

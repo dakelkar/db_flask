@@ -1,15 +1,13 @@
-from flask import Flask, render_template, flash, redirect, url_for, session, logging, request
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators, IntegerField, SelectField, FloatField
-from wtforms.fields.html5 import DateField
+from flask import Flask, render_template, flash, redirect, url_for, session, request
 from passlib.hash import sha256_crypt
 from log import Log
+from create_url import decodex
+from dbs.patientsdb import PatientsDb
+from schema_forms.patient_1_form import Patient_1_Form
+from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
-from create_url import decodex, encodex
-from base64 import urlsafe_b64decode
 
-from patientsdb import PatientsDb
-from patient_form import PatientForm
-from models import PatientInfo
+
 
 # Initialize logging
 log = Log()
@@ -32,7 +30,6 @@ def index():
 def about():
     return render_template('about.html')
 
-
 class RegisterForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)])
     username = StringField('Username', [validators.Length(min=4, max=25)])
@@ -48,9 +45,9 @@ class RegisterForm(Form):
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
-        name=form.name.data
-        email=form.email.data
-        username=form.username.data
+        name = form.name.data
+        email = form.email.data
+        username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data))
 
         if db.add_user(name, email, username, password):
@@ -109,6 +106,7 @@ def logout():
 # Main dashboard
 @app.route('/dashboard')
 @is_logged_in
+
 def dashboard():
     patient_list = db.get_patients()
     if patient_list:
@@ -123,7 +121,7 @@ def dashboard():
 @app.route('/add_patient', methods=['GET', 'POST'])
 @is_logged_in
 def add_patient():
-    form = PatientForm(request.form)
+    form = Patient_1_Form(request.form)
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
@@ -140,19 +138,16 @@ def add_patient():
             flash('Patient Added', 'success')
 
         return redirect(url_for('dashboard'))
+    return render_template('patient_1_add.html', form=form)
+   # return render_template(dk, form=form)
 
-    return render_template('add_patient.html', form=form)
-
-
-
-#EDIT EVENT FOR SP NAME
-@app.route('/edit_patient/<folder_url>', methods=['GET', 'POST'])
+@app.route('/edit_patient/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
-def edit_patient(folder_url):
-    form = PatientForm(request.form)
+def edit_patient(folder_hash):
+    form = Patient_1_Form(request.form)
 
     if request.method == 'GET':
-        folder_number = decodex(folder_url)
+        folder_number = decodex(folder_hash)
         patient = db.get_patient(folder_number)
         if patient is not None:
             form.from_model(patient)
@@ -170,13 +165,13 @@ def edit_patient(folder_url):
 
         return redirect(url_for('dashboard'))
 
-    return render_template('edit_patient.html', form=form)
+    return render_template('patient_1_edit.html', form=form)
 
 
-@app.route('/delete_patient/<folder_url>', methods=['POST'])
+@app.route('/delete_patient/<folder_hash>', methods=['POST'])
 @is_logged_in
-def delete_patient(folder_url):
-    folder_number = decodex(folder_url)
+def delete_patient(folder_hash):
+    folder_number = decodex(folder_hash)
     success_flag, error = db.delete_patient(folder_number)
 
     if not success_flag:
