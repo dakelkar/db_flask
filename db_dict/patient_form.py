@@ -14,3 +14,4 @@ class Patient_dict():
              "M":"Male"}
     gender_list = ["F", "M"]
     gender_choice = generate_choice(gender_list, gender)
+

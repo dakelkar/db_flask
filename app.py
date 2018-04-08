@@ -4,6 +4,7 @@ from log import Log
 from create_url import decodex
 from dbs.patientsdb import PatientsDb
 from schema_forms.patient_bio_info_form import Patient_bio_info_Form
+from schema_forms.biopsy_form import Biopsy_info_Form
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 
@@ -141,7 +142,7 @@ def add_patient():
     return render_template('patient_bio_info_add.html', form=form)
    # return render_template(dk, form=form)
 
-@app.route('/edit_patient/<folder_hash>', methods=['GET', 'POST'])
+@app.route('/add_data/edit_patient/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_patient(folder_hash):
     form = Patient_bio_info_Form(request.form)
@@ -167,6 +168,12 @@ def edit_patient(folder_hash):
 
     return render_template('patient_bio_info_edit.html', form=form)
 
+@app.route('/add_data/<folder_hash>')
+@is_logged_in
+def add_data (folder_hash):
+    folder_number = decodex(folder_hash)
+    patient = db.get_patient(folder_number)
+    return render_template('add_data.html', patient = patient)
 
 @app.route('/delete_patient/<folder_hash>', methods=['POST'])
 @is_logged_in
@@ -180,6 +187,29 @@ def delete_patient(folder_hash):
         flash('Patient Deleted', 'success')
 
     return redirect(url_for('dashboard'))
+
+@app.route('/add_data/add_biopsy/<folder_hash>', methods=['POST'])
+@is_logged_in
+def add_biopsy(folder_hash):
+    form = Biopsy_info_Form(request.form)
+    if request.method == 'POST' and not form.validate():
+        errs = ""
+        for fieldName, errorMessages in form.errors.items():
+            for err in errorMessages:
+                errs = errs + err + " "
+        flash('Error adding biopsy: ' + errs, 'danger')
+
+    if request.method == 'POST' and form.validate():
+        folder_number = decodex(folder_hash)
+        biopsy = form.to_model()
+        success_flag, error = db.add_biopsy(biopsy)
+        if not success_flag:
+            flash('Error adding patient: ' + str(error), 'danger')
+        else:
+            flash('Biopsy Information Added', 'success')
+
+        return redirect(url_for('/add_data'))
+    return render_template('patient_bio_info_add.html', form=form)
 
 #########################################################
 # foo CRUD - should come here
