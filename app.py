@@ -3,7 +3,7 @@ from passlib.hash import sha256_crypt
 from log import Log
 from create_url import decodex
 from dbs.patientsdb import PatientsDb
-from schema_forms.patient_1_form import Patient_1_Form
+from schema_forms.patient_bio_info_form import Patient_bio_info_Form
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 
@@ -121,7 +121,7 @@ def dashboard():
 @app.route('/add_patient', methods=['GET', 'POST'])
 @is_logged_in
 def add_patient():
-    form = Patient_1_Form(request.form)
+    form = Patient_bio_info_Form(request.form)
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
@@ -138,13 +138,13 @@ def add_patient():
             flash('Patient Added', 'success')
 
         return redirect(url_for('dashboard'))
-    return render_template('patient_1_add.html', form=form)
+    return render_template('patient_bio_info_add.html', form=form)
    # return render_template(dk, form=form)
 
 @app.route('/edit_patient/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_patient(folder_hash):
-    form = Patient_1_Form(request.form)
+    form = Patient_bio_info_Form(request.form)
 
     if request.method == 'GET':
         folder_number = decodex(folder_hash)
@@ -165,7 +165,7 @@ def edit_patient(folder_hash):
 
         return redirect(url_for('dashboard'))
 
-    return render_template('patient_1_edit.html', form=form)
+    return render_template('patient_bio_info_edit.html', form=form)
 
 
 @app.route('/delete_patient/<folder_hash>', methods=['POST'])

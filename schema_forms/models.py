@@ -1,5 +1,5 @@
 from create_url import encodex
-class Patient_1_Info:
+class Patient_bio_info_Info:
     def __init__(self, folder_number, mr_number, name, aadhaar_card, date_first, permanent_address, current_address,
                  phone, email_id, gender, age_yrs, date_of_birth, place_birth, height_cm, weight_kg):
         self.folder_number=folder_number

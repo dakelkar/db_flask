@@ -1,9 +1,10 @@
 from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField
 from wtforms.fields.html5 import DateField
-from schema_forms.models import Patient_1_Info
+from schema_forms.models import Patient_bio_info_Info
+from db_dict.patient_form import Patient_dict
 
+class Patient_bio_info_Form(Form):
 
-class Patient_1_Form(Form):
     folder_number = StringField('Folder Number', [validators.required()])
     mr_number = StringField('MR number', [validators.Length(min=1, max=50)])
     name = StringField('Name', [validators.Length(min=1, max=50)])
@@ -11,20 +12,20 @@ class Patient_1_Form(Form):
     date_first = DateField("Date of first visit")
     permanent_address = TextAreaField('Permanent Address', [validators.Length(min=1, max=200)])
     current_address = TextAreaField('Current Address', [validators.Length(min=1, max=200)])
-    phone = IntegerField ('Phone')
+    phone = IntegerField('Phone')
     email_id = StringField('Email ID', [validators.optional()])
-    gender = SelectField('Gender', choices=[('F', 'Female'), ('M', 'Male')])
+    gender = SelectField('Gender', choices= Patient_dict.gender_choice)
     age_yrs = IntegerField('Age in years', [validators.required()])
-    date_of_birth = DateField('Date of Birth',[validators.required()])
+    date_of_birth = DateField('Date of Birth', [validators.required()])
     place_birth = StringField('Place of Birth')
     height_cm = FloatField('Height (in cm)', [validators.required()])
     weight_kg = FloatField('Weight (in kg)', [validators.required()])
 
     def to_model(self):
         """
-        :returns PatientForm: model for the form
+        :returns Patient_bio_info_Form: model for the form
         """
-        patient = Patient_1_Info(folder_number= self.folder_number.data,
+        patient = Patient_bio_info_Info(folder_number= self.folder_number.data,
             mr_number=self.mr_number.data,
             name=self.name.data,
             aadhaar_card=self.aadhaar_card.data,
