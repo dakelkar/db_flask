@@ -201,7 +201,7 @@ def add_biopsy(folder_hash):
 
     if request.method == 'POST' and form.validate():
         folder_number = decodex(folder_hash)
-        biopsy = form.to_model()
+        biopsy = form.to_model(folder_number)
         success_flag, error = db.add_biopsy(biopsy)
         if not success_flag:
             flash('Error adding patient: ' + str(error), 'danger')
