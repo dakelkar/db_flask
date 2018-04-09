@@ -134,6 +134,7 @@ class PatientsDb(object):
             "fnac_diagnosis" : biopsy.fnac_diagnosis
         }
 
+
     def to_biopsy_info(self, patient, p):
         biopsy_info = models.Biopsy_Info(folder_number=p[patient.key],
                     consent_stat_biopsy = p["consent_stat_biopsy"],consent_form_biopsy = p['consent_form_biopsy'],
@@ -151,6 +152,8 @@ class PatientsDb(object):
                     tumour_ki67_biopsy = p['tumour_ki67_biopsy'],fnac = p['fnac'],fnac_location = p['fnac_location'],
                     fnac_diagnosis = p['fnac_diagnosis'])
         return biopsy_info
+
+
     def get_biopsy(self, folder_number):
          # try:
         biopsy_entry = self.db.biopsy.find_one({ self.key: folder_number })
@@ -159,6 +162,7 @@ class PatientsDb(object):
          # except:
          #    self.log.get_logger().error("Error retrieving patient %s from database: %s", folder_number, sys.exc_info())
          #    return
+
 
     def add_biopsy(self, biopsy):
         """
@@ -173,17 +177,18 @@ class PatientsDb(object):
         #     self.log.get_logger().error("Error adding event to database: %s", sys.exc_info())
         #     return False, sys.exc_info()
 
+
     def update_biopsy(self, biopsy):
         """
         :param models.PatientForm patient: model to update from
         """
-        try:
-            self.db.biopsy.update_one({self.key: biopsy.folder_number },
+        #try:
+        self.db.biopsy.update_one({self.key: biopsy.folder_number },
                                         { "$set": self.from_biopsy_info(biopsy)})
-            return True, None
-        except:
-            self.log.get_logger().error("Error updating event to database: %s", sys.exc_info())
-            return False, sys.exc_info()
+        return True, None
+        #except:
+        #    self.log.get_logger().error("Error updating event to database: %s", sys.exc_info())
+         #   return False, sys.exc_info()
 
     #################################
     # user add and password functions #

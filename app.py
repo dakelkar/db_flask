@@ -3,8 +3,8 @@ from passlib.hash import sha256_crypt
 from log import Log
 from create_url import decodex
 from dbs.patientsdb import PatientsDb
-from schema_forms.patient_bio_info_form import Patient_bio_info_Form
-from schema_forms.biopsy_form import Biopsy_info_Form
+from schema_forms.patient_bio_info_form import PatientBioInfoForm
+from schema_forms.biopsy_form import BiopsyForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 
@@ -122,7 +122,7 @@ def dashboard():
 @app.route('/add_patient', methods=['GET', 'POST'])
 @is_logged_in
 def add_patient():
-    form = Patient_bio_info_Form(request.form)
+    form = PatientBioInfoForm(request.form)
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
@@ -145,7 +145,7 @@ def add_patient():
 @app.route('/add_data/edit_patient/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_patient(folder_hash):
-    form = Patient_bio_info_Form(request.form)
+    form = PatientBioInfoForm(request.form)
 
     if request.method == 'GET':
         folder_number = decodex(folder_hash)
@@ -188,10 +188,11 @@ def delete_patient(folder_hash):
 
     return redirect(url_for('dashboard'))
 
-@app.route('/add_data/add_biopsy/<folder_hash>', methods=['POST'])
+@app.route('/add_data/add_biopsy/<folder_hash>', methods=['GET','POST'])
 @is_logged_in
 def add_biopsy(folder_hash):
-    form = Biopsy_info_Form(request.form)
+    form = BiopsyForm(request.form)
+    folder_number = decodex(folder_hash)
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
@@ -200,7 +201,6 @@ def add_biopsy(folder_hash):
         flash('Error adding biopsy: ' + errs, 'danger')
 
     if request.method == 'POST' and form.validate():
-        folder_number = decodex(folder_hash)
         biopsy = form.to_model(folder_number)
         success_flag, error = db.add_biopsy(biopsy)
         if not success_flag:
@@ -209,7 +209,7 @@ def add_biopsy(folder_hash):
             flash('Biopsy Information Added', 'success')
 
         return redirect(url_for('/add_data'))
-    return render_template('patient_bio_info_add.html', form=form)
+    return render_template('biopsy_add.html', form=form)
 
 #########################################################
 # foo CRUD - should come here

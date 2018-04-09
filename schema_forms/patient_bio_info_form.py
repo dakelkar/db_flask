@@ -1,10 +1,9 @@
-from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField
+from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField
 from wtforms.fields.html5 import DateField
 from schema_forms.models import Patient_bio_info_Info
-from db_dict.patient_form import Patient_dict
+from db_dict.patient_form import PatientDict
 
-class Patient_bio_info_Form(Form):
-
+class PatientBioInfoForm(Form):
     folder_number = StringField('Folder Number', [validators.required()])
     mr_number = StringField('MR number', [validators.Length(min=1, max=50)])
     name = StringField('Name', [validators.Length(min=1, max=50)])
@@ -14,7 +13,7 @@ class Patient_bio_info_Form(Form):
     current_address = TextAreaField('Current Address', [validators.Length(min=1, max=200)])
     phone = IntegerField('Phone')
     email_id = StringField('Email ID', [validators.optional()])
-    gender = SelectField('Gender', choices= Patient_dict.gender_choice)
+    gender = RadioField('Gender', choices= PatientDict.gender_choice)
     age_yrs = IntegerField('Age in years', [validators.required()])
     date_of_birth = DateField('Date of Birth', [validators.required()])
     place_birth = StringField('Place of Birth')

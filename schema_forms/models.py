@@ -1,4 +1,4 @@
-from create_url import encodex
+from create_url import encodex, decodex
 class Patient_bio_info_Info:
     def __init__(self, folder_number, mr_number, name, aadhaar_card, date_first, permanent_address, current_address,
                  phone, email_id, gender, age_yrs, date_of_birth, place_birth, height_cm, weight_kg):
@@ -19,14 +19,14 @@ class Patient_bio_info_Info:
         self.weight_kg=weight_kg
         self.folder_hash = encodex(folder_number)
 
-class Biopsy_Info:
-    def __init__(self, folder_number, consent_stat_biopsy,consent_form_biopsy, block_serial_number_biopsy,
+class BiopsyInfo:
+    def __init__(self, folder_hash, consent_stat_biopsy,consent_form_biopsy, block_serial_number_biopsy,
                  block_location_biopsy, block_current_location_biopsy, biopsy_custody_pccm, biopsy_block_id,
                  biopsy_block_number, biopsy_date, biopsy_lab_id, biopsy_type, biopsy_tumour_diagnosis,
                  biopsy_tumour_grade, biopsy_lymphovascular_emboli, dcis_biopsy, tumour_er_biopsy,
                  tumour_er_percent_biopsy, tumour_pr_biopsy, tumour_pr_percent_biopsy, tumour_her2_biopsy,
                  tumour_her2_grade_biopsy, tumour_ki67_biopsy, fnac, fnac_location, fnac_diagnosis):
-        self.folder_number = folder_number
+        self.folder_number = decodex(folder_hash)
         self.consent_stat_biopsy = consent_stat_biopsy
         self.consent_form_biopsy = consent_form_biopsy
         self.block_serial_number_biopsy = block_serial_number_biopsy
@@ -52,4 +52,3 @@ class Biopsy_Info:
         self. fnac = fnac
         self.fnac_location = fnac_location
         self.fnac_diagnosis = fnac_diagnosis
-        self.folder_hash = encodex(folder_number)
