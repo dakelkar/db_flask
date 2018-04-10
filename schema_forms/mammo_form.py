@@ -3,9 +3,9 @@ from wtforms.fields.html5 import DateField
 from schema_forms.models import Patient_bio_info_Info
 from db_dict.patient_form import PatientDict
 
-class PatientBioInfoForm(Form):
+class MammographyForm(Form):
     folder_number = StringField('Folder Number', [validators.required()])
-    mr_number = StringField('MR number', [validators.Length(min=1, max=50)])
+    mammo_location = StringField('Mammography Diagnosis at', [validators.Length(min=1, max=50)])
     name = StringField('Name', [validators.Length(min=1, max=50)])
     aadhaar_card = StringField('Aadhaar Card Number (if available)')
     date_first = DateField("Date of first visit")

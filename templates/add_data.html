@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Add data Modules</h1>
+    <small>Welcome {{session.name}}</small>
+    <div></div>
+    <a class="btn btn-success" href="/add_data">Add additional modules</a>
+    <hr>
+        <h2>Folder Number</h2>
+        <h3>{{patient.folder_number}}</h3>
+                <td><a href="add_biopsy/{{patient.folder_hash}}" class="btn btn-primary">Add Biopsy</a></td>
+                <td>
+                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-success">Edit Patient Bio Info</a></td>
+{% endblock %}
