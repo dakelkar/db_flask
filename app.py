@@ -1,7 +1,7 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, request
 from passlib.hash import sha256_crypt
 from log import Log
-from create_url import decodex
+from create_hash import decodex
 from dbs.patientsdb import PatientsDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
@@ -107,15 +107,24 @@ def logout():
 # Main dashboard
 @app.route('/dashboard')
 @is_logged_in
-
 def dashboard():
     patient_list = db.get_patients()
     if patient_list:
-        return render_template('dashboard.html', patients=patient_list)
+        return render_template('dashboard.html', patients = patient_list)
     else:
-        msg = 'No patients found'
-        return render_template('dashboard.html', msg=msg)
+        msg = 'No data found'
+        return render_template('dashboard.html', msg = msg)
 
+#biopsy dashboard
+@app.route('/dashboard_biopsy')
+@is_logged_in
+def dashboard_biopsy():
+    biopsy_list = db.get_biopsies()
+    if biopsy_list:
+        return render_template('dashboard_biopsy.html', biopsies = biopsy_list)
+    else:
+        msg = 'No biopsies found'
+        return render_template('dashboard_biopsy.html', msg=msg)
 
 #########################################################
 # Patient CRUD
@@ -140,9 +149,8 @@ def add_patient():
 
         return redirect(url_for('dashboard'))
     return render_template('patient_bio_info_add.html', form=form)
-   # return render_template(dk, form=form)
 
-@app.route('/add_data/edit_patient/<folder_hash>', methods=['GET', 'POST'])
+@app.route('/edit_patient/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_patient(folder_hash):
     form = PatientBioInfoForm(request.form)
@@ -168,13 +176,6 @@ def edit_patient(folder_hash):
 
     return render_template('patient_bio_info_edit.html', form=form)
 
-@app.route('/add_data/<folder_hash>')
-@is_logged_in
-def add_data (folder_hash):
-    folder_number = decodex(folder_hash)
-    patient = db.get_patient(folder_number)
-    return render_template('add_data.html', patient = patient)
-
 @app.route('/delete_patient/<folder_hash>', methods=['POST'])
 @is_logged_in
 def delete_patient(folder_hash):
@@ -188,11 +189,13 @@ def delete_patient(folder_hash):
 
     return redirect(url_for('dashboard'))
 
-@app.route('/add_data/add_biopsy/<folder_hash>', methods=['GET','POST'])
+######################
+# Biopsy CRUD
+
+@app.route('/add_biopsy', methods=['GET','POST'])
 @is_logged_in
-def add_biopsy(folder_hash):
+def add_biopsy():
     form = BiopsyForm(request.form)
-    folder_number = decodex(folder_hash)
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
@@ -201,16 +204,55 @@ def add_biopsy(folder_hash):
         flash('Error adding biopsy: ' + errs, 'danger')
 
     if request.method == 'POST' and form.validate():
-        biopsy = form.to_model(folder_number)
+        biopsy = form.to_model()
         success_flag, error = db.add_biopsy(biopsy)
         if not success_flag:
             flash('Error adding patient: ' + str(error), 'danger')
         else:
             flash('Biopsy Information Added', 'success')
 
-        return redirect(url_for('/add_data'))
+        return redirect(url_for('dashboard_biopsy'))
     return render_template('biopsy_add.html', form=form)
 
+@app.route('/edit_biopsy/<folder_hash>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_biopsy(folder_hash):
+    form = BiopsyForm(request.form)
+
+    if request.method == 'GET':
+        folder_number = decodex(folder_hash)
+        biopsy = db.get_biopsy(folder_number)
+        if biopsy is not None:
+            form.from_model(biopsy)
+        else:
+            flash('Biopsy not found for folder: ' + folder_number, 'danger')
+
+    if request.method == 'POST' and form.validate():
+        biopsy = form.to_model()
+        success_flag, error = db.update_biopsy(biopsy)
+
+        if not success_flag:
+            flash('Error updating biopsy: ' + str(error), 'danger')
+        else:
+            flash('Biopsy Updated', 'success')
+
+        return redirect(url_for('dashboard_biopsy'))
+
+    return render_template('biopsy_edit.html', form=form)
+
+
+@app.route('/delete_biopsy/<folder_hash>', methods=['POST'])
+@is_logged_in
+def delete_biopsy(folder_hash):
+    folder_number = decodex(folder_hash)
+    success_flag, error = db.delete_biopsy(folder_number)
+
+    if not success_flag:
+        flash('Error deleting biopsy: ' + str(error), 'danger')
+    else:
+        flash('Biopsy Deleted', 'success')
+
+    return redirect(url_for('dashboard_biopsy'))
 #########################################################
 # foo CRUD - should come here
 # TODO: implement here...
@@ -221,3 +263,13 @@ def add_biopsy(folder_hash):
 if __name__ == '__main__':
     app.secret_key = 'secret123'
     app.run(host='0.0.0.0', port=5666, debug=True)
+
+###########
+#to incorporate later
+##############
+#@app.route('/add_data/<folder_hash>')
+#@is_logged_in
+#def add_data (folder_hash):
+    #    folder_number = decodex(folder_hash)
+    #    patient = db.get_patient(folder_number)
+#    return render_template('add_data.html', patient = patient)

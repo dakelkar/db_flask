@@ -2,11 +2,9 @@ from wtforms import Form, StringField, validators, IntegerField, SelectField, Ra
 from wtforms.fields.html5 import DateField
 from schema_forms.models import BiopsyInfo
 from db_dict.biopsy import BiopsyDict
-from schema_forms.patient_bio_info_form import PatientBioInfoForm
-from create_url import encodex, decodex
 
 class BiopsyForm (Form):
-    folder_number = PatientBioInfoForm.folder_number
+    folder_number = StringField('Folder Number', [validators.required()])
     consent_stat_biopsy = RadioField('Has consent been taken from patient?', choices=BiopsyDict.consent_stat_choice)
     consent_form_biopsy = RadioField('Is consent form with signature present in file ?',
                                      choices=BiopsyDict.consent_form_choice)
@@ -37,43 +35,43 @@ class BiopsyForm (Form):
     fnac_diagnosis = SelectField("FNAC Diagnosis", choices = BiopsyDict.fnac_diagnosis_choice)
 
 
-    def to_model(self, folder_number):
+    def to_model(self):
         """
         :returns Biopsy_Form: model for the form
         """
-        biopsy = BiopsyInfo(  consent_stat_biopsy=self.consent_stat_biopsy.data,
-                              consent_form_biopsy=self.consent_form_biopsy.data,
-                              block_serial_number_biopsy=self.block_serial_number_biopsy.data,
-                              block_location_biopsy=self.block_location_biopsy.data,
-                              block_current_location_biopsy=self.block_current_location_biopsy.data,
-                              biopsy_custody_pccm=self.biopsy_custody_pccm.data,
-                              biopsy_block_id=self.biopsy_block_id.data,
-                              biopsy_block_number=self.biopsy_block_number.data,
-                              biopsy_date=self.biopsy_date.data,
-                              biopsy_lab_id=self.biopsy_lab_id.data,
-                              biopsy_type=self.biopsy_type.data,
-                              biopsy_tumour_diagnosis=self.biopsy_tumour_diagnosis.data,
-                              biopsy_tumour_grade=self.biopsy_tumour_grade.data,
-                              biopsy_lymphovascular_emboli=self.biopsy_lymphovascular_emboli.data,
-                              dcis_biopsy = self.dcis_biopsy.data,
-                              tumour_er_biopsy=self.tumour_er_biopsy.data,
-                              tumour_er_percent_biopsy =self.tumour_er_percent_biopsy.data,
-                              tumour_pr_biopsy = self.tumour_pr_biopsy.data,
-                              tumour_pr_percent_biopsy = self.tumour_pr_percent_biopsy.data,
-                              tumour_her2_biopsy = self.tumour_her2_biopsy.data,
-                              tumour_her2_grade_biopsy = self.tumour_her2_grade_biopsy.data,
-                              tumour_ki67_biopsy = self.tumour_ki67_biopsy.data,
-                              fnac = self.fnac.data,
-                              fnac_location = self.fnac_location.data,
-                              fnac_diagnosis = self.fnac_diagnosis.data,
-                              folder_hash = encodex(folder_number.data))
+        biopsy = BiopsyInfo(folder_number= self.folder_number.data,
+                            consent_stat_biopsy=self.consent_stat_biopsy.data,
+                            consent_form_biopsy=self.consent_form_biopsy.data,
+                            block_serial_number_biopsy=self.block_serial_number_biopsy.data,
+                            block_location_biopsy=self.block_location_biopsy.data,
+                            block_current_location_biopsy=self.block_current_location_biopsy.data,
+                            biopsy_custody_pccm=self.biopsy_custody_pccm.data,
+                            biopsy_block_id=self.biopsy_block_id.data,
+                            biopsy_block_number=self.biopsy_block_number.data,
+                            biopsy_date=self.biopsy_date.data,
+                            biopsy_lab_id=self.biopsy_lab_id.data,
+                            biopsy_type=self.biopsy_type.data,
+                            biopsy_tumour_diagnosis=self.biopsy_tumour_diagnosis.data,
+                            biopsy_tumour_grade=self.biopsy_tumour_grade.data,
+                            biopsy_lymphovascular_emboli=self.biopsy_lymphovascular_emboli.data,
+                            dcis_biopsy = self.dcis_biopsy.data,
+                            tumour_er_biopsy=self.tumour_er_biopsy.data,
+                            tumour_er_percent_biopsy =self.tumour_er_percent_biopsy.data,
+                            tumour_pr_biopsy = self.tumour_pr_biopsy.data,
+                            tumour_pr_percent_biopsy = self.tumour_pr_percent_biopsy.data,
+                            tumour_her2_biopsy = self.tumour_her2_biopsy.data,
+                            tumour_her2_grade_biopsy = self.tumour_her2_grade_biopsy.data,
+                            tumour_ki67_biopsy = self.tumour_ki67_biopsy.data,
+                            fnac = self.fnac.data,
+                            fnac_location = self.fnac_location.data,
+                            fnac_diagnosis = self.fnac_diagnosis.data)
         return biopsy
 
     def from_model(self, biopsy):
         """
-        :param PatientForm patient: initialize form based on the model
+        :param BiopsyForm biopsy: initialize form based on the model
         """
-        self.folder_number = biopsy.folder_number
+        self.folder_number.data = biopsy.folder_number
         self.consent_stat_biopsy.data =  biopsy.consent_stat_biopsy
         self.consent_form_biopsy.data = biopsy.consent_form_biopsy
         self.block_serial_number_biopsy.data = biopsy.block_serial_number_biopsy

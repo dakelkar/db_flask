@@ -7,7 +7,9 @@ from datetime import datetime
 class PatientsDb(object):
     # This class wraps the DB access for patients
     key = "folder_number"
-    
+    ###########################3
+    # Patient_Info def
+
     def from_patient_bio_info_info(self, patient):
         return {
             self.key: patient.folder_number,
@@ -104,6 +106,9 @@ class PatientsDb(object):
         #     self.log.get_logger().error("Error deleting patient %s from database: %s", folder_number, sys.exc_info())
         #     return False, sys.exc_info()
 
+    ###########################3
+    # Biopsy def
+
     def from_biopsy_info(self, biopsy):
         return {
             self.key: biopsy.folder_number,
@@ -120,7 +125,7 @@ class PatientsDb(object):
             "biopsy_type" : biopsy.biopsy_type,
             "biopsy_tumour_diagnosis" : biopsy.biopsy_tumour_diagnosis,
             "biopsy_tumour_grade" : biopsy.biopsy_tumour_grade,
-            "biopsy_lymphovascular_emboli" : biopsy.biopsy_lymphovascular_emboli.data,
+            "biopsy_lymphovascular_emboli" : biopsy.biopsy_lymphovascular_emboli,
             "dcis_biopsy" : biopsy.dcis_biopsy,
             "tumour_er_biopsy" : biopsy.tumour_er_biopsy,
             "tumour_er_percent_biopsy" : biopsy.tumour_er_percent_biopsy,
@@ -135,8 +140,8 @@ class PatientsDb(object):
         }
 
 
-    def to_biopsy_info(self, patient, p):
-        biopsy_info = models.Biopsy_Info(folder_number=p[patient.key],
+    def to_biopsy_info(self, p):
+        biopsy_info = models.BiopsyInfo(folder_number=p[self.key],
                     consent_stat_biopsy = p["consent_stat_biopsy"],consent_form_biopsy = p['consent_form_biopsy'],
                     block_serial_number_biopsy = p['block_serial_number_biopsy'],
                     block_location_biopsy = p['block_location_biopsy'],
@@ -153,10 +158,19 @@ class PatientsDb(object):
                     fnac_diagnosis = p['fnac_diagnosis'])
         return biopsy_info
 
-
+    def get_biopsies(self):
+        """
+        :returns list of models.BiopsyInfo
+        """
+        # try:
+        biopsies = self.db.biopsies.find()
+        return [self.to_biopsy_info(p) for p in biopsies]
+        # except:
+        #     self.log.get_logger().error("Error retrieving patients from database: %s", sys.exc_info())
+        #     return
     def get_biopsy(self, folder_number):
          # try:
-        biopsy_entry = self.db.biopsy.find_one({ self.key: folder_number })
+        biopsy_entry = self.db.biopsies.find_one({ self.key: folder_number })
         biopsy = self.to_biopsy_info(biopsy_entry)
         return biopsy
          # except:
@@ -171,7 +185,7 @@ class PatientsDb(object):
         """
         #try:
         biopsy_entry = self.from_biopsy_info(biopsy)
-        self.db.biopsy.insert_one(biopsy_entry)
+        self.db.biopsies.insert_one(biopsy_entry)
         return True, None
         # except:
         #     self.log.get_logger().error("Error adding event to database: %s", sys.exc_info())
@@ -183,13 +197,19 @@ class PatientsDb(object):
         :param models.PatientForm patient: model to update from
         """
         #try:
-        self.db.biopsy.update_one({self.key: biopsy.folder_number },
+        self.db.biopsies.update_one({self.key: biopsy.folder_number },
                                         { "$set": self.from_biopsy_info(biopsy)})
         return True, None
         #except:
         #    self.log.get_logger().error("Error updating event to database: %s", sys.exc_info())
          #   return False, sys.exc_info()
 
+    def delete_biopsy(self, folder_number):
+        # try:
+        self.db.biopsies.delete_one({self.key: folder_number})
+        return True, None  # except:
+        #     self.log.get_logger().error("Error deleting patient %s from database: %s", folder_number, sys.exc_info())
+        #     return False, sys.exc_info()
     #################################
     # user add and password functions #
     #################################

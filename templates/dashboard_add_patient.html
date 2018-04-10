@@ -20,13 +20,7 @@
                 <td>{{patient.folder_number}}</td>
                 <td>{{patient.mr_number}}</td>
                 <td>{{patient.name}}</td>
-                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
-                <td>
-                    <form action="{{url_for('delete_patient', folder_hash=patient.folder_hash)}}" method="post">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <input type="submit" value="Delete" class="btn btn-danger">
-                    </form>
-                </td>
+                <td><a href="add_data/{{patient.folder_hash}}" class="btn btn-success">Add other Modules</a></td>
             </tr>
         {% endfor %}
     </table>

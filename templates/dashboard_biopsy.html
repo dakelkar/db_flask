@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Biopsy Information</h1>
+    <small>Welcome {{session.name}}</small>
+    <div></div>
+    <a class="btn btn-success" href="/add_patient">Register New Patient</a>
+    <a class="btn btn-success" href="/add_biopsy">Add new Biopsy Report</a>
+    <hr>
+
+    <table class="table table-striped">
+        <tr>
+            <th>Folder Number</th>
+            <th>ER Status</th>
+            <th>PR Status</th>
+            <th>HER2 Status</th>
+            <th>Ki67 Percent</th>
+        </tr>
+        {% for biopsy in biopsies %}
+            <tr>
+                <td>{{biopsy.folder_number}}</td>
+                <td>{{biopsy.tumour_er_biopsy}}</td>
+                <td>{{biopsy.tumour_pr_biopsy}}</td>
+                <td>{{biopsy.tumour_her2_biopsy}}</td>
+                <td>{{biopsy.tumour_ki67_biopsy}}</td>
+                <td><a href="edit_biopsy/{{biopsy.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
+                <td>
+                    <form action="{{url_for('delete_biopsy', folder_hash=biopsy.folder_hash)}}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="submit" value="Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
