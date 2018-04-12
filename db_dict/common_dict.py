@@ -19,8 +19,8 @@ class CommonDict():
                   "i":"I: Negative",'ii':"II: Benign", 'iii':"III: Probably Benign",'iv':"IV: Suspicious",
                   'iva': "IVA: Low suspicion for malignancy",'ivb': "IVB: Moderate suspicion for malignancy",
                   'ivc': "IVC: High suspicion for malignancy",'v':"V:  Highly Suggestive of Malignancy"}
-    distance_from_nipple_dict = {'<.5': "<0.5 cm", '>0.5': ">0.5 cm", 'other': "Other"}
-    yes_no_dict = {"N": "No", "Yes": "Y"}
+    distance_from_nipple_dict = {'NA':"Not Present", '<.5': "<0.5 cm", '>0.5': ">0.5 cm", 'other': "Other"}
+    yes_no_dict = {"N": "No", "Y": "Yes"}
     absent_present_dict = {'absent':'Absent', 'present':'Present', 'other':"Other"}
     breast_location_choice = generate_choice(breast_location_dict)
     birad_choice = generate_choice(birad_dict)

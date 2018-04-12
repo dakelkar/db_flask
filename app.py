@@ -5,6 +5,7 @@ from create_hash import decodex
 from dbs.patientsdb import PatientsDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
+from schema_forms.mammo_form import MammographyForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 
@@ -125,6 +126,18 @@ def dashboard_biopsy():
     else:
         msg = 'No biopsies found'
         return render_template('dashboard_biopsy.html', msg=msg)
+
+#mammography dashboard
+@app.route('/dashboard_mammo')
+@is_logged_in
+def dashboard_mammo():
+    mammo_list = db.get_mammographies()
+    if mammo_list:
+        return render_template('dashboard_mammo.html', mammographies = mammo_list)
+    else:
+        msg = 'No mammographies found'
+        return render_template('dashboard_mammo.html', msg=msg)
+
 
 #########################################################
 # Patient CRUD
@@ -253,6 +266,72 @@ def delete_biopsy(folder_hash):
         flash('Biopsy Deleted', 'success')
 
     return redirect(url_for('dashboard_biopsy'))
+
+
+######################
+# Mammo CRUD
+
+@app.route('/add_mammo', methods=['GET', 'POST'])
+@is_logged_in
+def add_mammo():
+    form = MammographyForm(request.form)
+    if request.method == 'POST' and not form.validate():
+        errs = ""
+        for fieldName, errorMessages in form.errors.items():
+            for err in errorMessages:
+                errs = errs + err + " "
+        flash('Error adding mammograph: ' + errs, 'danger')
+
+    if request.method == 'POST' and form.validate():
+        mammo = form.to_model()
+        success_flag, error = db.add_mammography(mammo)
+        if not success_flag:
+            flash('Error adding mammograph: ' + str(error), 'danger')
+        else:
+            flash('Patient Added', 'success')
+
+        return redirect(url_for('dashboard_mammo'))
+    return render_template('mammo_add.html', form=form)
+
+@app.route('/edit_mammo/<folder_hash>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_mammo(folder_hash):
+    form = MammographyForm(request.form)
+
+    if request.method == 'GET':
+        folder_number = decodex(folder_hash)
+        mammo = db.get_mammography(folder_number)
+        if mammo is not None:
+            form.from_model(mammo)
+        else:
+            flash('Mammograph not found for folder: ' + folder_number, 'danger')
+
+    if request.method == 'POST' and form.validate():
+        mammo = form.to_model()
+        success_flag, error = db.update_mammography(mammo)
+
+        if not success_flag:
+            flash('Error updating mammograph: ' + str(error), 'danger')
+        else:
+            flash('Mammograph Updated', 'success')
+
+        return redirect(url_for('dashboard_mammp'))
+
+    return render_template('mammo_edit.html', form=form)
+
+@app.route('/delete_mammo/<folder_hash>', methods=['POST'])
+@is_logged_in
+def delete_mammo(folder_hash):
+    folder_number = decodex(folder_hash)
+    success_flag, error = db.delete_mammography(folder_number)
+
+    if not success_flag:
+        flash('Error deleting mammograph: ' + str(error), 'danger')
+    else:
+        flash('Mammograph Deleted', 'success')
+
+    return redirect(url_for('dashboard_mammo'))
+
 #########################################################
 # foo CRUD - should come here
 # TODO: implement here...
@@ -267,6 +346,7 @@ if __name__ == '__main__':
 ###########
 #to incorporate later
 ##############
+#@app.route('/add_data/<folder_hash>')
 #@app.route('/add_data/<folder_hash>')
 #@is_logged_in
 #def add_data (folder_hash):

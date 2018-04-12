@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Add Mammography Information</h1>
+    {% from "includes/_formhelpers.html" import render_field %}
+    <form method="POST" action="">
+        <div class="form-group">
+            {{ render_field(form.folder_number, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_location, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_details, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_date, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_accesion, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_number, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_report_previous, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_breast_density, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_present, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_number, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_location_right_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_location_left_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_depth, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_dist, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_pect, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_shape, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_margin, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_mass_density, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calcification_present, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calc_number, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calc_location_right_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calc_location_left_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calc_depth, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calc_dist, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calcification_type, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_calcification_diagnosis, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_arch_present, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_arch_location_right_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_arch_location_left_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_arch_depth, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_arch_dist, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_assym_present, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_assym_location_right_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_assym_location_left_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_assym_depth, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_assym_type_right_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_assym_type_left_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_intra_mammary_lymph_nodes_present, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_intra_mammary_lymph_nodes_description, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_lesion, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_lesion_right_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_lesion_left_breast, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_asso_feature_skin_retraction, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_asso_feature_nipple_retraction, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_asso_feature_skin_thickening, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_asso_feature_trabecular_thickening, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_asso_feature_axillary_adenopathy, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_asso_feature_architectural_distortion, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_asso_feature_calicifications, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.mammo_birad, class_="form-control") }}
+        </div>
+        <p><input class="btn btn-primary" type="submit" value="Submit"></p>
+    </form>
+{% endblock %}
