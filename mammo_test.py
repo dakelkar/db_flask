@@ -15,8 +15,7 @@ def mock_url_for(endpoint, **values):
 
 class MammoTestCase(unittest.TestCase):
     def setUp(self):
-        self.path = './templates'
-        self.filename = 'dashboard.html'
+        self.templatePath = './templates'
 
         self.test_model = MammographyInfo(folder_number="some number", mammo_location="some location",
              mammo_details='mammo_details', mammo_date='mammo_date',
@@ -49,11 +48,11 @@ class MammoTestCase(unittest.TestCase):
              mammo_asso_feature_calicifications='mammo_asso_feature_calicifications', mammo_birad='mammo_birad'
         )
 
-    def getRendered(self, context):
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader(self.path))
+    def getRendered(self, filename, context):
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(self.templatePath))
         env.globals.update(get_flashed_messages=mock_get_flashed_messages)
         env.globals.update(url_for=mock_url_for)
-        rendered = env.get_template(self.filename).render(context)
+        rendered = env.get_template(filename).render(context)
         return rendered
 
     def test_from_model(self):
@@ -69,25 +68,20 @@ class MammoTestCase(unittest.TestCase):
         self.assertEqual(new_model.folder_number, self.test_model.folder_number, "exepected equal values")
         self.assertEqual(new_model.mammo_arch_depth, "amazing edited value")
 
-    # def test_dashboard_golden_path(self):
-    #     patients = [
-    #         models.Patient_bio_info_Info(123, 123, "someone", "123", "123", "123", "123", "123", "123", "123", "123", "123",
-    #                            "123", "123", "123"),
-    #         models.Patient_bio_info_Info(123, 123, "someoneElse", "123", "123", "123", "123", "123", "123", "123", "123", "123",
-    #                            "123", "123", "123")
-    #     ]
-    #     context = {  # your variables to pass to template
-    #         'patients': patients,
-    #         'session': FakeSession()
-    #     }
+    def test_mammo_add_template(self):
 
-    #     rendered = self.getRendered(context)
+        # given
+        form = MammographyForm()        
+        context = {  
+            'form': form,
+            'session': FakeSession()
+        }
 
-    #     # `rendered` is now a string with rendered template
-    #     # do some asserts on `rendered` string
-    #     assert 'fakeUser' in rendered
-    #     assert 'someone' in rendered
-    #     assert 'someoneElse' in rendered
+        # when
+        rendered = self.getRendered("mammo_add.html", context)
+
+        # then: assert the last field is present :)
+        assert 'BI-RAD classification (if available)' in rendered
 
 if __name__ == '__main__':
     unittest.main()
