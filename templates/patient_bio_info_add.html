@@ -38,6 +38,9 @@
             {{ render_field(form.age_yrs, class_="form-control") }}
         </div>
         <div class="form-group">
+            {{ render_field(form.age_diagnosis, class_="form-control") }}
+        </div>
+        <div class="form-group">
             {{ render_field(form.date_of_birth, class_="form-control") }}
         </div>
         <div class="form-group">
@@ -48,6 +51,12 @@
         </div>
         <div class="form-group">
             {{ render_field(form.weight_kg, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.form_status, class_="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.last_update, class_="form-control") }}
         </div>
         <p><input class="btn btn-primary" type="submit" value="Submit"></p>
     </form>

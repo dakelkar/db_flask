@@ -12,7 +12,7 @@
     <table class="table table-striped">
         <tr>
             <th>Folder Number</th>
-            <th>MR number</th>
+            <th>Form Status</th>
             <th>Name</th>
             <th></th>
             <th></th>
@@ -20,7 +20,7 @@
         {% for patient in patients %}
             <tr>
                 <td>{{patient.folder_number}}</td>
-                <td>{{patient.mr_number}}</td>
+                <td>{{patient.form_status}}</td>
                 <td>{{patient.name}}</td>
                 <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
                 <td>
@@ -32,4 +32,5 @@
             </tr>
         {% endfor %}
     </table>
+    <h2>{{foo}}</h2>
 {% endblock %}

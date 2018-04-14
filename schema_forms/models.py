@@ -1,7 +1,8 @@
 from create_hash import encodex
 class Patient_bio_info_Info:
     def __init__(self, folder_number, mr_number, name, aadhaar_card, date_first, permanent_address, current_address,
-                 phone, email_id, gender, age_yrs, date_of_birth, place_birth, height_cm, weight_kg):
+                 phone, email_id, gender, age_yrs, age_diagnosis, date_of_birth, place_birth, height_cm, weight_kg,
+                 form_status, last_update):
         self.folder_number=folder_number
         self.mr_number=mr_number
         self.name=name
@@ -13,10 +14,13 @@ class Patient_bio_info_Info:
         self.email_id=email_id
         self.gender=gender
         self.age_yrs=age_yrs
+        self.age_diagnosis=age_diagnosis
         self.date_of_birth=date_of_birth
         self.place_birth=place_birth
         self.height_cm=height_cm
         self.weight_kg=weight_kg
+        self.form_status=form_status
+        self.last_update = last_update
         self.folder_hash = encodex(folder_number)
 
 class BiopsyInfo:

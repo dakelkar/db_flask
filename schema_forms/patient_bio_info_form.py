@@ -1,7 +1,9 @@
 from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField
-from wtforms.fields.html5 import DateField
+from wtforms.fields.html5 import DateTimeField, DateField
 from schema_forms.models import Patient_bio_info_Info
 from db_dict.patient_form import PatientDict
+from db_dict.common_dict import CommonDict
+from datetime import datetime, date
 
 class PatientBioInfoForm(Form):
     folder_number = StringField('Folder Number', [validators.required()])
@@ -15,10 +17,16 @@ class PatientBioInfoForm(Form):
     email_id = StringField('Email ID', [validators.optional()])
     gender = RadioField('Gender', choices= PatientDict.gender_choice)
     age_yrs = IntegerField('Age in years', [validators.required()])
+    age_diagnosis = IntegerField('Age at diagnosis (yrs)', [validators.required()])
     date_of_birth = DateField('Date of Birth', [validators.required()])
     place_birth = StringField('Place of Birth')
     height_cm = FloatField('Height (in cm)', [validators.required()])
     weight_kg = FloatField('Weight (in kg)', [validators.required()])
+    form_status = SelectField('Is form completely filled or does it need to be re-checked?',
+                              choices = CommonDict.form_status_choice)
+    last_update = DateField('Date/time of last update', format= '%Y-%m-%d', default=date.today(),
+                            validators=[validators.DataRequired()])
+
 
     def to_model(self):
         """
@@ -34,11 +42,13 @@ class PatientBioInfoForm(Form):
             phone=self.phone.data,
             email_id=self.email_id.data,
             gender=self.gender.data,
-            age_yrs=self.age_yrs.data,
+            age_yrs=self.age_yrs.data, age_diagnosis=self.age_diagnosis.data,
             date_of_birth=self.date_of_birth.data,
             place_birth=self.place_birth.data,
             height_cm=self.height_cm.data,
-            weight_kg=self.weight_kg.data)
+            weight_kg=self.weight_kg.data,
+            form_status=self.form_status.data,
+            last_update = self.last_update.data)
         return patient
 
     def from_model(self, patient):
@@ -56,9 +66,12 @@ class PatientBioInfoForm(Form):
         self.email_id.data = patient.email_id
         self.gender.data = patient.gender
         self.age_yrs.data = patient.age_yrs
+        self.age_diagnosis.data = patient.age_diagnosis
         self.date_of_birth.data = patient.date_of_birth
         self.place_birth.data = patient.place_birth
         self.height_cm.data = patient.height_cm
         self.weight_kg.data = patient.weight_kg
+        self.form_status.data= patient.form_status
+        self.last_update.data = patient.last_update
 
 

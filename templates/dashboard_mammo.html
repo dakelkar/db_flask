@@ -17,10 +17,10 @@
         {% for mammography in mammographies %}
             <tr>
                 <td>{{mammography.folder_number}}</td>
-                <td>{{mammography.birad}}</td>
-                <td><a href="edit_mammography/{{mammography.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
+                <td>{{mammography.mammo_birad}}</td>
+                <td><a href="edit_mammo/{{mammography.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
                 <td>
-                    <form action="{{url_for('delete_mammography', folder_hash=mammography.folder_hash)}}" method="post">
+                    <form action="{{url_for('delete_mammo', folder_hash=mammography.folder_hash)}}" method="post">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="submit" value="Delete" class="btn btn-danger">
                     </form>

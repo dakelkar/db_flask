@@ -13,7 +13,7 @@ class PatientDict():
             choices_all = choices_all+ [(choices)]
         return tuple(choices_all)
 
-    gender ={"F":"Female",
+    gender ={'tbd':"To be filled", "F":"Female",
              "M":"Male"}
     gender_choice = generate_choice(gender)
 

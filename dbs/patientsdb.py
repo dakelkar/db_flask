@@ -23,10 +23,13 @@ class PatientsDb(object):
             "email_id": patient.email_id,
             "gender": patient.gender,
             "age_yrs": patient.age_yrs,
+            "age_diagnosis":patient.age_diagnosis,
             "date_of_birth": datetime.combine(patient.date_of_birth, datetime.min.time()),
             "place_birth":  patient.place_birth,
             "height_cm": patient.height_cm,
-            "weight_kg": patient.weight_kg
+            "weight_kg": patient.weight_kg,
+            "form_status":patient.form_status,
+            "last_update":datetime.combine(patient.last_update, datetime.min.time())
         }
 
     def to_patient_bio_info_info(self, p):
@@ -35,8 +38,10 @@ class PatientsDb(object):
                                           permanent_address=p['permanent_address'],
                                           current_address=p['current_address'], phone=p['phone'],
                                           email_id=p['email_id'], gender=p['gender'], age_yrs=p['age_yrs'],
-                                          date_of_birth=p['date_of_birth'].date(), place_birth=p['place_birth'],
-                                          height_cm=p['height_cm'], weight_kg=p['weight_kg'])
+                                          age_diagnosis=p['age_diagnosis'],date_of_birth=p['date_of_birth'].date(),
+                                          place_birth=p['place_birth'], height_cm=p['height_cm'],
+                                          weight_kg=p['weight_kg'], form_status=p['form_status'],
+                                          last_update=p['last_update'].date())
         return patient_bio_info_info
 
     def __init__(self, logger):
@@ -216,7 +221,8 @@ class PatientsDb(object):
 
     def from_mammography_info(self, mammography):
         return {self.key: mammography.folder_number, 'mammo_location': mammography.mammo_location,
-        'mammo_details': mammography.mammo_details, 'mammo_date': mammography.mammo_date,
+        'mammo_details': mammography.mammo_details, 'mammo_date': datetime.combine(mammography.mammo_date,
+                                                                                   datetime.min.time()),
         'mammo_accesion': mammography.mammo_accesion, 'mammo_number': mammography.mammo_number,
         'mammo_report_previous':mammography.mammo_report_previous, 'mammo_breast_density':
         mammography.mammo_breast_density, 'mammo_mass_present':mammography.mammo_mass_present,
@@ -257,7 +263,7 @@ class PatientsDb(object):
 
     def to_mammography_info(self, p):
          mammography = models.MammographyInfo(folder_number=p[self.key], mammo_location=p['mammo_location'],
-             mammo_details=p['mammo_details'], mammo_date=p['mammo_date'],
+             mammo_details=p['mammo_details'], mammo_date=p['mammo_date'].date(),
              mammo_accesion=p['mammo_accesion'], mammo_number=p['mammo_number'],
              mammo_report_previous=p['mammo_report_previous'],mammo_breast_density=p['mammo_breast_density'],
              mammo_mass_present=p['mammo_mass_present'],mammo_mass_number=p['mammo_mass_number'],
@@ -302,7 +308,7 @@ class PatientsDb(object):
     def get_mammography(self, folder_number):
         # try:
         mammography_entry = self.db.mammographies.find_one({self.key: folder_number})
-        mammography = self.to_biopsy_info(mammography_entry)
+        mammography = self.to_mammography_info(mammography_entry)
         return mammography
         # except:  #    self.log.get_logger().error("Error retrieving patient %s from database: %s", folder_number, sys.exc_info())  #    return
 

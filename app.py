@@ -111,7 +111,7 @@ def logout():
 def dashboard():
     patient_list = db.get_patients()
     if patient_list:
-        return render_template('dashboard.html', patients = patient_list)
+        return render_template('dashboard.html', patients = patient_list, foo="dk")
     else:
         msg = 'No data found'
         return render_template('dashboard.html', msg = msg)
@@ -315,7 +315,7 @@ def edit_mammo(folder_hash):
         else:
             flash('Mammograph Updated', 'success')
 
-        return redirect(url_for('dashboard_mammp'))
+        return redirect(url_for('dashboard_mammo'))
 
     return render_template('mammo_edit.html', form=form)
 

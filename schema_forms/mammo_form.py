@@ -1,5 +1,6 @@
 from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField
 from wtforms.fields.html5 import DateField
+from schema_forms.models import MammographyInfo
 from db_dict.mammography import MammographyDict
 
 class MammographyForm(Form):
@@ -88,7 +89,7 @@ class MammographyForm(Form):
         """
         :returns Patient_bio_info_Form: model for the form
         """
-        mammography = MammographyForm(folder_number= self.folder_number.data,
+        mammography = MammographyInfo(folder_number= self.folder_number.data,
                         mammo_location=self.mammo_location.data, mammo_details = self.mammo_details.data,
                         mammo_date = self.mammo_date.data, mammo_accesion = self.mammo_accesion.data,
                         mammo_number = self.mammo_number.data, mammo_report_previous = self.mammo_report_previous.data,
