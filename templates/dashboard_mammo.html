@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Patient Information</h1>
+    <h1>Mammography Information</h1>
     <small>Welcome {{session.name}}</small>
     <div></div>
     <a class="btn btn-success" href="/add_patient">Register New Patient</a>
@@ -12,19 +12,15 @@
     <table class="table table-striped">
         <tr>
             <th>Folder Number</th>
-            <th>Form Status</th>
-            <th>Name</th>
-            <th></th>
-            <th></th>
+            <th>BI-RAD Status</th>
         </tr>
-        {% for patient in patients %}
+        {% for mammography in mammographies %}
             <tr>
-                <td>{{patient.folder_number}}</td>
-                <td>{{patient.form_status}}</td>
-                <td>{{patient.name}}</td>
-                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
+                <td>{{mammography.folder_number}}</td>
+                <td>{{mammography.mammo_birad}}</td>
+                <td><a href="edit_mammo/{{mammography.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
                 <td>
-                    <form action="{{url_for('delete_patient', folder_hash=patient.folder_hash)}}" method="post">
+                    <form action="{{url_for('delete_mammo', folder_hash=mammography.folder_hash)}}" method="post">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="submit" value="Delete" class="btn btn-danger">
                     </form>
