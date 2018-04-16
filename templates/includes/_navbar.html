@@ -10,21 +10,14 @@
           <li>  <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/about">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboard">Patient List</a>
-          </li>
-            <li class="nav-item">
-            <a class="nav-link" href="/dashboard_biopsy">Biopsy List</a>
-          </li>
-          <li>
-            <li class="nav-item">
-            <a class="nav-link" href="/dashboard_mammo">Mammography List</a>
+            <a class="nav-link" href="/dashboard">Patients</a>
           </li>
         </ul>
 
         <ul class="navbar-nav navbar-right">
+          <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+          </li>
             {% if session.logged_in %}
                 <li class="nav-link"><a href="/logout">Logout</a></li>
             {% else %}

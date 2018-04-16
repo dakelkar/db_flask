@@ -16,13 +16,15 @@
             <th>Name</th>
             <th></th>
             <th></th>
+            <th></th>
         </tr>
         {% for patient in patients %}
             <tr>
                 <td>{{patient.folder_number}}</td>
                 <td>{{patient.form_status}}</td>
                 <td>{{patient.name}}</td>
-                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
+                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-default pullright">Edit Bio</a></td>
+                <td><a href="folder/{{patient.folder_hash}}" class="btn btn-default pullright">View Folder</a></td>
                 <td>
                     <form action="{{url_for('delete_patient', folder_hash=patient.folder_hash)}}" method="post">
                         <input type="hidden" name="_method" value="DELETE">

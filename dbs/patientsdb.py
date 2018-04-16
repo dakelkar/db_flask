@@ -176,6 +176,9 @@ class PatientsDb(object):
     def get_biopsy(self, folder_number):
          # try:
         biopsy_entry = self.db.biopsies.find_one({ self.key: folder_number })
+        if biopsy_entry is None:
+            return None
+            
         biopsy = self.to_biopsy_info(biopsy_entry)
         return biopsy
          # except:
@@ -308,6 +311,9 @@ class PatientsDb(object):
     def get_mammography(self, folder_number):
         # try:
         mammography_entry = self.db.mammographies.find_one({self.key: folder_number})
+        if mammography_entry is None:
+            return None
+
         mammography = self.to_mammography_info(mammography_entry)
         return mammography
         # except:  #    self.log.get_logger().error("Error retrieving patient %s from database: %s", folder_number, sys.exc_info())  #    return
