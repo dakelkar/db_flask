@@ -111,7 +111,7 @@ def logout():
 def dashboard():
     patient_list = db.get_patients()
     if patient_list:
-        return render_template('dashboard.html', patients = patient_list, foo="dk")
+        return render_template('dashboard.html', patients = patient_list)
     else:
         msg = 'No data found'
         return render_template('dashboard.html', msg = msg)
