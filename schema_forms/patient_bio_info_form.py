@@ -24,7 +24,7 @@ class PatientBioInfoForm(Form):
     weight_kg = FloatField('Weight (in kg)', [validators.required()])
     form_status = SelectField('Is form completely filled or does it need to be re-checked?',
                               choices = CommonDict.form_status_choice)
-    last_update = DateField('Date/time of last update', format= '%Y-%m-%d', default=date.today(),
+    last_update = DateField('Date of last update', format= '%Y-%m-%d', default=date.today(),
                             validators=[validators.DataRequired()])
 
 

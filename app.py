@@ -4,6 +4,7 @@ from passlib.hash import sha256_crypt
 from log import Log
 from create_hash import decodex
 from dbs.patientsdb import PatientsDb
+from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm
@@ -14,10 +15,15 @@ from schema_forms.models import FolderSection
 
 # Initialize logging
 log = Log()
+log_= Log()
 
 # Initialize DB
 db = PatientsDb(log)
 db.connect()
+
+# Initialize User DB
+db_ = UserDb(log_)
+db_.connect()
 
 app = Flask(__name__)
 
@@ -53,7 +59,7 @@ def register():
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data))
 
-        if db.add_user(name, email, username, password):
+        if db_.add_user(name, email, username, password):
             flash('You are now registered and can log in', 'success')
         else:
             flash('Error adding user to database', 'error')
@@ -67,14 +73,14 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password_candidate = request.form['password']
-
-        encrypted, name = db.get_password(username)
+        print ("username is ", username)
+        encrypted, name = db_.get_password(username)
+        print("getting password")
         if encrypted is not None:
             if sha256_crypt.verify(password_candidate, encrypted):
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
-
                 flash('You are now logged in', 'success')
                 return redirect(url_for('dashboard'))
             else:
@@ -188,10 +194,10 @@ def view_folder(folder_hash):
     folder_number = decodex(folder_hash)
     folder_sections = []
 
-    section = create_folder_section(folder_number, "mammo", db.get_mammography)
+    section = create_folder_section(folder_number, "Mammography", db.get_mammography)
     folder_sections.append(section)
 
-    section = create_folder_section(folder_number, "biopsy", db.get_biopsy)
+    section = create_folder_section(folder_number, "Biopsy Report", db.get_biopsy)
     folder_sections.append(section)
 
     return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number, folder_sections=folder_sections)

@@ -352,28 +352,3 @@ class PatientsDb(object):
         #     return False, sys.exc_info()
 
     #################################
-    # user add and password functions #
-    #################################
-    def add_user(self, name, email, username, password):
-        try:
-            user = self.db.users.find_one({"username": username})
-            if user is not None:
-                return False
-
-            self.db.users.insert_one({"name": name, "email": email, "username": username, "password": password})
-            return True
-        except:
-            self.log.get_logger().error("Error adding user: %s", sys.exc_info())
-            return False
-
-    def get_password(self, username):
-        try:
-            user = self.db.users.find_one({"username": username})
-            if user is None:
-                return None, None
-            else:
-                return user['password'], user['name']
-        except:
-            self.log.get_logger().error("Error retrieving user from database: %s", sys.exc_info())
-            return None, None
-

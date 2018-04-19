@@ -13,7 +13,9 @@ class CommonDict():
             choices = (index, dict_.get(index))
             choices_all = choices_all+ [(choices)]
         return tuple(choices_all)
-    form_status_dict = {'empty':"Empty", 'partial':"All fields are not filled", 'add':"Requires additional data from specialist", 'complete':"Complete"}
+    form_status_dict = {'Empty':"Empty", 'All fields are not filled':"All fields are not filled",
+                        'Requires additional data from specialist':"Requires additional data from specialist",
+                        "Data to be obtained from Patient":'Data to be obtained from Patient','Complete':"Complete"}
     breast_location_dict = {'tbd':"To be filled",'NA': "Not present in this breast", 'uoq':"UOQ", 'uiq':"UIQ",'ucq':"UCQ",'loq': "LOQ",
                             'liq':"LIQ",'lcq':"LCQ", 'coq': "COQ",'ciq':"CIQ",'coo':"CCQ"}
     birad_dict = {'tbd':"To be filled",'NA': "Information not available in this report","0":"0: Incomplete – Need Additional Imaging Evaluation",
