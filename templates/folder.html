@@ -20,7 +20,7 @@
                 <td>{{folder_section.status}}</td>
                 <td>{{folder_section.last_modified_by}}</td>
                 <td>{{folder_section.last_modified_on}}</td>
-                <td><a href="/{{folder_section.action}}_{{folder_section.name}}/{{folder_hash}}" class="btn btn-primary pullright">{{folder_section.action}}</a></td>
+                <td><a href="/{{folder_section.action}}_{{folder_section.name}}/{{folder_hash}}" class="btn btn-{{'outline-' if folder_section.action=='edit'}}primary pullright">{{folder_section.action}}</a></td>
             </tr>
         {% endfor %}
     </table>
