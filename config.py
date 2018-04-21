@@ -3,8 +3,6 @@
 # Log information
 LOG_PATH = "./logs/"
 LOG_NAME = "service.log"
-LOG_PATH = './logs_/'
-LOG_NAME = "service.log_"
 CITY = "Pune"
 REGION = "India"
 LATITUDE = 47.6740

@@ -11,19 +11,26 @@ from schema_forms.mammo_form import MammographyForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
-
+from dbs.biopsydb import BiopsyDb
+from dbs.mammodb import MammoDb
 
 # Initialize logging
 log = Log()
-log_= Log()
-
 # Initialize DB
 db = PatientsDb(log)
 db.connect()
 
 # Initialize User DB
-db_ = UserDb(log_)
-db_.connect()
+users_db = UserDb(log)
+users_db.connect()
+
+# Initialize BiopsyDb
+biopsy_db = BiopsyDb(log)
+biopsy_db.connect()
+
+#Initialize MammoDb
+mammo_db = MammoDb(log)
+mammo_db.connect()
 
 app = Flask(__name__)
 
@@ -59,7 +66,7 @@ def register():
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data))
 
-        if db_.add_user(name, email, username, password):
+        if users_db.add_user(name, email, username, password):
             flash('You are now registered and can log in', 'success')
         else:
             flash('Error adding user to database', 'error')
@@ -74,7 +81,7 @@ def login():
         username = request.form['username']
         password_candidate = request.form['password']
         print ("username is ", username)
-        encrypted, name = db_.get_password(username)
+        encrypted, name = users_db.get_password(username)
         print("getting password")
         if encrypted is not None:
             if sha256_crypt.verify(password_candidate, encrypted):
@@ -194,13 +201,14 @@ def view_folder(folder_hash):
     folder_number = decodex(folder_hash)
     folder_sections = []
 
-    section = create_folder_section(folder_number, "Mammography", db.get_mammography)
+    section = create_folder_section(folder_number, "mammo", mammo_db.get_mammography)
     folder_sections.append(section)
 
-    section = create_folder_section(folder_number, "Biopsy Report", db.get_biopsy)
+    section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
     folder_sections.append(section)
 
-    return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number, folder_sections=folder_sections)
+    return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number,
+                           folder_sections=folder_sections)
 
 def create_folder_section(folder_number, section_name, db_get):
     section_object = db_get(folder_number)
@@ -209,7 +217,8 @@ def create_folder_section(folder_number, section_name, db_get):
     if section_object is not None:
         action = "edit"
         status = "Maybe we should have a status?"
-    section = FolderSection(section_name, action, status,  last_modified_by="Who Knows", last_modified_on=datetime.datetime.today().strftime('%Y-%m-%d'))
+    section = FolderSection(section_name, action, status,  last_modified_by="Who Knows",
+                            last_modified_on=datetime.datetime.today().strftime('%Y-%m-%d'))
     return section
 
 
@@ -232,7 +241,7 @@ def add_biopsy(folder_hash):
 
     if request.method == 'POST' and form.validate():
         biopsy = form.to_model()
-        success_flag, error = db.add_biopsy(biopsy)
+        success_flag, error = biopsy_db.add_biopsy(biopsy)
         if not success_flag:
             flash('Error adding patient: ' + str(error), 'danger')
         else:
@@ -249,7 +258,7 @@ def edit_biopsy(folder_hash):
     form.folder_number.data = folder_number
 
     if request.method == 'GET':
-        biopsy = db.get_biopsy(folder_number)
+        biopsy = biopsy_db.get_biopsy(folder_number)
         if biopsy is not None:
             form.from_model(biopsy)
         else:
@@ -257,7 +266,7 @@ def edit_biopsy(folder_hash):
 
     if request.method == 'POST' and form.validate():
         biopsy = form.to_model()
-        success_flag, error = db.update_biopsy(biopsy)
+        success_flag, error = biopsy_db.update_biopsy(biopsy)
 
         if not success_flag:
             flash('Error updating biopsy: ' + str(error), 'danger')
@@ -273,7 +282,7 @@ def edit_biopsy(folder_hash):
 @is_logged_in
 def delete_biopsy(folder_hash):
     folder_number = decodex(folder_hash)
-    success_flag, error = db.delete_biopsy(folder_number)
+    success_flag, error = biopsy_db.delete_biopsy(folder_number)
 
     if not success_flag:
         flash('Error deleting biopsy: ' + str(error), 'danger')
@@ -302,7 +311,7 @@ def add_mammo(folder_hash):
 
     if request.method == 'POST' and form.validate():
         mammo = form.to_model()
-        success_flag, error = db.add_mammography(mammo)
+        success_flag, error = mammo_db.add_mammography(mammo)
         if not success_flag:
             flash('Error adding mammograph: ' + str(error), 'danger')
         else:
@@ -319,7 +328,7 @@ def edit_mammo(folder_hash):
     form.folder_number.data = folder_number
 
     if request.method == 'GET':
-        mammo = db.get_mammography(folder_number)
+        mammo = mammo_db.get_mammography(folder_number)
         if mammo is not None:
             form.from_model(mammo)
         else:
@@ -327,7 +336,7 @@ def edit_mammo(folder_hash):
 
     if request.method == 'POST' and form.validate():
         mammo = form.to_model()
-        success_flag, error = db.update_mammography(mammo)
+        success_flag, error = mammo_db.update_mammography(mammo)
 
         if not success_flag:
             flash('Error updating mammograph: ' + str(error), 'danger')
@@ -342,7 +351,7 @@ def edit_mammo(folder_hash):
 @is_logged_in
 def delete_mammo(folder_hash):
     folder_number = decodex(folder_hash)
-    success_flag, error = db.delete_mammography(folder_number)
+    success_flag, error = mammo_db.delete_mammography(folder_number)
 
     if not success_flag:
         flash('Error deleting mammograph: ' + str(error), 'danger')
