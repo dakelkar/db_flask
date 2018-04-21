@@ -13,7 +13,8 @@
         <tr>
             <th>Folder Number</th>
             <th>Form Status</th>
-            <th>Name</th>
+            <th>Last Update</th>
+            <th></th>
             <th></th>
             <th></th>
         </tr>
@@ -21,8 +22,9 @@
             <tr>
                 <td>{{patient.folder_number}}</td>
                 <td>{{patient.form_status}}</td>
-                <td>{{patient.name}}</td>
-                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-default pullright">Edit</a></td>
+                <td>{{patient.last_update}}</td>
+                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-primary pullright">Edit Bio</a></td>
+                <td><a href="folder/{{patient.folder_hash}}" class="btn btn-secondary pullright">View Folder</a></td>
                 <td>
                     <form action="{{url_for('delete_patient', folder_hash=patient.folder_hash)}}" method="post">
                         <input type="hidden" name="_method" value="DELETE">

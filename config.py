@@ -3,9 +3,8 @@
 # Log information
 LOG_PATH = "./logs/"
 LOG_NAME = "service.log"
-
-CITY = "Redmond"
-REGION = "USA"
+CITY = "Pune"
+REGION = "India"
 LATITUDE = 47.6740
 LONGITUDE = -122.1215
 TIMEZONE = "US/Pacific"

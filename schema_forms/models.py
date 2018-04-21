@@ -1,4 +1,13 @@
 from create_hash import encodex
+class FolderSection:
+    def __init__(self, name, action, status, last_modified_by, last_modified_on):
+        self.name = name
+        self.action = action
+        self.status = status
+        self.last_modified_by = last_modified_by
+        self.last_modified_on = last_modified_on
+
+
 class Patient_bio_info_Info:
     def __init__(self, folder_number, mr_number, name, aadhaar_card, date_first, permanent_address, current_address,
                  phone, email_id, gender, age_yrs, age_diagnosis, date_of_birth, place_birth, height_cm, weight_kg,

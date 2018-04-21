@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Patient Folder: {{folder_number}}</h1>
+    <small>Welcome {{session.name}}</small>
+    <div></div>
+    <hr>
+
+    <table class="table table-striped">
+        <tr>
+            <th>Section</th>
+            <th>Form Status</th>
+            <th>Last Edited By</th>
+            <th>Last Edited On</th>
+            <th></th>
+        </tr>
+        {% for folder_section in folder_sections %}
+            <tr>
+                <td>{{folder_section.name}}</td>
+                <td>{{folder_section.status}}</td>
+                <td>{{folder_section.last_modified_by}}</td>
+                <td>{{folder_section.last_modified_on}}</td>
+                <td><a href="/{{folder_section.action}}_{{folder_section.name}}/{{folder_hash}}" class="btn btn-primary pullright">{{folder_section.action}}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

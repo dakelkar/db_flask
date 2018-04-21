@@ -1,22 +1,36 @@
+import datetime
 from flask import Flask, render_template, flash, redirect, url_for, session, request
 from passlib.hash import sha256_crypt
 from log import Log
 from create_hash import decodex
 from dbs.patientsdb import PatientsDb
+from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
-
-
+from schema_forms.models import FolderSection
+from dbs.biopsydb import BiopsyDb
+from dbs.mammodb import MammoDb
 
 # Initialize logging
 log = Log()
-
 # Initialize DB
 db = PatientsDb(log)
 db.connect()
+
+# Initialize User DB
+users_db = UserDb(log)
+users_db.connect()
+
+# Initialize BiopsyDb
+biopsy_db = BiopsyDb(log)
+biopsy_db.connect()
+
+#Initialize MammoDb
+mammo_db = MammoDb(log)
+mammo_db.connect()
 
 app = Flask(__name__)
 
@@ -52,7 +66,7 @@ def register():
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data))
 
-        if db.add_user(name, email, username, password):
+        if users_db.add_user(name, email, username, password):
             flash('You are now registered and can log in', 'success')
         else:
             flash('Error adding user to database', 'error')
@@ -66,14 +80,14 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password_candidate = request.form['password']
-
-        encrypted, name = db.get_password(username)
+        print ("username is ", username)
+        encrypted, name = users_db.get_password(username)
+        print("getting password")
         if encrypted is not None:
             if sha256_crypt.verify(password_candidate, encrypted):
                 session['logged_in'] = True
                 session['username'] = username
                 session['name'] = name
-
                 flash('You are now logged in', 'success')
                 return redirect(url_for('dashboard'))
             else:
@@ -115,29 +129,6 @@ def dashboard():
     else:
         msg = 'No data found'
         return render_template('dashboard.html', msg = msg)
-
-#biopsy dashboard
-@app.route('/dashboard_biopsy')
-@is_logged_in
-def dashboard_biopsy():
-    biopsy_list = db.get_biopsies()
-    if biopsy_list:
-        return render_template('dashboard_biopsy.html', biopsies = biopsy_list)
-    else:
-        msg = 'No biopsies found'
-        return render_template('dashboard_biopsy.html', msg=msg)
-
-#mammography dashboard
-@app.route('/dashboard_mammo')
-@is_logged_in
-def dashboard_mammo():
-    mammo_list = db.get_mammographies()
-    if mammo_list:
-        return render_template('dashboard_mammo.html', mammographies = mammo_list)
-    else:
-        msg = 'No mammographies found'
-        return render_template('dashboard_mammo.html', msg=msg)
-
 
 #########################################################
 # Patient CRUD
@@ -203,12 +194,44 @@ def delete_patient(folder_hash):
     return redirect(url_for('dashboard'))
 
 ######################
+# Folder
+@app.route('/folder/<folder_hash>', methods=['GET'])
+@is_logged_in
+def view_folder(folder_hash):
+    folder_number = decodex(folder_hash)
+    folder_sections = []
+
+    section = create_folder_section(folder_number, "mammo", mammo_db.get_mammography)
+    folder_sections.append(section)
+
+    section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
+    folder_sections.append(section)
+
+    return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number,
+                           folder_sections=folder_sections)
+
+def create_folder_section(folder_number, section_name, db_get):
+    section_object = db_get(folder_number)
+    action = "add"
+    status = ""
+    if section_object is not None:
+        action = "edit"
+        status = "Maybe we should have a status?"
+    section = FolderSection(section_name, action, status,  last_modified_by="Who Knows",
+                            last_modified_on=datetime.datetime.today().strftime('%Y-%m-%d'))
+    return section
+
+
+######################
 # Biopsy CRUD
 
-@app.route('/add_biopsy', methods=['GET','POST'])
+@app.route('/add_biopsy/<folder_hash>', methods=['GET','POST'])
 @is_logged_in
-def add_biopsy():
+def add_biopsy(folder_hash):
     form = BiopsyForm(request.form)
+    folder_number = decodex(folder_hash)
+    form.folder_number.data = folder_number
+
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
@@ -218,23 +241,24 @@ def add_biopsy():
 
     if request.method == 'POST' and form.validate():
         biopsy = form.to_model()
-        success_flag, error = db.add_biopsy(biopsy)
+        success_flag, error = biopsy_db.add_biopsy(biopsy)
         if not success_flag:
             flash('Error adding patient: ' + str(error), 'danger')
         else:
             flash('Biopsy Information Added', 'success')
 
-        return redirect(url_for('dashboard_biopsy'))
+        return redirect(url_for('view_folder', folder_hash=folder_hash))
     return render_template('biopsy_add.html', form=form)
 
 @app.route('/edit_biopsy/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_biopsy(folder_hash):
     form = BiopsyForm(request.form)
+    folder_number = decodex(folder_hash)
+    form.folder_number.data = folder_number
 
     if request.method == 'GET':
-        folder_number = decodex(folder_hash)
-        biopsy = db.get_biopsy(folder_number)
+        biopsy = biopsy_db.get_biopsy(folder_number)
         if biopsy is not None:
             form.from_model(biopsy)
         else:
@@ -242,14 +266,14 @@ def edit_biopsy(folder_hash):
 
     if request.method == 'POST' and form.validate():
         biopsy = form.to_model()
-        success_flag, error = db.update_biopsy(biopsy)
+        success_flag, error = biopsy_db.update_biopsy(biopsy)
 
         if not success_flag:
             flash('Error updating biopsy: ' + str(error), 'danger')
         else:
             flash('Biopsy Updated', 'success')
 
-        return redirect(url_for('dashboard_biopsy'))
+        return redirect(url_for('view_folder', folder_hash=folder_hash))
 
     return render_template('biopsy_edit.html', form=form)
 
@@ -258,23 +282,26 @@ def edit_biopsy(folder_hash):
 @is_logged_in
 def delete_biopsy(folder_hash):
     folder_number = decodex(folder_hash)
-    success_flag, error = db.delete_biopsy(folder_number)
+    success_flag, error = biopsy_db.delete_biopsy(folder_number)
 
     if not success_flag:
         flash('Error deleting biopsy: ' + str(error), 'danger')
     else:
         flash('Biopsy Deleted', 'success')
 
-    return redirect(url_for('dashboard_biopsy'))
+    return redirect(url_for('view_folder', folder_hash=folder_hash))
 
 
 ######################
 # Mammo CRUD
 
-@app.route('/add_mammo', methods=['GET', 'POST'])
+@app.route('/add_mammo/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
-def add_mammo():
+def add_mammo(folder_hash):
     form = MammographyForm(request.form)
+    folder_number = decodex(folder_hash)
+    form.folder_number.data = folder_number
+
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
@@ -284,23 +311,24 @@ def add_mammo():
 
     if request.method == 'POST' and form.validate():
         mammo = form.to_model()
-        success_flag, error = db.add_mammography(mammo)
+        success_flag, error = mammo_db.add_mammography(mammo)
         if not success_flag:
             flash('Error adding mammograph: ' + str(error), 'danger')
         else:
             flash('Patient Added', 'success')
 
-        return redirect(url_for('dashboard_mammo'))
+        return redirect(url_for('view_folder', folder_hash=folder_hash))
     return render_template('mammo_add.html', form=form)
 
 @app.route('/edit_mammo/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_mammo(folder_hash):
     form = MammographyForm(request.form)
+    folder_number = decodex(folder_hash)
+    form.folder_number.data = folder_number
 
     if request.method == 'GET':
-        folder_number = decodex(folder_hash)
-        mammo = db.get_mammography(folder_number)
+        mammo = mammo_db.get_mammography(folder_number)
         if mammo is not None:
             form.from_model(mammo)
         else:
@@ -308,14 +336,14 @@ def edit_mammo(folder_hash):
 
     if request.method == 'POST' and form.validate():
         mammo = form.to_model()
-        success_flag, error = db.update_mammography(mammo)
+        success_flag, error = mammo_db.update_mammography(mammo)
 
         if not success_flag:
             flash('Error updating mammograph: ' + str(error), 'danger')
         else:
             flash('Mammograph Updated', 'success')
 
-        return redirect(url_for('dashboard_mammo'))
+        return redirect(url_for('view_folder', folder_hash=folder_hash))
 
     return render_template('mammo_edit.html', form=form)
 
@@ -323,14 +351,14 @@ def edit_mammo(folder_hash):
 @is_logged_in
 def delete_mammo(folder_hash):
     folder_number = decodex(folder_hash)
-    success_flag, error = db.delete_mammography(folder_number)
+    success_flag, error = mammo_db.delete_mammography(folder_number)
 
     if not success_flag:
         flash('Error deleting mammograph: ' + str(error), 'danger')
     else:
         flash('Mammograph Deleted', 'success')
 
-    return redirect(url_for('dashboard_mammo'))
+    return redirect(url_for('view_folder', folder_hash=folder_hash))
 
 #########################################################
 # foo CRUD - should come here
@@ -342,14 +370,3 @@ def delete_mammo(folder_hash):
 if __name__ == '__main__':
     app.secret_key = 'secret123'
     app.run(host='0.0.0.0', port=5666, debug=True)
-
-###########
-#to incorporate later
-##############
-#@app.route('/add_data/<folder_hash>')
-#@app.route('/add_data/<folder_hash>')
-#@is_logged_in
-#def add_data (folder_hash):
-    #    folder_number = decodex(folder_hash)
-    #    patient = db.get_patient(folder_number)
-#    return render_template('add_data.html', patient = patient)
