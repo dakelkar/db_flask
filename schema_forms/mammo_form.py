@@ -5,8 +5,8 @@ from db_dict.mammography import MammographyDict
 
 class MammographyForm(Form):
     folder_number = StringField('Folder Number', [validators.required()])
-    mammo_location = RadioField('Mammography Diagnosis at', choices = MammographyDict.mammo_location_choice)
-    mammo_details = RadioField("Is this the first mammography?", choices = MammographyDict.mammo_details_choice)
+    mammo_location = SelectField('Mammography Diagnosis at', choices = MammographyDict.mammo_location_choice)
+    mammo_details = SelectField("Is this the first mammography?", choices = MammographyDict.mammo_details_choice)
     mammo_date = DateField("Date of mammography")
     mammo_accesion = StringField("Accession number of mammography", [validators.Length(min=2, max=50)])
     mammo_number = StringField("Number of mammographies undergone (input NA if none)", [validators.Length(min=2, max=50)])
