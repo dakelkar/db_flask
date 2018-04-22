@@ -1,9 +1,41 @@
-from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField
+from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField, FormField
 from wtforms.fields.html5 import DateField
-from schema_forms.models import MammographyInfo
+from schema_forms.models import MammographyInfo, MammographyArchInfo
 from db_dict.mammography import MammographyDict
+from flask_wtf import FlaskForm
 
-class MammographyForm(Form):
+class MammoArchDistortionsForm(FlaskForm):
+    mammo_arch_location_right_breast = SelectField("Location of Architectural Distortion on Right Breast", choices =
+    MammographyDict.mammo_arch_location_right_breast_choice)
+    mammo_arch_location_left_breast = SelectField("Location of Architectural Distortion on Left Breast", choices =
+                                                  MammographyDict.mammo_arch_location_left_breast_choice)
+    mammo_arch_depth =  SelectField("Depth of Architectural Distortion", choices =
+                                        MammographyDict.mammo_arch_depth_choice)
+    mammo_arch_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
+                                    MammographyDict.mammo_arch_dist_choice)
+
+    def to_model(self):
+        """
+        :returns mammo_arch_info: model for the form
+        """
+        mammo_arch_info = MammographyArchInfo(
+                        mammo_arch_location_right_breast = self.mammo_arch_location_right_breast.data,
+                        mammo_arch_location_left_breast = self.mammo_arch_location_left_breast.data,
+                        mammo_arch_depth = self.mammo_arch_depth.data, mammo_arch_dist = self.mammo_arch_dist.data,
+                        )
+        return mammo_arch_info
+
+    def from_model(self, mammo_arch_info):
+        """
+        :param PatientForm patient: initialize form based on the model
+        """
+        self.mammo_arch_location_right_breast.data = mammo_arch_info.mammo_arch_location_right_breast
+        self.mammo_arch_location_left_breast.data = mammo_arch_info.mammo_arch_location_left_breast
+        self.mammo_arch_depth.data = mammo_arch_info.mammo_arch_depth
+        self.mammo_arch_dist.data = mammo_arch_info.mammo_arch_dist
+
+
+class MammographyForm(FlaskForm):
     folder_number = StringField('Folder Number', [validators.required()])
     mammo_location = SelectField('Mammography Diagnosis at', choices = MammographyDict.mammo_location_choice)
     mammo_details = SelectField("Is this the first mammography?", choices = MammographyDict.mammo_details_choice)
@@ -42,14 +74,7 @@ class MammographyForm(Form):
                                                 MammographyDict.mammo_calcification_diagnosis_choice)
     mammo_arch_present = SelectField("Are Architectural Distortions present", choices =
                                         MammographyDict.mammo_arch_present_choice)
-    mammo_arch_location_right_breast = SelectField("Location of Architectural Distortion on Right Breast", choices =
-                                                   MammographyDict.mammo_arch_location_right_breast_choice)
-    mammo_arch_location_left_breast = SelectField("Location of Architectural Distortion on Left Breast", choices =
-                                                  MammographyDict.mammo_arch_location_left_breast_choice)
-    mammo_arch_depth =  SelectField("Depth of Architectural Distortion", choices =
-                                        MammographyDict.mammo_arch_depth_choice)
-    mammo_arch_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
-                                    MammographyDict.mammo_arch_dist_choice)
+    mammo_arch = FormField(MammoArchDistortionsForm)
     mammo_assym_present = SelectField("Are Asymmetries present", choices =  MammographyDict.mammo_assym_present_choice)
     mammo_assym_location_right_breast = SelectField("Location of asymmetries on Right Breast", choices =
                                                     MammographyDict.mammo_assym_location_right_breast_choice)

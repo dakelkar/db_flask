@@ -134,7 +134,15 @@ class BiopsyDb(object):
     # Mammography def
 
     def from_mammography_info(self, mammography):
-        return {self.key: mammography.folder_number, 'mammo_location': mammography.mammo_location,
+        mammo_arch = mammography.mammo_arch
+        mammo_arch_data = {
+        'mammo_arch_location_right_breast': mammo_arch.mammo_arch_location_right_breast,
+        'mammo_arch_location_left_breast': mammo_arch.mammo_arch_location_left_breast,
+        'mammo_arch_depth': mammo_arch.mammo_arch_depth, 
+        'mammo_arch_dist': mammo_arch.mammo_arch_dist
+        }
+
+        mammo_data = {self.key: mammography.folder_number, 'mammo_location': mammography.mammo_location,
         'mammo_details': mammography.mammo_details, 'mammo_date': datetime.combine(mammography.mammo_date,
                                                                                    datetime.min.time()),
         'mammo_accesion': mammography.mammo_accesion, 'mammo_number': mammography.mammo_number,
@@ -153,9 +161,7 @@ class BiopsyDb(object):
         'mammo_calcification_type': mammography.mammo_calcification_type,
         'mammo_calcification_diagnosis': mammography.mammo_calcification_diagnosis,
         'mammo_arch_present': mammography.mammo_arch_present,
-        'mammo_arch_location_right_breast': mammography.mammo_arch_location_right_breast,
-        'mammo_arch_location_left_breast': mammography.mammo_arch_location_left_breast,
-        'mammo_arch_depth': mammography.mammo_arch_depth, 'mammo_arch_dist': mammography.mammo_arch_dist,
+        'mammo_arch' : mammo_arch_data,
         'mammo_assym_present': mammography.mammo_assym_present,
         'mammo_assym_location_right_breast': mammography.mammo_assym_location_right_breast,
         'mammo_assym_location_left_breast': mammography.mammo_assym_location_left_breast,
@@ -173,43 +179,58 @@ class BiopsyDb(object):
         'mammo_asso_feature_axillary_adenopathy': mammography.mammo_asso_feature_axillary_adenopathy,
         'mammo_asso_feature_architectural_distortion': mammography.mammo_asso_feature_architectural_distortion,
         'mammo_asso_feature_calicifications': mammography.mammo_asso_feature_calicifications,
-        'mammo_birad': mammography.mammo_birad}
+        'mammo_birad': mammography.mammo_birad
+        }
+
+        print(mammo_data)
+        return mammo_data
 
     def to_mammography_info(self, p):
-         mammography = models.MammographyInfo(folder_number=p[self.key], mammo_location=p['mammo_location'],
-             mammo_details=p['mammo_details'], mammo_date=p['mammo_date'].date(),
-             mammo_accesion=p['mammo_accesion'], mammo_number=p['mammo_number'],
-             mammo_report_previous=p['mammo_report_previous'],mammo_breast_density=p['mammo_breast_density'],
-             mammo_mass_present=p['mammo_mass_present'],mammo_mass_number=p['mammo_mass_number'],
-             mammo_mass_location_right_breast=p['mammo_mass_location_right_breast'],
-             mammo_mass_location_left_breast=p['mammo_mass_location_left_breast'],
-             mammo_mass_depth=p['mammo_mass_depth'],mammo_mass_dist=p['mammo_mass_dist'],
-             mammo_mass_pect=p['mammo_mass_pect'],mammo_mass_shape=p['mammo_mass_shape'],
-             mammo_mass_margin=p['mammo_mass_margin'], mammo_mass_density=p['mammo_mass_density'],
-             mammo_calcification_present=p['mammo_calcification_present'], mammo_calc_number=p['mammo_calc_number'],
-             mammo_calc_location_right_breast=p['mammo_calc_location_right_breast'], mammo_calc_location_left_breast
-             =p['mammo_calc_location_left_breast'], mammo_calc_depth=p['mammo_calc_depth'],mammo_calc_dist=
-             p['mammo_calc_dist'], mammo_calcification_type=p['mammo_calcification_type'],
-             mammo_calcification_diagnosis=p['mammo_calcification_diagnosis'], mammo_arch_present=
-             p['mammo_arch_present'],mammo_arch_location_right_breast=p['mammo_arch_location_right_breast'],
-             mammo_arch_location_left_breast=p['mammo_arch_location_left_breast'], mammo_arch_depth=
-             p['mammo_arch_depth'],mammo_arch_dist=p['mammo_arch_dist'],mammo_assym_present=p['mammo_assym_present'],
-             mammo_assym_location_right_breast=p['mammo_assym_location_right_breast'],
-             mammo_assym_location_left_breast=p['mammo_assym_location_left_breast'],
-             mammo_assym_depth=p['mammo_assym_depth'], mammo_assym_type_right_breast=p['mammo_assym_type_right_breast'],
-             mammo_assym_type_left_breast=p['mammo_assym_type_left_breast'],
-             mammo_intra_mammary_lymph_nodes_present=p['mammo_intra_mammary_lymph_nodes_present'],
-             mammo_intra_mammary_lymph_nodes_description=p['mammo_intra_mammary_lymph_nodes_description'],
-             mammo_lesion=p['mammo_lesion'],mammo_lesion_right_breast=p['mammo_lesion_right_breast'],
-             mammo_lesion_left_breast=p['mammo_lesion_left_breast'],mammo_asso_feature_skin_retraction=p[
-             'mammo_asso_feature_skin_retraction'],mammo_asso_feature_nipple_retraction=p[
-             'mammo_asso_feature_nipple_retraction'], mammo_asso_feature_skin_thickening=
-              p['mammo_asso_feature_skin_thickening'], mammo_asso_feature_trabecular_thickening=p[
-             'mammo_asso_feature_trabecular_thickening'], mammo_asso_feature_axillary_adenopathy=p[
-             'mammo_asso_feature_axillary_adenopathy'], mammo_asso_feature_architectural_distortion=p[
-             'mammo_asso_feature_architectural_distortion'], mammo_asso_feature_calicifications=p[
-             'mammo_asso_feature_calicifications'], mammo_birad=p['mammo_birad'])
-         return mammography
+        mammo_arch_data = p['mammo_arch']
+        mammo_arch = models.MammographyArchInfo(
+            mammo_arch_location_right_breast=mammo_arch_data['mammo_arch_location_right_breast'],
+            mammo_arch_location_left_breast=mammo_arch_data['mammo_arch_location_left_breast'], 
+            mammo_arch_depth=mammo_arch_data['mammo_arch_depth'],
+            mammo_arch_dist=mammo_arch_data['mammo_arch_dist']
+        )
+
+        mammography = models.MammographyInfo(
+            folder_number=p[self.key], mammo_location=p['mammo_location'],
+            mammo_details=p['mammo_details'], mammo_date=p['mammo_date'].date(),
+            mammo_accesion=p['mammo_accesion'], mammo_number=p['mammo_number'],
+            mammo_report_previous=p['mammo_report_previous'],mammo_breast_density=p['mammo_breast_density'],
+            mammo_mass_present=p['mammo_mass_present'],mammo_mass_number=p['mammo_mass_number'],
+            mammo_mass_location_right_breast=p['mammo_mass_location_right_breast'],
+            mammo_mass_location_left_breast=p['mammo_mass_location_left_breast'],
+            mammo_mass_depth=p['mammo_mass_depth'],mammo_mass_dist=p['mammo_mass_dist'],
+            mammo_mass_pect=p['mammo_mass_pect'],mammo_mass_shape=p['mammo_mass_shape'],
+            mammo_mass_margin=p['mammo_mass_margin'], mammo_mass_density=p['mammo_mass_density'],
+            mammo_calcification_present=p['mammo_calcification_present'], mammo_calc_number=p['mammo_calc_number'],
+            mammo_calc_location_right_breast=p['mammo_calc_location_right_breast'], mammo_calc_location_left_breast
+            =p['mammo_calc_location_left_breast'], mammo_calc_depth=p['mammo_calc_depth'],mammo_calc_dist=
+            p['mammo_calc_dist'], mammo_calcification_type=p['mammo_calcification_type'],
+            mammo_calcification_diagnosis=p['mammo_calcification_diagnosis'], 
+            mammo_arch_present=p['mammo_arch_present'],
+            mammo_arch=mammo_arch,
+            mammo_assym_present=p['mammo_assym_present'],
+            mammo_assym_location_right_breast=p['mammo_assym_location_right_breast'],
+            mammo_assym_location_left_breast=p['mammo_assym_location_left_breast'],
+            mammo_assym_depth=p['mammo_assym_depth'], mammo_assym_type_right_breast=p['mammo_assym_type_right_breast'],
+            mammo_assym_type_left_breast=p['mammo_assym_type_left_breast'],
+            mammo_intra_mammary_lymph_nodes_present=p['mammo_intra_mammary_lymph_nodes_present'],
+            mammo_intra_mammary_lymph_nodes_description=p['mammo_intra_mammary_lymph_nodes_description'],
+            mammo_lesion=p['mammo_lesion'],mammo_lesion_right_breast=p['mammo_lesion_right_breast'],
+            mammo_lesion_left_breast=p['mammo_lesion_left_breast'],mammo_asso_feature_skin_retraction=p[
+            'mammo_asso_feature_skin_retraction'],mammo_asso_feature_nipple_retraction=p[
+            'mammo_asso_feature_nipple_retraction'], mammo_asso_feature_skin_thickening=
+            p['mammo_asso_feature_skin_thickening'], mammo_asso_feature_trabecular_thickening=p[
+            'mammo_asso_feature_trabecular_thickening'], mammo_asso_feature_axillary_adenopathy=p[
+            'mammo_asso_feature_axillary_adenopathy'], mammo_asso_feature_architectural_distortion=p[
+            'mammo_asso_feature_architectural_distortion'], mammo_asso_feature_calicifications=p[
+            'mammo_asso_feature_calicifications'], mammo_birad=p['mammo_birad']
+        )
+
+        return mammography
 
     def get_mammographies(self):
         """

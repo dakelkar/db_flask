@@ -13,6 +13,7 @@ from functools import wraps
 from schema_forms.models import FolderSection
 from dbs.biopsydb import BiopsyDb
 from dbs.mammodb import MammoDb
+from flask_bootstrap import Bootstrap
 
 # Initialize logging
 log = Log()
@@ -33,7 +34,7 @@ mammo_db = MammoDb(log)
 mammo_db.connect()
 
 app = Flask(__name__)
-
+Bootstrap(app)
 
 #########################################################
 # Login, registration and index

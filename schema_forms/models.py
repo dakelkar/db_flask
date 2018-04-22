@@ -67,14 +67,21 @@ class BiopsyInfo:
         self.fnac_diagnosis = fnac_diagnosis
         self.folder_hash = encodex(folder_number)
 
+class MammographyArchInfo:
+    def __init__(self, mammo_arch_location_right_breast, mammo_arch_location_left_breast, mammo_arch_depth, mammo_arch_dist):
+        self.mammo_arch_location_right_breast = mammo_arch_location_right_breast
+        self.mammo_arch_location_left_breast = mammo_arch_location_left_breast
+        self.mammo_arch_depth = mammo_arch_depth
+        self.mammo_arch_dist = mammo_arch_dist
+        
 class MammographyInfo:
     def __init__(self, folder_number, mammo_location, mammo_details, mammo_date, mammo_accesion,mammo_number,
                 mammo_report_previous, mammo_breast_density, mammo_mass_present, mammo_mass_number,
                 mammo_mass_location_right_breast, mammo_mass_location_left_breast, mammo_mass_depth,mammo_mass_dist,
                 mammo_mass_pect, mammo_mass_shape, mammo_mass_margin, mammo_mass_density, mammo_calcification_present,
                 mammo_calc_number, mammo_calc_location_right_breast, mammo_calc_location_left_breast, mammo_calc_depth,
-                mammo_calc_dist, mammo_calcification_type, mammo_calcification_diagnosis, mammo_arch_present,
-                mammo_arch_location_right_breast, mammo_arch_location_left_breast, mammo_arch_depth, mammo_arch_dist,
+                mammo_calc_dist, mammo_calcification_type, mammo_calcification_diagnosis,
+                mammo_arch_present, mammo_arch,
                 mammo_assym_present, mammo_assym_location_right_breast, mammo_assym_location_left_breast,
                 mammo_assym_depth, mammo_assym_type_right_breast, mammo_assym_type_left_breast,
                 mammo_intra_mammary_lymph_nodes_present, mammo_intra_mammary_lymph_nodes_description, mammo_lesion,
@@ -109,6 +116,7 @@ class MammographyInfo:
         self.mammo_calcification_type = mammo_calcification_type
         self.mammo_calcification_diagnosis = mammo_calcification_diagnosis
         self.mammo_arch_present = mammo_arch_present
+        self.mammo_arch = mammo_arch
         self.mammo_arch_location_right_breast = mammo_arch_location_right_breast
         self.mammo_arch_location_left_breast = mammo_arch_location_left_breast
         self.mammo_arch_depth = mammo_arch_depth
