@@ -301,7 +301,7 @@ def delete_biopsy(folder_hash):
 def add_mammo(folder_hash):
     form = MammographyForm(request.form)
     folder_number = decodex(folder_hash)
-    form.folder_number.data = folder_number
+    form.fld_folder_number.data = folder_number
 
     if request.method == 'POST' and not form.validate():
         errs = ""
@@ -327,7 +327,7 @@ def add_mammo(folder_hash):
 def edit_mammo(folder_hash):
     form = MammographyForm(request.form)
     folder_number = decodex(folder_hash)
-    form.folder_number.data = folder_number
+    form.fld_folder_number.data = folder_number
 
     if request.method == 'GET':
         form = mammo_db.get_mammography(folder_number)

@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block body %}
-<h1>Folder Number {{form.folder_number.data}}</h1>
+<h1>Folder Number {{form.fld_folder_number.data}}</h1>
 <div class="panel panel-primary">
   <div class="panel-heading">Mammography Information</div>
   <div class="panel-body">
@@ -24,7 +24,7 @@
   function registerSubForm(name)
   {
     // toggle on load..
-    var selectorFieldId = '#'+name+'_present'
+    var selectorFieldId = '#fld_'+name+'_present'
     toggleSubForm(selectorFieldId, name)
 
     // ... and register a change as well

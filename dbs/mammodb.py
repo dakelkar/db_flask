@@ -44,7 +44,7 @@ class MammoDb(object):
         :param models.MammographyInfo mammography: model to update from
         """
         # try:
-        self.db.mammographies.update_one({self.key: mammography.folder_number.data}, {"$set": mammography.to_bson()})
+        self.db.mammographies.update_one({self.key: mammography.fld_folder_number.data}, {"$set": mammography.to_bson()})
         return True, None
         # except:
         #    self.log.get_logger().error("Error updating event to database: %s", sys.exc_info())
