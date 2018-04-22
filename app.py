@@ -204,7 +204,7 @@ def view_folder(folder_hash):
 
     section = create_folder_section(folder_number, "mammo", mammo_db.get_mammography)
     folder_sections.append(section)
-
+    # i dont understand how mammo and biopsy are inherited by the url for add_section or edit_section.
     section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
     folder_sections.append(section)
 
@@ -214,10 +214,10 @@ def view_folder(folder_hash):
 def create_folder_section(folder_number, section_name, db_get):
     section_object = db_get(folder_number)
     action = "add"
-    status = ""
+    status = "To be filled"
     if section_object is not None:
         action = "edit"
-        status = "Maybe we should have a status?"
+        status = ""
     section = FolderSection(section_name, action, status,  last_modified_by="Who Knows",
                             last_modified_on=datetime.datetime.today().strftime('%Y-%m-%d'))
     return section

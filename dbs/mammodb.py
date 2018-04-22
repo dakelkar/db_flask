@@ -1,7 +1,5 @@
 import sys
 import pymongo
-from schema_forms import models
-from datetime import datetime
 from schema_forms.mammo_form import MammographyForm
 
 class MammoDb(object):
@@ -24,7 +22,7 @@ class MammoDb(object):
 
     def get_mammography(self, folder_number):
         # try:
-        mammography_entry = self.db.mammographies.find_one({self.key: folder_number})
+        mammography_entry = self.db.find_one({self.key: folder_number})
         if mammography_entry is None:
             return None
         
@@ -36,7 +34,7 @@ class MammoDb(object):
     def add_mammography(self, mammography):
         mammography_entry = mammography.to_bson()
         print(mammography_entry)
-        self.db.mammographies.insert_one(mammography_entry)
+        self.db.insert_one(mammography_entry)
         return True, None
 
     def update_mammography(self, mammography):
@@ -44,7 +42,7 @@ class MammoDb(object):
         :param models.MammographyInfo mammography: model to update from
         """
         # try:
-        self.db.mammographies.update_one({self.key: mammography.fld_folder_number.data}, {"$set": mammography.to_bson()})
+        self.db.update_one({self.key: mammography.fld_folder_number.data}, {"$set": mammography.to_bson()})
         return True, None
         # except:
         #    self.log.get_logger().error("Error updating event to database: %s", sys.exc_info())
@@ -52,7 +50,7 @@ class MammoDb(object):
 
     def delete_mammography(self, folder_number):
         # try:
-        self.db.mammographies.delete_one({self.key: folder_number})
+        self.db.delete_one({self.key: folder_number})
         return True, None
         # except:
         #     self.log.get_logger().error("Error deleting patient %s from database: %s", folder_number, sys.exc_info())

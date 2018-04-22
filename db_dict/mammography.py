@@ -88,3 +88,4 @@ class MammographyDict():
     mammo_asso_feature_architectural_distortion_choice = CommonDict.absent_present_choice
     mammo_asso_feature_calicifications_choice = CommonDict.absent_present_choice
     mammo_birad_choice =  CommonDict.birad_choice
+    mammo_status_choice = CommonDict.form_status_choice
