@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block body %}
+<h1>Folder Number {{form.fld_folder_number.data}}</h1>
+<div class="panel panel-primary">
+  <div class="panel-heading">Mammography Information</div>
+  <div class="panel-body">
+    {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+
+  function toggleSubForm(selectorFieldId, name) {
+    
+    var selection = $(selectorFieldId).val() == "Y";
+    // console logs can be fancy
+    // https://developers.google.com/web/tools/chrome-devtools/console/console-write#string_substitution_and_formatting
+    console.log("toggle state of [%s] to [%s]", name, selection)
+    $("label[for=" + name + "]").parent().parent().toggle(selection)
+  }
+
+  function registerSubForm(name)
+  {
+    // toggle on load..
+    var selectorFieldId = '#fld_'+name+'_present'
+    toggleSubForm(selectorFieldId, name)
+
+    // ... and register a change as well
+    $(selectorFieldId).on('change',function(){
+      toggleSubForm(selectorFieldId, name)
+    });
+  }
+
+  registerSubForm('mammo_arch')
+
+</script>
+{% endblock %}
