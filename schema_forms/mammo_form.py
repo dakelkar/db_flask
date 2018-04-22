@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField, FormField
+from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField, FormField, SubmitField, HiddenField
 from wtforms.fields.html5 import DateField
 from schema_forms.models import MammographyInfo, MammographyArchInfo
 from db_dict.mammography import MammographyDict
@@ -36,7 +36,7 @@ class MammoArchDistortionsForm(FlaskForm):
 
 
 class MammographyForm(FlaskForm):
-    folder_number = StringField('Folder Number', [validators.required()])
+    folder_number = HiddenField()
     mammo_location = SelectField('Mammography Diagnosis at', choices = MammographyDict.mammo_location_choice)
     mammo_details = SelectField("Is this the first mammography?", choices = MammographyDict.mammo_details_choice)
     mammo_date = DateField("Date of mammography")
@@ -108,7 +108,7 @@ class MammographyForm(FlaskForm):
     mammo_asso_feature_calicifications = SelectField("Associated Feature: Calcification", choices =
                                                      MammographyDict.mammo_asso_feature_calicifications_choice)
     mammo_birad = SelectField("BI-RAD classification (if available)",  choices =  MammographyDict.mammo_birad_choice)
-
+    submit_button = SubmitField('Submit Form')
 
     def to_model(self):
         """

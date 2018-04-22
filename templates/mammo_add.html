@@ -1,6 +1,15 @@
 {% extends 'layout.html' %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block body %}
+<h1>Folder Number {{form.folder_number.data}}</h1>
+<div class="panel panel-primary">
+  <div class="panel-heading">Add Mammography Information</div>
+  <div class="panel-body">
+    {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
 <script>
   $('#mammo_arch_present').on('change',function(){
       var selection = $(this).val(); 
@@ -8,6 +17,4 @@
       $("#mammo_arch-mammo_arch_location_right_breast").toggle($(this).val()=="Y");
     });
 </script>
-<h1>Add Mammography Information</h1>
-{{ wtf.quick_form(form) }}
 {% endblock %}
