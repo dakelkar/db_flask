@@ -306,20 +306,21 @@ def add_mammo(folder_hash):
     if request.method == 'POST' and not form.validate():
         errs = ""
         for fieldName, errorMessages in form.errors.items():
+            errs = errs + "Field: = " + fieldName + "["
             for err in errorMessages:
                 errs = errs + err + " "
+            errs = errs + "] "
         flash('Error adding mammograph: ' + errs, 'danger')
 
     if request.method == 'POST' and form.validate():
-        mammo = form.to_model()
-        success_flag, error = mammo_db.add_mammography(mammo)
+        success_flag, error = mammo_db.add_mammography(form)
         if not success_flag:
             flash('Error adding mammograph: ' + str(error), 'danger')
         else:
             flash('Patient Added', 'success')
 
         return redirect(url_for('view_folder', folder_hash=folder_hash))
-    return render_template('mammo_add.html', form=form)
+    return render_template('mammo_form.html', form=form)
 
 @app.route('/edit_mammo/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
@@ -329,15 +330,12 @@ def edit_mammo(folder_hash):
     form.folder_number.data = folder_number
 
     if request.method == 'GET':
-        mammo = mammo_db.get_mammography(folder_number)
-        if mammo is not None:
-            form.from_model(mammo)
-        else:
+        form = mammo_db.get_mammography(folder_number)
+        if form is None:
             flash('Mammograph not found for folder: ' + folder_number, 'danger')
 
     if request.method == 'POST' and form.validate():
-        mammo = form.to_model()
-        success_flag, error = mammo_db.update_mammography(mammo)
+        success_flag, error = mammo_db.update_mammography(form)
 
         if not success_flag:
             flash('Error updating mammograph: ' + str(error), 'danger')
@@ -346,7 +344,7 @@ def edit_mammo(folder_hash):
 
         return redirect(url_for('view_folder', folder_hash=folder_hash))
 
-    return render_template('mammo_edit.html', form=form)
+    return render_template('mammo_form.html', form=form)
 
 @app.route('/delete_mammo/<folder_hash>', methods=['POST'])
 @is_logged_in

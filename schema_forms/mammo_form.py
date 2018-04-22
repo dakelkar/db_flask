@@ -1,10 +1,14 @@
 from wtforms import Form, StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField, FormField, SubmitField, HiddenField
 from wtforms.fields.html5 import DateField
-from schema_forms.models import MammographyInfo, MammographyArchInfo
 from db_dict.mammography import MammographyDict
 from flask_wtf import FlaskForm
+from datetime import datetime
 
 class MammoArchDistortionsForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+
     mammo_arch_location_right_breast = SelectField("Location of Architectural Distortion on Right Breast", choices =
     MammographyDict.mammo_arch_location_right_breast_choice)
     mammo_arch_location_left_breast = SelectField("Location of Architectural Distortion on Left Breast", choices =
@@ -14,28 +18,26 @@ class MammoArchDistortionsForm(FlaskForm):
     mammo_arch_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
                                     MammographyDict.mammo_arch_dist_choice)
 
-    def to_model(self):
-        """
-        :returns mammo_arch_info: model for the form
-        """
-        mammo_arch_info = MammographyArchInfo(
-                        mammo_arch_location_right_breast = self.mammo_arch_location_right_breast.data,
-                        mammo_arch_location_left_breast = self.mammo_arch_location_left_breast.data,
-                        mammo_arch_depth = self.mammo_arch_depth.data, mammo_arch_dist = self.mammo_arch_dist.data,
-                        )
-        return mammo_arch_info
+    def to_bson(self):
+        return {
+            'mammo_arch_location_right_breast': self.mammo_arch_location_right_breast.data,
+            'mammo_arch_location_left_breast': self.mammo_arch_location_left_breast.data,
+            'mammo_arch_depth': self.mammo_arch_depth.data, 
+            'mammo_arch_dist': self.mammo_arch_dist.data
+        }
 
-    def from_model(self, mammo_arch_info):
-        """
-        :param PatientForm patient: initialize form based on the model
-        """
-        self.mammo_arch_location_right_breast.data = mammo_arch_info.mammo_arch_location_right_breast
-        self.mammo_arch_location_left_breast.data = mammo_arch_info.mammo_arch_location_left_breast
-        self.mammo_arch_depth.data = mammo_arch_info.mammo_arch_depth
-        self.mammo_arch_dist.data = mammo_arch_info.mammo_arch_dist
+    def from_bson(self, p):
+        self.mammo_arch_location_right_breast.data = p['mammo_arch_location_right_breast']
+        self.mammo_arch_location_left_breast.data = p['mammo_arch_location_left_breast']
+        self.mammo_arch_depth.data = p['mammo_arch_depth']
+        self.mammo_arch_dist.data = p['mammo_arch_dist']
 
 
 class MammographyForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+
     folder_number = HiddenField()
     mammo_location = SelectField('Mammography Diagnosis at', choices = MammographyDict.mammo_location_choice)
     mammo_details = SelectField("Is this the first mammography?", choices = MammographyDict.mammo_details_choice)
@@ -88,7 +90,7 @@ class MammographyForm(FlaskForm):
     mammo_intra_mammary_lymph_nodes_present = SelectField("Are intra-mammary lymph nodes present", choices =
                                                           MammographyDict.mammo_intra_mammary_lymph_nodes_choice)
     mammo_intra_mammary_lymph_nodes_description = TextAreaField("Description of intra-mammary lymph nodes", [validators.Length(min=1, max=200)])
-    mammo_lesion = RadioField("Is skin lesion present", choices =  MammographyDict.mammo_lesion_choice)
+    mammo_lesion = RadioField(label="Is skin lesion present", choices = MammographyDict.mammo_lesion_choice, default='tbd')
     mammo_lesion_right_breast = SelectField("Location of skin lesion on right breast", choices =
                                             MammographyDict.mammo_lesion_right_breast_choice)
     mammo_lesion_left_breast = SelectField("Location of skin lesion on left breast", choices =
@@ -110,107 +112,97 @@ class MammographyForm(FlaskForm):
     mammo_birad = SelectField("BI-RAD classification (if available)",  choices =  MammographyDict.mammo_birad_choice)
     submit_button = SubmitField('Submit Form')
 
-    def to_model(self):
-        """
-        :returns Patient_bio_info_Form: model for the form
-        """
-        mammography = MammographyInfo(folder_number= self.folder_number.data,
-                        mammo_location=self.mammo_location.data, mammo_details = self.mammo_details.data,
-                        mammo_date = self.mammo_date.data, mammo_accesion = self.mammo_accesion.data,
-                        mammo_number = self.mammo_number.data, mammo_report_previous = self.mammo_report_previous.data,
-                        mammo_breast_density = self.mammo_breast_density.data,
-                        mammo_mass_present = self.mammo_mass_present.data,
-                        mammo_mass_number = self.mammo_mass_number.data,
-                        mammo_mass_location_right_breast = self.mammo_mass_location_right_breast.data,
-                        mammo_mass_location_left_breast = self.mammo_mass_location_left_breast.data,
-                        mammo_mass_depth = self.mammo_mass_depth.data, mammo_mass_dist = self.mammo_mass_dist.data,
-                        mammo_mass_pect = self.mammo_mass_pect.data, mammo_mass_shape = self.mammo_mass_shape.data,
-                        mammo_mass_margin = self.mammo_mass_margin.data,
-                        mammo_mass_density = self.mammo_mass_density.data,
-                        mammo_calcification_present = self.mammo_calcification_present.data,
-                        mammo_calc_number = self.mammo_calc_number.data,
-                        mammo_calc_location_right_breast = self.mammo_calc_location_right_breast.data,
-                        mammo_calc_location_left_breast = self.mammo_calc_location_left_breast.data,
-                        mammo_calc_depth = self.mammo_calc_depth.data, mammo_calc_dist = self.mammo_calc_dist.data,
-                        mammo_calcification_type = self.mammo_calcification_type.data,
-                        mammo_calcification_diagnosis = self.mammo_calcification_diagnosis.data,
-                        mammo_arch_present = self.mammo_arch_present.data,
-                        mammo_arch_location_right_breast = self.mammo_arch_location_right_breast.data,
-                        mammo_arch_location_left_breast = self.mammo_arch_location_left_breast.data,
-                        mammo_arch_depth = self.mammo_arch_depth.data, mammo_arch_dist = self.mammo_arch_dist.data,
-                        mammo_assym_present = self.mammo_assym_present.data,
-                        mammo_assym_location_right_breast = self.mammo_assym_location_right_breast.data,
-                        mammo_assym_location_left_breast = self.mammo_assym_location_left_breast.data,
-                        mammo_assym_depth = self.mammo_assym_depth.data,
-                        mammo_assym_type_right_breast = self.mammo_assym_type_right_breast.data,
-                        mammo_assym_type_left_breast = self.mammo_assym_type_left_breast.data,
-                        mammo_intra_mammary_lymph_nodes_present = self.mammo_intra_mammary_lymph_nodes_present.data,
-                        mammo_intra_mammary_lymph_nodes_description =self.mammo_intra_mammary_lymph_nodes_description.data,
-                        mammo_lesion = self.mammo_lesion.data, mammo_lesion_right_breast = self.mammo_lesion_right_breast.data,
-                        mammo_lesion_left_breast = self.mammo_lesion_left_breast.data,
-                        mammo_asso_feature_skin_retraction = self.mammo_asso_feature_skin_retraction.data,
-                        mammo_asso_feature_nipple_retraction = self.mammo_asso_feature_nipple_retraction.data,
-                        mammo_asso_feature_skin_thickening = self.mammo_asso_feature_skin_thickening.data,
-                        mammo_asso_feature_trabecular_thickening = self.mammo_asso_feature_trabecular_thickening.data,
-                        mammo_asso_feature_axillary_adenopathy = self.mammo_asso_feature_axillary_adenopathy.data,
-                        mammo_asso_feature_architectural_distortion = self.mammo_asso_feature_architectural_distortion.data,
-                        mammo_asso_feature_calicifications = self.mammo_asso_feature_calicifications.data,
-                        mammo_birad = self.mammo_birad.data)
-        return mammography
+    def to_bson(self):
+        return {"folder_number": self.folder_number.data, 'mammo_location': self.mammo_location.data,
+        'mammo_details': self.mammo_details.data, 'mammo_date': datetime.combine(self.mammo_date.data,
+                                                                                   datetime.min.time()),
+        'mammo_accesion': self.mammo_accesion.data, 'mammo_number': self.mammo_number.data,
+        'mammo_report_previous':self.mammo_report_previous.data, 'mammo_breast_density':
+        self.mammo_breast_density.data, 'mammo_mass_present':self.mammo_mass_present.data,
+        'mammo_mass_number':self.mammo_mass_number.data, 'mammo_mass_location_right_breast':
+        self.mammo_mass_location_right_breast.data, 'mammo_mass_location_left_breast':
+        self.mammo_mass_location_left_breast.data,'mammo_mass_depth': self.mammo_mass_depth.data,
+        'mammo_mass_dist' : self.mammo_mass_dist.data, 'mammo_mass_pect': self.mammo_mass_pect.data,
+        'mammo_mass_shape': self.mammo_mass_shape.data,'mammo_mass_margin': self.mammo_mass_margin.data,
+        'mammo_mass_density': self.mammo_mass_density.data, 'mammo_calcification_present':
+         self.mammo_calcification_present.data, 'mammo_calc_number': self.mammo_calc_number.data,
+        'mammo_calc_location_right_breast': self.mammo_calc_location_right_breast.data,
+        'mammo_calc_location_left_breast': self.mammo_calc_location_left_breast.data,
+        'mammo_calc_depth': self.mammo_calc_depth.data, 'mammo_calc_dist': self.mammo_calc_dist.data,
+        'mammo_calcification_type': self.mammo_calcification_type.data,
+        'mammo_calcification_diagnosis': self.mammo_calcification_diagnosis.data,
 
-    def from_model(self, mammography):
-        """
-        :param PatientForm patient: initialize form based on the model
-        """
-        self.folder_number.data = mammography.folder_number
-        self.mammo_location.data = mammography.mammo_location
-        self.mammo_details.data =  mammography.mammo_details
-        self.mammo_date.data = mammography.mammo_date
-        self.mammo_accesion.data = mammography.mammo_accesion
-        self.mammo_number.data = mammography.mammo_number
-        self.mammo_report_previous.data = mammography.mammo_report_previous
-        self.mammo_breast_density.data = mammography.mammo_breast_density
-        self.mammo_mass_present.data = mammography.mammo_mass_present
-        self.mammo_mass_number.data = mammography.mammo_mass_number
-        self.mammo_mass_location_right_breast.data = mammography.mammo_mass_location_right_breast
-        self.mammo_mass_location_left_breast.data = mammography.mammo_mass_location_left_breast
-        self.mammo_mass_depth.data = mammography.mammo_mass_depth
-        self.mammo_mass_dist.data = mammography.mammo_mass_dist
-        self.mammo_mass_pect.data = mammography.mammo_mass_pect
-        self.mammo_mass_shape.data = mammography.mammo_mass_shape
-        self.mammo_mass_margin.data = mammography.mammo_mass_margin
-        self.mammo_mass_density.data = mammography.mammo_mass_density
-        self.mammo_calcification_present.data = mammography.mammo_calcification_present
-        self.mammo_calc_number.data = mammography.mammo_calc_number
-        self.mammo_calc_location_right_breast.data = mammography.mammo_calc_location_right_breast
-        self.mammo_calc_location_left_breast.data = mammography.mammo_calc_location_left_breast
-        self.mammo_calc_depth.data = mammography.mammo_calc_depth
-        self.mammo_calc_dist.data = mammography.mammo_calc_dist
-        self.mammo_calcification_type.data = mammography.mammo_calcification_type
-        self.mammo_calcification_diagnosis.data = mammography.mammo_calcification_diagnosis
-        self.mammo_arch_present.data = mammography.mammo_arch_present
-        self.mammo_arch_location_right_breast.data = mammography.mammo_arch_location_right_breast
-        self.mammo_arch_location_left_breast.data = mammography.mammo_arch_location_left_breast
-        self.mammo_arch_depth.data = mammography.mammo_arch_depth
-        self.mammo_arch_dist.data = mammography.mammo_arch_dist
-        self.mammo_assym_present.data = mammography.mammo_assym_present
-        self.mammo_assym_location_right_breast.data = mammography.mammo_assym_location_right_breast
-        self.mammo_assym_location_left_breast.data = mammography.mammo_assym_location_left_breast
-        self.mammo_assym_depth.data = mammography.mammo_assym_depth
-        self.mammo_assym_type_right_breast.data = mammography.mammo_assym_type_right_breast
-        self.mammo_assym_type_left_breast.data = mammography.mammo_assym_type_left_breast
-        self.mammo_intra_mammary_lymph_nodes_present.data = mammography.mammo_intra_mammary_lymph_nodes_present
-        self.mammo_intra_mammary_lymph_nodes_description.data = mammography.mammo_intra_mammary_lymph_nodes_description
-        self.mammo_lesion.data = mammography.mammo_lesion
-        self.mammo_lesion_right_breast.data = mammography.mammo_lesion_right_breast
-        self.mammo_lesion_left_breast.data = mammography.mammo_lesion_left_breast
-        self.mammo_asso_feature_skin_retraction.data = mammography.mammo_asso_feature_skin_retraction
-        self.mammo_asso_feature_nipple_retraction.data = mammography.mammo_asso_feature_nipple_retraction
-        self.mammo_asso_feature_skin_thickening.data = mammography.mammo_asso_feature_skin_thickening
-        self.mammo_asso_feature_trabecular_thickening.data = mammography.mammo_asso_feature_trabecular_thickening
-        self.mammo_asso_feature_axillary_adenopathy.data = mammography.mammo_asso_feature_axillary_adenopathy
-        self.mammo_asso_feature_architectural_distortion.data = mammography.mammo_asso_feature_architectural_distortion
-        self.mammo_asso_feature_calicifications.data = mammography.mammo_asso_feature_calicifications
-        self.mammo_birad.data = mammography.mammo_birad
+        'mammo_arch_present': self.mammo_arch_present.data,
+        'mammo_arch': self.mammo_arch.to_bson(),
+
+        'mammo_assym_present': self.mammo_assym_present.data,
+        'mammo_assym_location_right_breast': self.mammo_assym_location_right_breast.data,
+        'mammo_assym_location_left_breast': self.mammo_assym_location_left_breast.data,
+        'mammo_assym_depth': self.mammo_assym_depth.data,
+        'mammo_assym_type_right_breast': self.mammo_assym_type_right_breast.data,
+        'mammo_assym_type_left_breast': self.mammo_assym_type_left_breast.data,
+        'mammo_intra_mammary_lymph_nodes_present': self.mammo_intra_mammary_lymph_nodes_present.data,
+        'mammo_intra_mammary_lymph_nodes_description': self.mammo_intra_mammary_lymph_nodes_description.data,
+        'mammo_lesion': self.mammo_lesion.data, 'mammo_lesion_right_breast': self.mammo_lesion_right_breast.data,
+        'mammo_lesion_left_breast': self.mammo_lesion_left_breast.data,
+        'mammo_asso_feature_skin_retraction': self.mammo_asso_feature_skin_retraction.data,
+        'mammo_asso_feature_nipple_retraction': self.mammo_asso_feature_nipple_retraction.data,
+        'mammo_asso_feature_skin_thickening': self.mammo_asso_feature_skin_thickening.data,
+        'mammo_asso_feature_trabecular_thickening' : self.mammo_asso_feature_trabecular_thickening.data,
+        'mammo_asso_feature_axillary_adenopathy': self.mammo_asso_feature_axillary_adenopathy.data,
+        'mammo_asso_feature_architectural_distortion': self.mammo_asso_feature_architectural_distortion.data,
+        'mammo_asso_feature_calicifications': self.mammo_asso_feature_calicifications.data,
+        'mammo_birad': self.mammo_birad.data}
+
+    def from_bson(self, p):
+        self.folder_number.data = p['folder_number']
+        self.mammo_location.data = p['mammo_location']
+        self.mammo_details.data =  p['mammo_details']
+        self.mammo_date.data = p['mammo_date'].date()
+        self.mammo_accesion.data = p['mammo_accesion']
+        self.mammo_number.data = p['mammo_number']
+        self.mammo_report_previous.data = p['mammo_report_previous']
+        self.mammo_breast_density.data = p['mammo_breast_density']
+        self.mammo_mass_present.data = p['mammo_mass_present']
+        self.mammo_mass_number.data = p['mammo_mass_number']
+        self.mammo_mass_location_right_breast.data = p['mammo_mass_location_right_breast']
+        self.mammo_mass_location_left_breast.data = p['mammo_mass_location_left_breast']
+        self.mammo_mass_depth.data = p['mammo_mass_depth']
+        self.mammo_mass_dist.data = p['mammo_mass_dist']
+        self.mammo_mass_pect.data = p['mammo_mass_pect']
+        self.mammo_mass_shape.data = p['mammo_mass_shape']
+        self.mammo_mass_margin.data = p['mammo_mass_margin']
+        self.mammo_mass_density.data = p['mammo_mass_density']
+        self.mammo_calcification_present.data = p['mammo_calcification_present']
+        self.mammo_calc_number.data = p['mammo_calc_number']
+        self.mammo_calc_location_right_breast.data = p['mammo_calc_location_right_breast']
+        self.mammo_calc_location_left_breast.data = p['mammo_calc_location_left_breast']
+        self.mammo_calc_depth.data = p['mammo_calc_depth']
+        self.mammo_calc_dist.data = p['mammo_calc_dist']
+        self.mammo_calcification_type.data = p['mammo_calcification_type']
+        self.mammo_calcification_diagnosis.data = p['mammo_calcification_diagnosis']
+        
+        self.mammo_arch_present.data = p['mammo_arch_present']
+        self.mammo_arch.from_bson(p['mammo_arch'])
+
+        self.mammo_assym_present.data = p['mammo_assym_present']
+        self.mammo_assym_location_right_breast.data = p['mammo_assym_location_right_breast']
+        self.mammo_assym_location_left_breast.data = p['mammo_assym_location_left_breast']
+        self.mammo_assym_depth.data = p['mammo_assym_depth']
+        self.mammo_assym_type_right_breast.data = p['mammo_assym_type_right_breast']
+        self.mammo_assym_type_left_breast.data = p['mammo_assym_type_left_breast']
+        self.mammo_intra_mammary_lymph_nodes_present.data = p['mammo_intra_mammary_lymph_nodes_present']
+        self.mammo_intra_mammary_lymph_nodes_description.data = p['mammo_intra_mammary_lymph_nodes_description']
+        self.mammo_lesion.data = p['mammo_lesion']
+        self.mammo_lesion_right_breast.data = p['mammo_lesion_right_breast']
+        self.mammo_lesion_left_breast.data = p['mammo_lesion_left_breast']
+        self.mammo_asso_feature_skin_retraction.data = p['mammo_asso_feature_skin_retraction']
+        self.mammo_asso_feature_nipple_retraction.data = p['mammo_asso_feature_nipple_retraction']
+        self.mammo_asso_feature_skin_thickening.data = p['mammo_asso_feature_skin_thickening']
+        self.mammo_asso_feature_trabecular_thickening.data = p['mammo_asso_feature_trabecular_thickening']
+        self.mammo_asso_feature_axillary_adenopathy.data = p['mammo_asso_feature_axillary_adenopathy']
+        self.mammo_asso_feature_architectural_distortion.data = p['mammo_asso_feature_architectural_distortion']
+        self.mammo_asso_feature_calicifications.data = p['mammo_asso_feature_calicifications']
+        self.mammo_birad.data = p['mammo_birad']
 
 
