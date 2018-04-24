@@ -2,9 +2,8 @@ from wtforms import StringField, TextAreaField, validators, IntegerField, Select
 from wtforms.fields.html5 import DateField
 from db_dict.mammography import MammographyDict
 from flask_wtf import FlaskForm
-from datetime import datetime, date
-from schema_forms.other_form import OthersForm
-#need help creating and deploying this.. - see dict it appears many times to code as new sub field every time?
+from datetime import datetime
+from schema_forms import form_utilities
 
 class MammoArchDistortionsForm(FlaskForm):
     class Meta:
@@ -20,19 +19,16 @@ class MammoArchDistortionsForm(FlaskForm):
     mammo_arch_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
                                     MammographyDict.mammo_arch_dist_choice)
 
+
     def to_bson(self):
-        return {
-            'mammo_arch_location_right_breast': self.mammo_arch_location_right_breast.data,
-            'mammo_arch_location_left_breast': self.mammo_arch_location_left_breast.data,
-            'mammo_arch_depth': self.mammo_arch_depth.data, 
-            'mammo_arch_dist': self.mammo_arch_dist.data
-        }
+        bson = form_utilities.to_bson(self, prefix="mammo_arch", prefix_keep=True)
+        return bson
+
 
     def from_bson(self, p):
-        self.mammo_arch_location_right_breast.data = p['mammo_arch_location_right_breast']
-        self.mammo_arch_location_left_breast.data = p['mammo_arch_location_left_breast']
-        self.mammo_arch_depth.data = p['mammo_arch_depth']
-        self.mammo_arch_dist.data = p['mammo_arch_dist']
+        form_utilities.from_bson(self, p)
+
+# to figure out validators...
 
 
 class MammoMassForm(FlaskForm):
@@ -51,30 +47,14 @@ class MammoMassForm(FlaskForm):
     mammo_mass_margin = SelectField("Margins of mass", choices=MammographyDict.mammo_mass_margin_choice)
     mammo_mass_density = SelectField("Density of mass", choices=MammographyDict.mammo_mass_density_choice)
 
+
     def to_bson(self):
-        return {
-            'mammo_mass_number': self.mammo_mass_number.data,
-            'mammo_mass_location_right_breast': self.mammo_mass_location_right_breast.data,
-            'mammo_mass_location_left_breast': self.mammo_mass_location_left_breast.data,
-            'mammo_mass_depth': self.mammo_mass_depth.data,
-            'mammo_mass_dist':self.mammo_mass_dist.data,
-            'mammo_mass_pect':self.mammo_mass_pect.data,
-            'mammo_mass_shape':self.mammo_mass_shape.data,
-            'mammo_mass_margin':self.mammo_mass_margin.data,
-            'mammo_mass_density':self.mammo_mass_density.data
-        }
+        bson = form_utilities.to_bson(self, prefix="mammo_mass", prefix_keep=True)
+        return bson
+
 
     def from_bson(self, p):
-        self.mammo_mass_number.data = p['mammo_mass_number']
-        self.mammo_mass_location_right_breast.data = p['mammo_mass_location_right_breast']
-        self.mammo_mass_location_left_breast.data = p['mammo_mass_location_left_breast']
-        self.mammo_mass_depth.data = p['mammo_mass_depth']
-        self.mammo_mass_dist.data = p['mammo_mass_dist']
-        self.mammo_mass_pect.data = p['mammo_mass_pect']
-        self.mammo_mass_shape.data = p['mammo_mass_shape']
-        self.mammo_mass_margin.data=p['mammo_mass_margin']
-        self.mammo_mass_density.data = p['mammo_mass_density']
-
+        form_utilities.from_bson(self, p)
 
 class MammoCalcificationForm(FlaskForm):
 
@@ -94,25 +74,15 @@ class MammoCalcificationForm(FlaskForm):
     mammo_calcification_diagnosis = SelectField("Calcification Diagnosis",
                                                     choices=MammographyDict.mammo_calcification_diagnosis_choice)
 
+
     def to_bson(self):
-        return {
-            'mammo_calcification_number': self.mammo_calcification_number.data,
-            'mammo_calcification_location_right_breast': self.mammo_calcification_location_right_breast.data,
-            'mammo_calcification_location_left_breast': self.mammo_calcification_location_left_breast.data,
-            'mammo_calcification_depth': self.mammo_calcification_depth.data,
-            'mammo_calcification_dist':self.mammo_calcification_dist.data,
-            'mammo_calcification_type':self.mammo_calcification_type.data,
-            'mammo_calcification_diagnosis':self.mammo_calcification_diagnosis.data
-        }
+        bson = form_utilities.to_bson(self, prefix="mammo_calcification", prefix_keep=True)
+        return bson
+
 
     def from_bson(self, p):
-        self.mammo_calcification_number.data =p['mammo_calcification_number']
-        self.mammo_calcification_location_right_breast.data= p['mammo_calcification_location_right_breast']
-        self.mammo_calcification_location_left_breast.data = p['mammo_calcification_location_left_breast']
-        self.mammo_calcification_depth.data = p['mammo_calcification_depth']
-        self.mammo_calcification_dist.data = p['mammo_calcification_dist']
-        self.mammo_calcification_type.data = p['mammo_calcification_type']
-        self.mammo_calcification_diagnosis.data = p['mammo_calcification_diagnosis']
+        form_utilities.from_bson(self, p)
+
 
 class MammographyForm(FlaskForm):
     class Meta:
@@ -134,6 +104,7 @@ class MammographyForm(FlaskForm):
     fld_mammo_arch_present = SelectField("Are Architectural Distortions present", choices =
                                         MammographyDict.mammo_arch_present_choice)
     mammo_arch = FormField(MammoArchDistortionsForm)
+    # if set validator here?
     fld_mammo_assym_present = SelectField("Are Asymmetries present", choices =  MammographyDict.mammo_assym_present_choice)
     fld_mammo_assym_location_right_breast = SelectField("Location of asymmetries on Right Breast", choices =
                                                     MammographyDict.mammo_assym_location_right_breast_choice)
@@ -167,22 +138,15 @@ class MammographyForm(FlaskForm):
     fld_mammo_asso_feature_calicifications = SelectField("Associated Feature: Calcification", choices =
                                                      MammographyDict.mammo_asso_feature_calicifications_choice)
     fld_mammo_birad = SelectField("BI-RAD classification (if available)",  choices =  MammographyDict.mammo_birad_choice)
-    fld_mammo_form_status = SelectField("Form Status",  choices= MammographyDict.mammo_status_choice)
-    mammo_last_update = DateField('Date of last update', format= '%Y-%m-%d', default=date.today(),
-                            validators=[validators.DataRequired()])
+    fld_form_status = SelectField("Form Status",  choices= MammographyDict.mammo_status_choice)
+    last_update = HiddenField()
     submit_button = SubmitField('Submit Form')
 
     def to_bson(self):
-        fld_prefix = 'fld_'
-        field_list = [a for a in dir(self) if a.startswith(fld_prefix)]
-        bson = {}
-        for field in field_list:
-            key = field[len(fld_prefix):]
-            bson[key] = self[field].data
-        
+        bson = form_utilities.to_bson(self, prefix='fld_', prefix_keep=False)
         #spl stuff for datetime
         bson['mammo_date'] =  datetime.combine(self.mammo_date.data, datetime.min.time())
-        bson['mammo_last_update'] = datetime.combine(self.mammo_last_update.data, datetime.min.time())
+        bson['last_update'] = datetime.today()
 
         #spl stuff for subforms
         bson['mammo_arch'] = self.mammo_arch.to_bson()
@@ -191,17 +155,21 @@ class MammographyForm(FlaskForm):
         return bson
 
     def from_bson(self, p):
-        for key in p.keys():
-            field_name = 'fld_' + key
-            if hasattr(self, field_name):
-                print(field_name)
-                self[field_name].data = p[key]
-        
+        form_utilities.from_bson(self, p, prefix='fld_', prefix_kept=False)
         #spl stuff for dates
         self.mammo_date.data = p['mammo_date'].date()
-        self.mammo_last_update.data = p['mammo_last_update'].date()
-
+        self.last_update.data = p['last_update'].date()
         #spl stuff for subforms
         self.mammo_arch.from_bson(p['mammo_arch'])
         self.mammo_mass.from_bson(p['mammo_mass'])
         self.mammo_calcification.from_bson(p['mammo_calcification'])
+
+#in mammo_arch check if validator there if it accepts if momma_arch not called... need nested validators?
+#check all patterns
+#how is subnesting evaluated?
+
+#$function: should find "other", if False, then new field samefield_other is hidden, but when true is seen so
+# dont need new subform, registers as on change function
+
+#keep last update, user as hidden...
+

@@ -81,9 +81,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password_candidate = request.form['password']
-        print ("username is ", username)
         encrypted, name = users_db.get_password(username)
-        print("getting password")
         if encrypted is not None:
             if sha256_crypt.verify(password_candidate, encrypted):
                 session['logged_in'] = True
@@ -97,7 +95,7 @@ def login():
         else:
             error = 'Username not found'
             return render_template('login.html', error=error)
-
+        return name
     return render_template('login.html')
 
 
@@ -204,7 +202,6 @@ def view_folder(folder_hash):
 
     section = create_folder_section(folder_number, "mammo", mammo_db.get_mammography)
     folder_sections.append(section)
-    # i dont understand how mammo and biopsy are inherited by the url for add_section or edit_section.
     section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
     folder_sections.append(section)
 
@@ -215,11 +212,12 @@ def create_folder_section(folder_number, section_name, db_get):
     section_object = db_get(folder_number)
     action = "add"
     status = "To be filled"
+    last_modified_on = datetime.datetime.today().strftime('%Y-%m-%d')
     if section_object is not None:
         action = "edit"
-        status = ""
-    section = FolderSection(section_name, action, status,  last_modified_by="Who Knows",
-                            last_modified_on=datetime.datetime.today().strftime('%Y-%m-%d'))
+        status = section_object.fld_form_status.data
+        last_modified_on = section_object.last_update.data
+    section = FolderSection(section_name, action, status, last_modified_on = last_modified_on, last_modified_by="Who Knows", )
     return section
 
 
