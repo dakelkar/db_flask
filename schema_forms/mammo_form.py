@@ -9,24 +9,25 @@ class MammoArchDistortionsForm(FlaskForm):
     class Meta:
         csrf = False
 
-
-    mammo_arch_location_right_breast = SelectField("Location of Architectural Distortion on Right Breast", choices =
-    MammographyDict.mammo_arch_location_right_breast_choice)
-    mammo_arch_location_left_breast = SelectField("Location of Architectural Distortion on Left Breast", choices =
-                                                  MammographyDict.mammo_arch_location_left_breast_choice)
-    mammo_arch_depth =  SelectField("Depth of Architectural Distortion", choices =
+    architectural_distortions_location_right_breast = SelectField("Location of Architectural Distortion on Right Breast",
+                                                                  choices = MammographyDict.
+                                                                  mammo_arch_location_right_breast_choice)
+    architectural_distortions_location_left_breast = SelectField("Location of Architectural Distortion on Left Breast",
+                                                                 choices = MammographyDict.
+                                                                 mammo_arch_location_left_breast_choice)
+    architectural_distortions_depth =  SelectField("Depth of Architectural Distortion", choices =
                                         MammographyDict.mammo_arch_depth_choice)
-    mammo_arch_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
+    architectural_distortions_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
                                     MammographyDict.mammo_arch_dist_choice)
 
 
     def to_bson(self):
-        bson = form_utilities.to_bson(self, prefix="mammo_arch", prefix_keep=True)
+        bson = form_utilities.to_bson(self, prefix="architectural_distortions_")
         return bson
 
 
     def from_bson(self, p):
-        form_utilities.from_bson(self, p)
+        form_utilities.from_bson(self, p, prefix="architectural_distortions_")
 
 # to figure out validators...
 
@@ -49,12 +50,12 @@ class MammoMassForm(FlaskForm):
 
 
     def to_bson(self):
-        bson = form_utilities.to_bson(self, prefix="mammo_mass", prefix_keep=True)
+        bson = form_utilities.to_bson(self, prefix="mammo_mass")
         return bson
 
 
     def from_bson(self, p):
-        form_utilities.from_bson(self, p)
+        form_utilities.from_bson(self, p, prefix="mammo_mass")
 
 class MammoCalcificationForm(FlaskForm):
 
@@ -76,12 +77,12 @@ class MammoCalcificationForm(FlaskForm):
 
 
     def to_bson(self):
-        bson = form_utilities.to_bson(self, prefix="mammo_calcification", prefix_keep=True)
+        bson = form_utilities.to_bson(self, prefix="mammo_calcification")
         return bson
 
 
     def from_bson(self, p):
-        form_utilities.from_bson(self, p)
+        form_utilities.from_bson(self, p, prefix="mammo_calcification")
 
 
 class MammographyForm(FlaskForm):
@@ -101,9 +102,9 @@ class MammographyForm(FlaskForm):
     fld_mammo_calcification_present = SelectField("Are there any calcifications detected?", choices=
                                                     MammographyDict.mammo_calcification_present_choice)
     mammo_calcification = FormField(MammoCalcificationForm)
-    fld_mammo_arch_present = SelectField("Are Architectural Distortions present", choices =
+    fld_architectural_distortions_present = SelectField("Are Architectural Distortions present", choices =
                                         MammographyDict.mammo_arch_present_choice)
-    mammo_arch = FormField(MammoArchDistortionsForm)
+    architectural_distortions = FormField(MammoArchDistortionsForm)
     # if set validator here?
     fld_mammo_assym_present = SelectField("Are Asymmetries present", choices =  MammographyDict.mammo_assym_present_choice)
     fld_mammo_assym_location_right_breast = SelectField("Location of asymmetries on Right Breast", choices =
@@ -143,24 +144,24 @@ class MammographyForm(FlaskForm):
     submit_button = SubmitField('Submit Form')
 
     def to_bson(self):
-        bson = form_utilities.to_bson(self, prefix='fld_', prefix_keep=False)
+        bson = form_utilities.to_bson(self)
         #spl stuff for datetime
         bson['mammo_date'] =  datetime.combine(self.mammo_date.data, datetime.min.time())
         bson['last_update'] = datetime.today()
 
         #spl stuff for subforms
-        bson['mammo_arch'] = self.mammo_arch.to_bson()
+        bson['architectural_distortions'] = self.architectural_distortions.to_bson()
         bson['mammo_mass'] = self.mammo_mass.to_bson()
         bson['mammo_calcification'] = self.mammo_calcification.to_bson()
         return bson
 
     def from_bson(self, p):
-        form_utilities.from_bson(self, p, prefix='fld_', prefix_kept=False)
+        form_utilities.from_bson(self, p)
         #spl stuff for dates
         self.mammo_date.data = p['mammo_date'].date()
         self.last_update.data = p['last_update'].date()
         #spl stuff for subforms
-        self.mammo_arch.from_bson(p['mammo_arch'])
+        self.architectural_distortions.from_bson(p['architectural_distortions'])
         self.mammo_mass.from_bson(p['mammo_mass'])
         self.mammo_calcification.from_bson(p['mammo_calcification'])
 
