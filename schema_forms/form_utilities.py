@@ -10,5 +10,4 @@ def from_bson(form, p, prefix = "fld_"):
     for key in p.keys():
         field_name = prefix + key
         if hasattr(form, field_name):
-            print(field_name)
             form[field_name].data = p[key]
