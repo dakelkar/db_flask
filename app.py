@@ -7,7 +7,7 @@ from dbs.patientsdb import PatientsDb
 from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
-from schema_forms.mammo_form import MammographyForm
+from schema_forms.mammo_form import RadiologyForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
@@ -297,7 +297,7 @@ def delete_biopsy(folder_hash):
 @app.route('/add_mammo/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def add_mammo(folder_hash):
-    form = MammographyForm(request.form)
+    form = RadiologyForm(request.form)
     folder_number = decodex(folder_hash)
     form.fld_folder_number.data = folder_number
 
@@ -323,7 +323,7 @@ def add_mammo(folder_hash):
 @app.route('/edit_mammo/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_mammo(folder_hash):
-    form = MammographyForm(request.form)
+    form = RadiologyForm(request.form)
     folder_number = decodex(folder_hash)
     form.fld_folder_number.data = folder_number
 
