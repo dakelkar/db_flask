@@ -1,4 +1,5 @@
-from wtforms import StringField, TextAreaField, validators, IntegerField, SelectField, FloatField, RadioField, FormField, SubmitField, HiddenField
+from wtforms import StringField, TextAreaField, IntegerField, SelectField, FloatField, RadioField, FormField, SubmitField, HiddenField
+from wtforms import validators
 from wtforms.fields.html5 import DateField
 from db_dict.mammography import MammographyDict
 from flask_wtf import FlaskForm
@@ -37,7 +38,7 @@ class MammoMassForm(FlaskForm):
     class Meta:
         csrf = False
 
-    fld_number = IntegerField("Mass detected")
+    fld_number = IntegerField("Mass detected",[validators.optional()])
     fld_loc_right_breast = SelectField("Location of mass in Right Breast",
                                                    choices=MammographyDict.mammo_mass_location_right_breast_choice)
     fld_loc_left_breast = SelectField("Location of mass in Left Breast",
@@ -63,7 +64,7 @@ class MammoCalcificationForm(FlaskForm):
     class Meta:
         csrf = False
 
-    fld_number = IntegerField("Group of calcification")
+    fld_number = IntegerField("Group of calcification", [validators.optional()])
     fld_loc_right_breast = SelectField("Location of calcification in Right Breast",
                                                        choices=MammographyDict.mammo_calc_location_right_breast_choice)
     fld_loc_left_breast = SelectField("Location of calcification in Left Breast",
@@ -78,12 +79,12 @@ class MammoCalcificationForm(FlaskForm):
 
 
     def to_bson(self):
-        bson = form_utilities.to_bson(self, prefix="mammo_calcification")
+        bson = form_utilities.to_bson(self)
         return bson
 
 
     def from_bson(self, p):
-        form_utilities.from_bson(self, p, prefix="mammo_calcification")
+        form_utilities.from_bson(self, p)
 
 class MammographyForm(FlaskForm):
     class Meta:
@@ -96,14 +97,18 @@ class MammographyForm(FlaskForm):
     fld_mammo_number = StringField("Number of previous mammographies undergone")
     fld_mammo_report_previous = TextAreaField("Report of previous mammography if available")
     fld_mammo_breast_density = SelectField("Breast Density in Mammography", choices = MammographyDict.mammo_breast_density_choice)
+
     fld_mammo_mass_present = SelectField("Is there any mass detected?", choices = MammographyDict.mammo_mass_present_choice)
     mammo_mass = FormField(MammoMassForm)
+
     fld_mammo_calcification_present = SelectField("Are there any calcifications detected?", choices=
                                                     MammographyDict.mammo_calcification_present_choice)
     mammo_calcification = FormField(MammoCalcificationForm)
+    
     fld_mammography_architectural_distortions_present = SelectField("Are Architectural Distortions present", choices =
                                         MammographyDict.mammo_arch_present_choice)
     mammography_architectural_distortions = FormField(MammoArchDistortionsForm)
+    
     # if set validator here?
     fld_mammo_assym_present = SelectField("Are Asymmetries present", choices =  MammographyDict.mammo_assym_present_choice)
     fld_mammo_assym_location_right_breast = SelectField("Location of asymmetries on Right Breast", choices =
@@ -154,7 +159,6 @@ class MammographyForm(FlaskForm):
         form_utilities.from_bson(self, p)
         #spl stuff for dates
         self.mammo_date.data = p['mammo_date'].date()
-        self.last_update.data = p['last_update'].date()
         #spl stuff for subforms
         self.mammography_architectural_distortions.from_bson(p['mammography_architectural_distortions'])
         self.mammo_mass.from_bson(p['mammo_mass'])
@@ -206,15 +210,19 @@ class RadiologyForm(FlaskForm):
     fld_mammography_report_present = SelectField('Is a Mammography or 3D Tomography report present in the patient file?',
                                            choices= CommonDict.yes_no_choice)
     mammography_report = FormField(MammographyForm)
+
     fld_tomography_report_present = SelectField('Is 3D Tomography report present in the patient file?',
                                            choices= CommonDict.yes_no_choice)
     tomography_report = FormField(TomographyForm)
+
     fld_abvs_report_present = SelectField('Is a ABVS report present in the patient file?',
                                            choices= CommonDict.yes_no_choice)
     abvs_report = FormField(ABVSForm)
+
     fld_mri_report_present = SelectField('Is a Breast MRI report present in the patient file?',
                                            choices= CommonDict.yes_no_choice)
     mri_report = FormField(MRIForm)
+
     fld_form_status = SelectField("Form Status",  choices= MammographyDict.mammo_status_choice)
     last_update = HiddenField()
     submit_button = SubmitField('Submit Form')
@@ -228,6 +236,7 @@ class RadiologyForm(FlaskForm):
         bson['tomography_report'] = self.tomography_report.to_bson()
         bson['abvs_report'] = self.abvs_report.to_bson()
         bson['mri_report'] = self.mri_report.to_bson()
+        return bson
 
     def from_bson(self, p):
         form_utilities.from_bson(self, p)

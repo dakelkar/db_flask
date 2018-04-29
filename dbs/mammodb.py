@@ -33,7 +33,6 @@ class MammoDb(object):
 
     def add_mammography(self, mammography):
         mammography_entry = mammography.to_bson()
-        print(mammography_entry)
         self.db.insert_one(mammography_entry)
         return True, None
 
