@@ -3,7 +3,7 @@
 {% block body %}
 <h1>Folder Number {{form.fld_folder_number.data}}</h1>
 <div class="panel panel-primary">
-  <div class="panel-heading">Mammography Information</div>
+  <div class="panel-heading">Radiology Information</div>
   <div class="panel-body">
     {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
   </div>
@@ -18,7 +18,7 @@
     // console logs can be fancy
     // https://developers.google.com/web/tools/chrome-devtools/console/console-write#string_substitution_and_formatting
     console.log("toggle state of [%s] to [%s]", name, selection)
-    $("label[for=" + name + "]").parent().parent().toggle(selection)
+     $("label[for=" + name + "]").parent().parent().toggle(selection)
   }
 
   function registerSubForm(name)
@@ -33,6 +33,11 @@
     });
   }
 
+
+  registerSubForm('mammography_report')
+  registerSubForm('tomography_report')
+  registerSubForm('abvs_report')
+  registerSubForm('mri_report')
   registerSubForm('mammography_architectural_distortions')
   registerSubForm('mammo_mass')
   registerSubForm('mammo_calcification')
