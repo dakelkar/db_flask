@@ -7,7 +7,7 @@ from dbs.patientsdb import PatientsDb
 from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
-from schema_forms.mammo_form import MammographyForm
+from schema_forms.mammo_form import RadiologyForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
@@ -202,8 +202,8 @@ def view_folder(folder_hash):
 
     section = create_folder_section(folder_number, "mammo", mammo_db.get_mammography)
     folder_sections.append(section)
-    section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
-    folder_sections.append(section)
+    #section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
+    #folder_sections.append(section)
 
     return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number,
                            folder_sections=folder_sections)
@@ -297,20 +297,15 @@ def delete_biopsy(folder_hash):
 @app.route('/add_mammo/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def add_mammo(folder_hash):
-    form = MammographyForm(request.form)
+    form = RadiologyForm(request.form)
     folder_number = decodex(folder_hash)
     form.fld_folder_number.data = folder_number
 
     if request.method == 'POST' and not form.validate():
-        errs = ""
-        for fieldName, errorMessages in form.errors.items():
-            errs = errs + "Field: = " + fieldName + "["
-            for err in errorMessages:
-                errs = errs + err + " "
-            errs = errs + "] "
-        flash('Error adding mammograph: ' + errs, 'danger')
-
+        flash('Please fix validation errors: ' + str(form.errors), 'danger')
+    
     if request.method == 'POST' and form.validate():
+        print("what the hell")
         success_flag, error = mammo_db.add_mammography(form)
         if not success_flag:
             flash('Error adding mammograph: ' + str(error), 'danger')
@@ -323,7 +318,7 @@ def add_mammo(folder_hash):
 @app.route('/edit_mammo/<folder_hash>', methods=['GET', 'POST'])
 @is_logged_in
 def edit_mammo(folder_hash):
-    form = MammographyForm(request.form)
+    form = RadiologyForm(request.form)
     folder_number = decodex(folder_hash)
     form.fld_folder_number.data = folder_number
 
