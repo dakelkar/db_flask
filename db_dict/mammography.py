@@ -80,12 +80,5 @@ class MammographyDict():
     mammo_lesion_choice = generate_choice(mammo_lesion_dict)
     mammo_lesion_right_breast_choice =  CommonDict.breast_location_choice
     mammo_lesion_left_breast_choice =  CommonDict.breast_location_choice
-    mammo_asso_feature_skin_retraction_choice  = CommonDict.absent_present_choice
-    mammo_asso_feature_nipple_retraction_choice  = CommonDict.absent_present_choice
-    mammo_asso_feature_skin_thickening_choice  = CommonDict.absent_present_choice
-    mammo_asso_feature_trabecular_thickening_choice  = CommonDict.absent_present_choice
-    mammo_asso_feature_axillary_adenopathy_choice  = CommonDict.absent_present_choice
-    mammo_asso_feature_architectural_distortion_choice = CommonDict.absent_present_choice
-    mammo_asso_feature_calicifications_choice = CommonDict.absent_present_choice
     mammo_birad_choice =  CommonDict.birad_choice
     mammo_status_choice = CommonDict.form_status_choice
