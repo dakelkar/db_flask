@@ -1,5 +1,5 @@
 from wtforms import StringField, TextAreaField, IntegerField, SelectField, FloatField, RadioField, FormField, \
-    SubmitField, HiddenField, BooleanField
+    SubmitField, HiddenField, BooleanField, SelectMultipleField
 from wtforms import validators
 from wtforms.fields.html5 import DateField
 from db_dict.mammography import MammographyDict
@@ -12,10 +12,10 @@ class MammoArchDistortionsForm(FlaskForm):
     class Meta:
         csrf = False
 
-    fld_loc_right_breast = SelectField("Location of Architectural Distortion on Right Breast",
+    fld_loc_right_breast = SelectMultipleField("Location of Architectural Distortion on Right Breast",
                                                                   choices = MammographyDict.
                                                                   mammo_arch_location_right_breast_choice)
-    fld_loc_left_breast = SelectField("Location of Architectural Distortion on Left Breast",
+    fld_loc_left_breast = SelectMultipleField("Location of Architectural Distortion on Left Breast",
                                                                  choices = MammographyDict.
                                                                  mammo_arch_location_left_breast_choice)
     fld_depth =  SelectField("Depth of Architectural Distortion", choices =
@@ -152,8 +152,6 @@ class MammographyForm(FlaskForm):
     fld_mammography_architectural_distortions_present = SelectField("Are Architectural Distortions present",
                                                                     choices=MammographyDict.mammo_arch_present_choice)
     mammography_architectural_distortions = FormField(MammoArchDistortionsForm)
-
-    # if set validator here?
     fld_mammography_asymmetry_present = SelectField("Are Asymmetries present", choices=MammographyDict.mammo_assym_present_choice)
     mammography_asymmetry = FormField(MammoAssymetryForm)
     fld_mammo_intra_mammary_lymph_nodes_present = SelectField("Are intra-mammary lymph nodes present",
