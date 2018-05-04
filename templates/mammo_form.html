@@ -36,8 +36,6 @@
   function toggleOther(selectorFieldId, otherFieldId) {
     
     var selection = $(selectorFieldId).val() == "other";
-    // console logs can be fancy
-    // https://developers.google.com/web/tools/chrome-devtools/console/console-write#string_substitution_and_formatting
     otherField = $(otherFieldId)
     if(typeof otherField != 'undefined') {
       console.log("toggle state of [%s] to [%s]", otherFieldId, selection)
@@ -58,7 +56,6 @@
     });
   }
 
-  console.log("yay")
   registerOtherHandler('mammography_report-fld_mammo_location')
 
   registerSubForm('mammography_report')
