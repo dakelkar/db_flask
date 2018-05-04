@@ -91,6 +91,7 @@ class MammographyForm(FlaskForm):
         csrf = False
 
     fld_mammo_location = SelectField('Mammography Diagnosis at', choices = MammographyDict.mammo_location_choice)
+    fld_mammo_location_other = StringField("Other")
     fld_mammo_details = SelectField("Is this the first mammography?", choices = MammographyDict.mammo_details_choice)
     mammo_date = DateField("Date of mammography", default=datetime.today())
     fld_mammo_accesion = StringField("Accession number of mammography")
