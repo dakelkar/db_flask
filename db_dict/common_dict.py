@@ -16,14 +16,15 @@ class CommonDict():
     form_status_dict = {'Empty':"Empty", 'All fields are not filled':"All fields are not filled",
                         'Requires additional data from specialist':"Requires additional data from specialist",
                         "Data to be obtained from Patient":'Data to be obtained from Patient','Complete':"Complete"}
-    breast_location_dict = {'tbd':"To be filled",'NA': "Not present in this breast", 'uoq':"UOQ", 'uiq':"UIQ",'ucq':"UCQ",'loq': "LOQ",
-                            'liq':"LIQ",'lcq':"LCQ", 'coq': "COQ",'ciq':"CIQ",'coo':"CCQ"}
+    breast_location_dict = {'tbd':"To be filled",'NA': "Not present in this breast", 'uoq':"UOQ", 'uiq':"UIQ",
+                            'ucq':"UCQ",'loq': "LOQ", 'liq':"LIQ",'lcq':"LCQ", 'coq': "COQ",'ciq':"CIQ",'ccq':"CCQ",
+                            'other': "Other"}
     birad_dict = {'tbd':"To be filled",'NA': "Information not available in this report","0":"0: Incomplete – Need Additional Imaging Evaluation",
                   "i":"I: Negative",'ii':"II: Benign", 'iii':"III: Probably Benign",'iv':"IV: Suspicious",
                   'iva': "IVA: Low suspicion for malignancy",'ivb': "IVB: Moderate suspicion for malignancy",
-                  'ivc': "IVC: High suspicion for malignancy",'v':"V:  Highly Suggestive of Malignancy"}
+                  'ivc': "IVC: High suspicion for malignancy",'v':"V:  Highly Suggestive of Malignancy", 'other': "Other"}
     distance_from_nipple_dict = {'tbd':"To be filled",'NA':"Not Present", '<.5': "<0.5 cm", '>0.5': ">0.5 cm", 'other': "Other"}
-    yes_no_dict = {'tbd':"To be filled","N": "No", "Y": "Yes"}
+    yes_no_dict = {'tbd':"To be filled","N": "No", "Y": "Yes", 'other': "Other"}
     absent_present_dict = {'tbd':"To be filled",'absent':'Absent', 'present':'Present', 'other':"Other"}
     breast_location_choice = generate_choice(breast_location_dict)
     birad_choice = generate_choice(birad_dict)

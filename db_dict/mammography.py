@@ -21,7 +21,7 @@ class MammographyDict():
                                  'a':"a. The breasts are almost entirely fatty", 'b': "b. There are scattered areas of "
                                  "fibroglandular density", 'c': "c. The breasts are heterogeneously dense, which may "
                                  "obscure small masses", 'd': "d. The breasts are extremely dense which lowers the "
-                                 "sensitivity of mammography"}
+                                 "sensitivity of mammography", 'other': "Other"}
     #this data has to actually repeat over n times n being mass number
     mammo_mass_depth_dict = {'tbd':"To be filled",'NA':"Not Present",'anterior':"Anterior",'middle':"Middle",'posterior':"Posterior",
                              'other':"Other"}

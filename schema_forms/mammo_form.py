@@ -12,10 +12,11 @@ class MammoArchDistortionsForm(FlaskForm):
     class Meta:
         csrf = False
 
-    fld_loc_right_breast = SelectMultipleField("Location of Architectural Distortion on Right Breast",
+    fld_loc_right_breast = SelectField("Location of Architectural Distortion on Right Breast",
                                                                   choices = MammographyDict.
                                                                   mammo_arch_location_right_breast_choice)
-    fld_loc_left_breast = SelectMultipleField("Location of Architectural Distortion on Left Breast",
+    fld_loc_right_breast_other = StringField("Other")
+    fld_loc_left_breast = SelectField("Location of Architectural Distortion on Left Breast",
                                                                  choices = MammographyDict.
                                                                  mammo_arch_location_left_breast_choice)
     fld_depth =  SelectField("Depth of Architectural Distortion", choices =
@@ -25,9 +26,12 @@ class MammoArchDistortionsForm(FlaskForm):
 
 
     def to_bson(self):
+        #self.fld_depth = "??"
+        print (self.fld_depth)
         bson = form_utilities.to_bson(self)
         return bson
-
+    # have to set value of other field in form_utilities. since here I can change the value of other field but it
+    # doesnt reflect what goes into the form.
 
     def from_bson(self, p):
         form_utilities.from_bson(self, p)
