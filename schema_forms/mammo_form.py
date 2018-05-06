@@ -26,17 +26,11 @@ class MammoArchDistortionsForm(FlaskForm):
 
 
     def to_bson(self):
-        #self.fld_depth = "??"
-        print (self.fld_depth)
         bson = form_utilities.to_bson(self)
         return bson
-    # have to set value of other field in form_utilities. since here I can change the value of other field but it
-    # doesnt reflect what goes into the form.
 
     def from_bson(self, p):
         form_utilities.from_bson(self, p)
-
-# to figure out validators...
 
 
 class MammoMassForm(FlaskForm):
