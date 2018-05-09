@@ -15,31 +15,19 @@
   function toggleSubForm(selectorFieldId, name) {
     
     var selection = $(selectorFieldId).val() == "Y";
-    //dk this selects for the value of selectorFieldId that will cause a change in the SubForm
-    // console logs can be fancy
-    // https://developers.google.com/web/tools/chrome-devtools/console/console-write#string_substitution_and_formatting
     console.log("toggle state of [%s] to [%s]", name, selection)
-     $("label[for=" + name + "]").parent().parent().toggle(selection)
-    //dk this describes what the subform is named and where it is located? .parent (mammo); 2nd .parent(folder?)
-
-  }
+    $("label[for=" + name + "]").parent().parent().toggle(selection)
+   }
 
 
   function registerSubForm(name)
   {
-    // toggle on load..
     var selectorFieldId = '#fld_'+name+'_present'
     toggleSubForm(selectorFieldId, name)
-    //dk defines selector field name
-    // ... and register a change as well
     $(selectorFieldId).on('change',function(){
-      toggleSubForm(selectorFieldId, name)
+    toggleSubForm(selectorFieldId, name)
     });
-    //dk tells it what to do when the selectorFieldId is changed as defined above?
-    //dk if I want a nested subform should the functions also be nested? otherwise I find whenever I have any other function
-    //dk the form only shows the deepest function (so if I add an other field whose behaviour changes when other is selected
-    //dk all subforms defined here are displayed and only other functionality is retained?
-  }
+   }
 
  function toggleOther(selectorFieldId, otherFieldId) {
 
