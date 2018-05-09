@@ -1,6 +1,6 @@
 import sys
 import pymongo
-from schema_forms.mammo_form import RadiologyForm
+from schema_forms.mammo_form import MammographyForm
 
 class MammoDb(object):
     # This class wraps the DB access for patients
@@ -26,7 +26,7 @@ class MammoDb(object):
         if mammography_entry is None:
             return None
         
-        mammography = RadiologyForm()
+        mammography = MammographyForm()
         mammography.from_bson(mammography_entry)
         return mammography
         # except:  #    self.log.get_logger().error("Error retrieving patient %s from database: %s", folder_number, sys.exc_info())  #    return
