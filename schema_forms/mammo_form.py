@@ -19,6 +19,8 @@ class MammoArchDistortionsForm(FlaskForm):
     fld_loc_left_breast = SelectField("Location of Architectural Distortion on Left Breast",
                                                                  choices = MammographyDict.
                                                                  mammo_arch_location_left_breast_choice)
+    fld_loc_left_breast_other = StringField("Other")
+
     fld_depth =  SelectField("Depth of Architectural Distortion", choices =
                                         MammographyDict.mammo_arch_depth_choice)
     fld_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
