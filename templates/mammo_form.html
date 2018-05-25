@@ -39,18 +39,27 @@
      }
    }
 
- function registerOtherHandler(name){
- // toggle on load..
- var selectorFieldId = '#'+name
- var otherFieldId = '#'+name+'_other'
- toggleOther(selectorFieldId, otherFieldId)
- // ... and register a change as well
- $(selectorFieldId).on('change',function(){
- toggleOther(selectorFieldId, otherFieldId)
-   });
-     }
+  function registerOtherHandler(name, otherName){
+    // toggle on load..
+    var selectorFieldId = '#'+name
+    var otherFieldId = '#'+otherName
+    toggleOther(selectorFieldId, otherFieldId)
+    // ... and register a change as well
+    $(selectorFieldId).on('change',function(){
+    toggleOther(selectorFieldId, otherFieldId)
+      });
+  }
 
-  registerOtherHandler('mammography_architectural_distortions-fld_loc_right_breast')
+  function registerOtherHandlers(){
+    otherFields = $("[id$=_other]");
+    for (var i = 0; i < otherFields.length; i++) {
+      otherFieldId = otherFields[i].id
+      fieldId = otherFieldId.substring(0, otherFieldId.length - "_other".length)
+      registerOtherHandler(fieldId, otherFieldId)
+    }    
+  }
+
+  registerOtherHandlers()
   registerSubForm('mammography_architectural_distortions')
   registerSubForm('mammo_mass')
   registerSubForm('mammo_calcification')

@@ -1,5 +1,7 @@
 from wtforms import StringField, TextAreaField, IntegerField, SelectField, FloatField, RadioField, FormField, \
-    SubmitField, HiddenField, BooleanField, SelectMultipleField
+    SubmitField, HiddenField, BooleanField, SelectMultipleField, FieldList
+from wtforms.fields.core import UnboundField
+
 from wtforms import validators
 from wtforms.fields.html5 import DateField
 from db_dict.mammography import MammographyDict
@@ -8,22 +10,8 @@ from datetime import datetime
 from schema_forms import form_utilities
 from db_dict.common_dict import CommonDict
 
-class MammoArchDistortionsForm(FlaskForm):
-    class Meta:
-        csrf = False
 
-    fld_loc_right_breast = SelectField("Location of Architectural Distortion on Right Breast",
-                                                                  choices = MammographyDict.
-                                                                  mammo_arch_location_right_breast_choice)
-    fld_loc_right_breast_other = StringField("Other")
-    fld_loc_left_breast = SelectField("Location of Architectural Distortion on Left Breast",
-                                                                 choices = MammographyDict.
-                                                                 mammo_arch_location_left_breast_choice)
-    fld_depth =  SelectField("Depth of Architectural Distortion", choices =
-                                        MammographyDict.mammo_arch_depth_choice)
-    fld_dist = SelectField("Distance of Architectural Distortion from nipple", choices =
-                                    MammographyDict.mammo_arch_dist_choice)
-
+class BaseForm(FlaskForm):
 
     def to_bson(self):
         bson = form_utilities.to_bson(self)
@@ -32,98 +20,40 @@ class MammoArchDistortionsForm(FlaskForm):
     def from_bson(self, p):
         form_utilities.from_bson(self, p)
 
+    @classmethod
+    def append_field(cls, name, field):
+        setattr(cls, name, field)
+        return cls
 
-class MammoMassForm(FlaskForm):
-    class Meta:
-        csrf = False
+    @classmethod
+    def append_select_fields(cls, fields):
+        for field in fields:
+            setattr(cls, field[0], SelectField(field[1][0], choices=field[1][1]))
+            setattr(cls, field[0] + "_other", StringField("Other"))     
 
+        return cls
+
+class MammoArchDistortionsForm(BaseForm):
+    pass
+
+class MammoMassForm(BaseForm):
     fld_number = IntegerField("Mass detected",[validators.optional()])
-    fld_loc_right_breast = SelectField("Location of mass in Right Breast",
-                                                   choices=MammographyDict.mammo_mass_location_right_breast_choice)
-    fld_loc_left_breast = SelectField("Location of mass in Left Breast",
-                                                  choices=MammographyDict.mammo_mass_location_left_breast_choice)
-    fld_depth = SelectField("Depth of mass detected", choices=MammographyDict.mammo_mass_depth_choice)
-    fld_dist = SelectField("Distance of mass from nipple", choices=MammographyDict.mammo_mass_dist_choice)
     fld_pect = StringField("Distance from Pectoralis Major (cm) if available (NA if not present)")
-    fld_shape = SelectField("Shape of mass", choices=MammographyDict.mammo_mass_shape_choice)
-    fld_margin = SelectField("Margins of mass", choices=MammographyDict.mammo_mass_margin_choice)
-    fld_density = SelectField("Density of mass", choices=MammographyDict.mammo_mass_density_choice)
+    pass
 
 
-    def to_bson(self):
-        bson = form_utilities.to_bson(self)
-        return bson
-
-
-    def from_bson(self, p):
-        form_utilities.from_bson(self, p)
-
-class MammoCalcificationForm(FlaskForm):
-
-    class Meta:
-        csrf = False
-
+class MammoCalcificationForm(BaseForm):
     fld_number = IntegerField("Group of calcification", [validators.optional()])
-    fld_loc_right_breast = SelectField("Location of calcification in Right Breast",
-                                                       choices=MammographyDict.mammo_calc_location_right_breast_choice)
-    fld_loc_left_breast = SelectField("Location of calcification in Left Breast",
-                                                      choices=MammographyDict.mammo_calc_location_left_breast_choice)
-    fld_depth = SelectField("Depth of Calcification", choices=MammographyDict.mammo_calc_depth_choice)
-    fld_dist = SelectField("Distance of calcification from nipple",
-                                      choices=MammographyDict.mamo_calc_dist_choice)
-    fld_type = SelectField("Calcification Type",
-                                               choices=MammographyDict.mammo_calcification_type_choice)
-    fld_diagnosis = SelectField("Calcification Diagnosis",
-                                                    choices=MammographyDict.mammo_calcification_diagnosis_choice)
+    pass
 
 
-    def to_bson(self):
-        bson = form_utilities.to_bson(self)
-        return bson
+class MammoAssymetryForm(BaseForm):
+    pass
 
 
-    def from_bson(self, p):
-        form_utilities.from_bson(self, p)
+class AssoFeatureForm(BaseForm):
+    pass
 
-class MammoAssymetryForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    fld_location_right_breast = SelectField("Location of asymmetries on Right Breast",
-                                                        choices=MammographyDict.mammo_assym_location_right_breast_choice)
-    fld_location_left_breast = SelectField("Location of asymmetries on Left Breast",
-                                                       choices=MammographyDict.mammo_assym_location_left_breast_choice)
-    fld_depth = SelectField("Depth of asymmetry", choices=MammographyDict.mammo_assym_depth_choice)
-    fld_type_right_breast = SelectField("Type of asymmetry on Right Breast",
-                                                    choices=MammographyDict.mammo_assym_type_right_breast_choice)
-    fld_left_breast = SelectField("Type of asymmetry on Left Breast",
-                                                   choices=MammographyDict.mammo_assym_type_left_breast_choice)
-    def to_bson(self):
-        bson = form_utilities.to_bson(self)
-        return bson
-
-    def from_bson(self, p):
-        form_utilities.from_bson(self, p)
-
-class AssoFeatureForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    fld_skin_retraction = SelectField("Skin Retraction", choices=CommonDict.absent_present_choice)
-    fld_nipple_retraction = SelectField("Nipple Retraction", choices=CommonDict.absent_present_choice)
-    fld_skin_thickening = SelectField("Skin Thickening", choices=CommonDict.absent_present_choice)
-    fld_trabecular_thickening = SelectField("Trabecular Thickening", choices=CommonDict.absent_present_choice)
-    fld_axillary_adenopathy = SelectField("Axillary Adenopathy", choices=CommonDict.absent_present_choice)
-    fld_architectural_distortion = SelectField("Architectural Distortion", choices=CommonDict.absent_present_choice)
-    fld_calicifications = SelectField("Calcification", choices=CommonDict.absent_present_choice)
-
-    def to_bson(self):
-        bson = form_utilities.to_bson(self)
-        return bson
-
-
-    def from_bson(self, p):
-        form_utilities.from_bson(self, p)
 
 class MammographyForm(FlaskForm):
     class Meta:
@@ -141,17 +71,61 @@ class MammographyForm(FlaskForm):
 
     fld_mammo_mass_present = SelectField("Is there any mass detected?",
                                          choices=MammographyDict.mammo_mass_present_choice)
-    mammo_mass = FormField(MammoMassForm)
+    mammo_mass = FormField(
+        MammoMassForm.append_select_fields([
+            ("fld_loc_right_breast", ("Location of mass in Right Breast", MammographyDict.mammo_mass_location_right_breast_choice)),
+            ("fld_loc_left_breast", ("Location of mass in Left Breast", MammographyDict.mammo_mass_location_left_breast_choice)),
+            ("fld_depth", ("Depth of mass detected", MammographyDict.mammo_mass_depth_choice)),
+            ("fld_dist", ("Distance of mass from nipple", MammographyDict.mammo_mass_dist_choice)),
+            ("fld_shape", ("Shape of mass", MammographyDict.mammo_mass_shape_choice)),
+            ("fld_margin", ("Margins of mass", MammographyDict.mammo_mass_margin_choice)),
+            ("fld_density", ("Density of mass", MammographyDict.mammo_mass_density_choice)),
+        ])
+    )
 
     fld_mammo_calcification_present = SelectField("Are there any calcifications detected?",
                                                   choices=MammographyDict.mammo_calcification_present_choice)
-    mammo_calcification = FormField(MammoCalcificationForm)
+    mammo_calcification = FormField(
+        MammoCalcificationForm.append_select_fields([
+            ("fld_loc_right_breast", ("Location of calcification in Right Breast", MammographyDict.mammo_calc_location_right_breast_choice)),
+            ("fld_loc_left_breast", ("Location of calcification in Left Breast", MammographyDict.mammo_calc_location_left_breast_choice)),
+            ("fld_depth", ("Depth of Calcification", MammographyDict.mammo_calc_depth_choice)),
+            ("fld_dist", ("Distance of calcification from nipple", MammographyDict.mamo_calc_dist_choice)),
+            ("fld_type", ("Calcification Type", MammographyDict.mammo_calcification_type_choice)),
+            ("fld_diagnosis", ("Calcification Diagnosis", MammographyDict.mammo_calcification_diagnosis_choice)),
+        ])
+    )
 
     fld_mammography_architectural_distortions_present = SelectField("Are Architectural Distortions present",
                                                                     choices=MammographyDict.mammo_arch_present_choice)
-    mammography_architectural_distortions = FormField(MammoArchDistortionsForm)
+    mammography_architectural_distortions = FormField(
+            MammoArchDistortionsForm.append_select_fields([
+            ("fld_loc_right_breast", (
+                "Location of Architectural Distortion on Right Breast",
+                MammographyDict.mammo_arch_location_right_breast_choice)),
+            ("fld_loc_left_breast", (
+                "Location of Architectural Distortion on Left Breast",
+                MammographyDict.mammo_arch_location_left_breast_choice)),
+            ("fld_depth",  (
+                "Depth of Architectural Distortion", 
+                MammographyDict.mammo_arch_depth_choice)),
+            ("fld_dist", (
+                "Distance of Architectural Distortion from nipple", 
+                MammographyDict.mammo_arch_dist_choice)),
+        ])
+    )
+
     fld_mammography_asymmetry_present = SelectField("Are Asymmetries present", choices=MammographyDict.mammo_assym_present_choice)
-    mammography_asymmetry = FormField(MammoAssymetryForm)
+    mammography_asymmetry = FormField(
+        MammoAssymetryForm.append_select_fields([
+            ("fld_location_right_breast", ("Location of asymmetries on Right Breast", MammographyDict.mammo_assym_location_right_breast_choice)),
+            ("fld_location_left_breast", ("Location of asymmetries on Left Breast", MammographyDict.mammo_assym_location_left_breast_choice)),
+            ("fld_depth", ("Depth of asymmetry", MammographyDict.mammo_assym_depth_choice)),
+            ("fld_type_right_breast", ("Type of asymmetry on Right Breast", MammographyDict.mammo_assym_type_right_breast_choice)),
+            ("fld_left_breast", ("Type of asymmetry on Left Breast", MammographyDict.mammo_assym_type_left_breast_choice)),
+        ])
+    )
+
     fld_mammo_intra_mammary_lymph_nodes_present = SelectField("Are intra-mammary lymph nodes present",
                                                               choices=MammographyDict.mammo_intra_mammary_lymph_nodes_choice)
     fld_mammo_intra_mammary_lymph_nodes_description = TextAreaField("Description of intra-mammary lymph nodes")
@@ -163,7 +137,18 @@ class MammographyForm(FlaskForm):
                                                choices=MammographyDict.mammo_lesion_left_breast_choice)
     fld_mammography_associated_features_present = SelectField("Are associated features present?",
                                                               choices = CommonDict.yes_no_choice)
-    mammography_associated_features = FormField(AssoFeatureForm)
+    mammography_associated_features = FormField(
+        AssoFeatureForm.append_select_fields([
+            ("fld_skin_retraction", ("Skin Retraction", CommonDict.absent_present_choice)),
+            ("fld_nipple_retraction", ("Nipple Retraction", CommonDict.absent_present_choice)),
+            ("fld_skin_thickening", ("Skin Thickening", CommonDict.absent_present_choice)),
+            ("fld_trabecular_thickening", ("Trabecular Thickening", CommonDict.absent_present_choice)),
+            ("fld_axillary_adenopathy", ("Axillary Adenopathy", CommonDict.absent_present_choice)),
+            ("fld_architectural_distortion", ("Architectural Distortion", CommonDict.absent_present_choice)),
+            ("fld_calicifications", ("Calcification", CommonDict.absent_present_choice)),
+        ])
+    )
+
     fld_mammo_birad = SelectField("BI-RAD classification (if available)", choices=MammographyDict.mammo_birad_choice)
     fld_form_status = SelectField("Form Status",  choices= MammographyDict.mammo_status_choice)
     last_update = HiddenField()
