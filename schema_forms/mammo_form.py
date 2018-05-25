@@ -12,6 +12,8 @@ from db_dict.common_dict import CommonDict
 
 
 class BaseForm(FlaskForm):
+    class Meta:
+        csrf = False
 
     def to_bson(self):
         bson = form_utilities.to_bson(self)
@@ -41,6 +43,22 @@ class MammoMassForm(BaseForm):
     fld_pect = StringField("Distance from Pectoralis Major (cm) if available (NA if not present)")
     pass
 
+MammoMassForm.append_select_fields([
+    ("fld_loc_right_breast", ("Location of mass in Right Breast", MammographyDict.mammo_mass_location_right_breast_choice)),
+    ("fld_loc_left_breast", ("Location of mass in Left Breast", MammographyDict.mammo_mass_location_left_breast_choice)),
+    ("fld_depth", ("Depth of mass detected", MammographyDict.mammo_mass_depth_choice)),
+    ("fld_dist", ("Distance of mass from nipple", MammographyDict.mammo_mass_dist_choice)),
+    ("fld_shape", ("Shape of mass", MammographyDict.mammo_mass_shape_choice)),
+    ("fld_margin", ("Margins of mass", MammographyDict.mammo_mass_margin_choice)),
+    ("fld_density", ("Density of mass", MammographyDict.mammo_mass_density_choice)),
+])
+
+class MammoMassRepeaterForm(FlaskForm):
+    class Meta:
+        csrf = False
+    fld_folder_number = HiddenField()
+    repeater = FieldList(FormField(MammoMassForm), min_entries=1)
+    
 
 class MammoCalcificationForm(BaseForm):
     fld_number = IntegerField("Group of calcification", [validators.optional()])
@@ -71,17 +89,7 @@ class MammographyForm(FlaskForm):
 
     fld_mammo_mass_present = SelectField("Is there any mass detected?",
                                          choices=MammographyDict.mammo_mass_present_choice)
-    mammo_mass = FormField(
-        MammoMassForm.append_select_fields([
-            ("fld_loc_right_breast", ("Location of mass in Right Breast", MammographyDict.mammo_mass_location_right_breast_choice)),
-            ("fld_loc_left_breast", ("Location of mass in Left Breast", MammographyDict.mammo_mass_location_left_breast_choice)),
-            ("fld_depth", ("Depth of mass detected", MammographyDict.mammo_mass_depth_choice)),
-            ("fld_dist", ("Distance of mass from nipple", MammographyDict.mammo_mass_dist_choice)),
-            ("fld_shape", ("Shape of mass", MammographyDict.mammo_mass_shape_choice)),
-            ("fld_margin", ("Margins of mass", MammographyDict.mammo_mass_margin_choice)),
-            ("fld_density", ("Density of mass", MammographyDict.mammo_mass_density_choice)),
-        ])
-    )
+    mammo_mass = FormField(MammoMassForm)
 
     fld_mammo_calcification_present = SelectField("Are there any calcifications detected?",
                                                   choices=MammographyDict.mammo_calcification_present_choice)

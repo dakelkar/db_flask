@@ -7,7 +7,7 @@ from dbs.patientsdb import PatientsDb
 from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
-from schema_forms.mammo_form import MammographyForm
+from schema_forms.mammo_form import MammographyForm, MammoMassRepeaterForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
@@ -202,6 +202,8 @@ def view_folder(folder_hash):
 
     section = create_folder_section(folder_number, "mammo", mammo_db.get_mammography)
     folder_sections.append(section)
+    section = create_folder_section(folder_number, "mammo_mass", mammo_db.get_mammography)
+    folder_sections.append(section)
     #section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
     #folder_sections.append(section)
 
@@ -338,6 +340,30 @@ def edit_mammo(folder_hash):
         return redirect(url_for('view_folder', folder_hash=folder_hash))
 
     return render_template('mammo_form.html', form=form)
+
+@app.route('/edit_mammo_mass/<folder_hash>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_mammo_mass(folder_hash):
+    form = MammoMassRepeaterForm(request.form)
+    folder_number = decodex(folder_hash)
+    form.fld_folder_number.data = folder_number
+
+    # if request.method == 'GET':
+    #     form = mammo_db.get_mammography(folder_number)
+    #     if form is None:
+    #         flash('Mammograph not found for folder: ' + folder_number, 'danger')
+
+    if request.method == 'POST' and form.validate():
+        success_flag, error = mammo_db.update_mammography(form)
+
+        if not success_flag:
+            flash('Error updating mammograph: ' + str(error), 'danger')
+        else:
+            flash('Mammograph Updated', 'success')
+
+        return redirect(url_for('view_folder', folder_hash=folder_hash))
+
+    return render_template('mammo_repeater.html', form=form)
 
 @app.route('/delete_mammo/<folder_hash>', methods=['POST'])
 @is_logged_in
