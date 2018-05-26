@@ -11,9 +11,10 @@ from schema_forms.mammo_form import MammographyForm, MammoMassRepeaterForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
-from dbs.biopsydb import BiopsyDb
-from dbs.mammodb import MammoDb
 from flask_bootstrap import Bootstrap
+from isloggedin import is_logged_in
+from crudprint import construct_crudprint
+from dbs.sectiondb import SectionDb
 
 # Initialize logging
 log = Log()
@@ -25,16 +26,17 @@ db.connect()
 users_db = UserDb(log)
 users_db.connect()
 
-# Initialize BiopsyDb
-biopsy_db = BiopsyDb(log)
-biopsy_db.connect()
-
-#Initialize MammoDb
-mammo_db = MammoDb(log)
+#Initialize section DBs
+mammo_db = SectionDb(log, MammographyForm, 'patients', 'mammographies')
 mammo_db.connect()
+
 
 app = Flask(__name__)
 Bootstrap(app)
+
+mammo_crudprint = construct_crudprint(MammographyForm, mammo_db)
+app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
+
 
 #########################################################
 # Login, registration and index
@@ -97,18 +99,6 @@ def login():
             return render_template('login.html', error=error)
         return name
     return render_template('login.html')
-
-
-def is_logged_in(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return f(*args, **kwargs)
-        else:
-            flash('Unauthorized, please log in', 'danger')
-            return redirect(url_for('login'))
-    return wrap
-
 
 @app.route('/logout')
 def logout():
@@ -200,9 +190,9 @@ def view_folder(folder_hash):
     folder_number = decodex(folder_hash)
     folder_sections = []
 
-    section = create_folder_section(folder_number, "mammo", mammo_db.get_mammography)
+    section = create_folder_section(folder_number, "mammo", mammo_db.get_item)
     folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo_mass", mammo_db.get_mammography)
+    section = create_folder_section(folder_number, "mammo_mass", mammo_db.get_item)
     folder_sections.append(section)
     #section = create_folder_section(folder_number, "biopsy", biopsy_db.get_biopsy)
     #folder_sections.append(section)
@@ -223,168 +213,8 @@ def create_folder_section(folder_number, section_name, db_get):
     return section
 
 
-######################
-# Biopsy CRUD
 
-@app.route('/add_biopsy/<folder_hash>', methods=['GET','POST'])
-@is_logged_in
-def add_biopsy(folder_hash):
-    form = BiopsyForm(request.form)
-    folder_number = decodex(folder_hash)
-    form.folder_number.data = folder_number
-
-    if request.method == 'POST' and not form.validate():
-        errs = ""
-        for fieldName, errorMessages in form.errors.items():
-            for err in errorMessages:
-                errs = errs + err + " "
-        flash('Error adding biopsy: ' + errs, 'danger')
-
-    if request.method == 'POST' and form.validate():
-        biopsy = form.to_model()
-        success_flag, error = biopsy_db.add_biopsy(biopsy)
-        if not success_flag:
-            flash('Error adding patient: ' + str(error), 'danger')
-        else:
-            flash('Biopsy Information Added', 'success')
-
-        return redirect(url_for('view_folder', folder_hash=folder_hash))
-    return render_template('biopsy_add.html', form=form)
-
-@app.route('/edit_biopsy/<folder_hash>', methods=['GET', 'POST'])
-@is_logged_in
-def edit_biopsy(folder_hash):
-    form = BiopsyForm(request.form)
-    folder_number = decodex(folder_hash)
-    form.folder_number.data = folder_number
-
-    if request.method == 'GET':
-        biopsy = biopsy_db.get_biopsy(folder_number)
-        if biopsy is not None:
-            form.from_model(biopsy)
-        else:
-            flash('Biopsy not found for folder: ' + folder_number, 'danger')
-
-    if request.method == 'POST' and form.validate():
-        biopsy = form.to_model()
-        success_flag, error = biopsy_db.update_biopsy(biopsy)
-
-        if not success_flag:
-            flash('Error updating biopsy: ' + str(error), 'danger')
-        else:
-            flash('Biopsy Updated', 'success')
-
-        return redirect(url_for('view_folder', folder_hash=folder_hash))
-
-    return render_template('biopsy_edit.html', form=form)
-
-
-@app.route('/delete_biopsy/<folder_hash>', methods=['POST'])
-@is_logged_in
-def delete_biopsy(folder_hash):
-    folder_number = decodex(folder_hash)
-    success_flag, error = biopsy_db.delete_biopsy(folder_number)
-
-    if not success_flag:
-        flash('Error deleting biopsy: ' + str(error), 'danger')
-    else:
-        flash('Biopsy Deleted', 'success')
-
-    return redirect(url_for('view_folder', folder_hash=folder_hash))
-
-
-######################
-# Mammo CRUD
-
-@app.route('/add_mammo/<folder_hash>', methods=['GET', 'POST'])
-@is_logged_in
-def add_mammo(folder_hash):
-    form = MammographyForm(request.form)
-    folder_number = decodex(folder_hash)
-    form.fld_folder_number.data = folder_number
-
-    if request.method == 'POST' and not form.validate():
-        flash('Please fix validation errors: ' + str(form.errors), 'danger')
-    
-    if request.method == 'POST' and form.validate():
-        print("what the hell")
-        success_flag, error = mammo_db.add_mammography(form)
-        if not success_flag:
-            flash('Error adding mammograph: ' + str(error), 'danger')
-        else:
-            flash('Patient Added', 'success')
-
-        return redirect(url_for('view_folder', folder_hash=folder_hash))
-    return render_template('mammo_form.html', form=form)
-
-@app.route('/edit_mammo/<folder_hash>', methods=['GET', 'POST'])
-@is_logged_in
-def edit_mammo(folder_hash):
-    form = MammographyForm(request.form)
-    folder_number = decodex(folder_hash)
-    form.fld_folder_number.data = folder_number
-
-    if request.method == 'GET':
-        form = mammo_db.get_mammography(folder_number)
-        if form is None:
-            flash('Mammograph not found for folder: ' + folder_number, 'danger')
-
-    if request.method == 'POST' and form.validate():
-        success_flag, error = mammo_db.update_mammography(form)
-
-        if not success_flag:
-            flash('Error updating mammograph: ' + str(error), 'danger')
-        else:
-            flash('Mammograph Updated', 'success')
-
-        return redirect(url_for('view_folder', folder_hash=folder_hash))
-
-    return render_template('mammo_form.html', form=form)
-
-@app.route('/edit_mammo_mass/<folder_hash>', methods=['GET', 'POST'])
-@is_logged_in
-def edit_mammo_mass(folder_hash):
-    form = MammoMassRepeaterForm(request.form)
-    folder_number = decodex(folder_hash)
-    form.fld_folder_number.data = folder_number
-
-    # if request.method == 'GET':
-    #     form = mammo_db.get_mammography(folder_number)
-    #     if form is None:
-    #         flash('Mammograph not found for folder: ' + folder_number, 'danger')
-
-    if request.method == 'POST' and form.validate():
-        success_flag, error = mammo_db.update_mammography(form)
-
-        if not success_flag:
-            flash('Error updating mammograph: ' + str(error), 'danger')
-        else:
-            flash('Mammograph Updated', 'success')
-
-        return redirect(url_for('view_folder', folder_hash=folder_hash))
-
-    return render_template('mammo_repeater.html', form=form)
-
-@app.route('/delete_mammo/<folder_hash>', methods=['POST'])
-@is_logged_in
-def delete_mammo(folder_hash):
-    folder_number = decodex(folder_hash)
-    success_flag, error = mammo_db.delete_mammography(folder_number)
-
-    if not success_flag:
-        flash('Error deleting mammograph: ' + str(error), 'danger')
-    else:
-        flash('Mammograph Deleted', 'success')
-
-    return redirect(url_for('view_folder', folder_hash=folder_hash))
-
-#########################################################
-# foo CRUD - should come here
-# TODO: implement here...
-
-#########################################################
 # MAIN
-
 if __name__ == '__main__':
     app.secret_key = 'secret123'
     app.run(host='0.0.0.0', port=5666, debug=True)

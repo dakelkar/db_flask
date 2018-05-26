@@ -11,6 +11,9 @@ def to_bson(form, prefix = 'fld_'):
     return bson
 
 def from_bson(form, p, prefix = "fld_"):
+    if p is None:
+        return None
+        
     for key in p.keys():
         field_name = prefix + key
         if hasattr(form, field_name):

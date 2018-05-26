@@ -87,13 +87,13 @@ class MammographyForm(FlaskForm):
     fld_mammo_breast_density = SelectField("Breast Density in Mammography",
                                            choices=MammographyDict.mammo_breast_density_choice)
 
-    fld_mammo_mass_present = SelectField("Is there any mass detected?",
+    fld_mammo_mass_form_present = SelectField("Is there any mass detected?",
                                          choices=MammographyDict.mammo_mass_present_choice)
-    mammo_mass = FormField(MammoMassForm)
+    mammo_mass_form = FormField(MammoMassForm)
 
-    fld_mammo_calcification_present = SelectField("Are there any calcifications detected?",
+    fld_mammo_calcification_form_present = SelectField("Are there any calcifications detected?",
                                                   choices=MammographyDict.mammo_calcification_present_choice)
-    mammo_calcification = FormField(
+    mammo_calcification_form = FormField(
         MammoCalcificationForm.append_select_fields([
             ("fld_loc_right_breast", ("Location of calcification in Right Breast", MammographyDict.mammo_calc_location_right_breast_choice)),
             ("fld_loc_left_breast", ("Location of calcification in Left Breast", MammographyDict.mammo_calc_location_left_breast_choice)),
@@ -104,9 +104,9 @@ class MammographyForm(FlaskForm):
         ])
     )
 
-    fld_mammography_architectural_distortions_present = SelectField("Are Architectural Distortions present",
+    fld_mammography_architectural_distortions_form_present = SelectField("Are Architectural Distortions present",
                                                                     choices=MammographyDict.mammo_arch_present_choice)
-    mammography_architectural_distortions = FormField(
+    mammography_architectural_distortions_form = FormField(
             MammoArchDistortionsForm.append_select_fields([
             ("fld_loc_right_breast", (
                 "Location of Architectural Distortion on Right Breast",
@@ -123,8 +123,8 @@ class MammographyForm(FlaskForm):
         ])
     )
 
-    fld_mammography_asymmetry_present = SelectField("Are Asymmetries present", choices=MammographyDict.mammo_assym_present_choice)
-    mammography_asymmetry = FormField(
+    fld_mammography_asymmetry_form_present = SelectField("Are Asymmetries present", choices=MammographyDict.mammo_assym_present_choice)
+    mammography_asymmetry_form = FormField(
         MammoAssymetryForm.append_select_fields([
             ("fld_location_right_breast", ("Location of asymmetries on Right Breast", MammographyDict.mammo_assym_location_right_breast_choice)),
             ("fld_location_left_breast", ("Location of asymmetries on Left Breast", MammographyDict.mammo_assym_location_left_breast_choice)),
@@ -143,9 +143,9 @@ class MammographyForm(FlaskForm):
                                                 choices=MammographyDict.mammo_lesion_right_breast_choice)
     fld_mammo_lesion_left_breast = SelectField("Location of skin lesion on left breast",
                                                choices=MammographyDict.mammo_lesion_left_breast_choice)
-    fld_mammography_associated_features_present = SelectField("Are associated features present?",
+    fld_mammography_associated_features_form_present = SelectField("Are associated features present?",
                                                               choices = CommonDict.yes_no_choice)
-    mammography_associated_features = FormField(
+    mammography_associated_features_form = FormField(
         AssoFeatureForm.append_select_fields([
             ("fld_skin_retraction", ("Skin Retraction", CommonDict.absent_present_choice)),
             ("fld_nipple_retraction", ("Nipple Retraction", CommonDict.absent_present_choice)),
@@ -168,11 +168,11 @@ class MammographyForm(FlaskForm):
         bson['last_update'] = datetime.today()
         bson['mammo_date'] =  datetime.combine(self.mammo_date.data, datetime.min.time())
         #spl stuff for subforms
-        bson['mammography_architectural_distortions'] = self.mammography_architectural_distortions.to_bson()
-        bson['mammo_mass'] = self.mammo_mass.to_bson()
-        bson['mammo_calcification'] = self.mammo_calcification.to_bson()
-        bson['mammography_asymmetry']= self.mammography_asymmetry.to_bson()
-        bson['mammography_associated_features']= self.mammography_associated_features.to_bson()
+        bson['mammography_architectural_distortions'] = self.mammography_architectural_distortions_form.to_bson()
+        bson['mammo_mass'] = self.mammo_mass_form.to_bson()
+        bson['mammo_calcification'] = self.mammo_calcification_form.to_bson()
+        bson['mammography_asymmetry']= self.mammography_asymmetry_form.to_bson()
+        bson['mammography_associated_features']= self.mammography_associated_features_form.to_bson()
         # spl stuff for subforms
 
         return bson
@@ -180,14 +180,14 @@ class MammographyForm(FlaskForm):
     def from_bson(self, p):
         form_utilities.from_bson(self, p)
         #spl stuff for dates
-        self.last_update.data = p['last_update'].date()
-        self.mammo_date.data = p['mammo_date'].date()
+        self.last_update.data = p.get_date('last_update')
+        self.mammo_date.data = p.get_date('mammo_date')
         #spl stuff for subforms
-        self.mammography_architectural_distortions.from_bson(p['mammography_architectural_distortions'])
-        self.mammo_mass.from_bson(p['mammo_mass'])
-        self.mammo_calcification.from_bson(p['mammo_calcification'])
-        self.mammography_asymmetry.from_bson(p['mammography_asymmetry'])
-        self.mammography_associated_features.from_bson(p['mammography_associated_features'])
+        self.mammography_architectural_distortions_form.from_bson(p['mammography_architectural_distortions'])
+        self.mammo_mass_form.from_bson(p['mammo_mass'])
+        self.mammo_calcification_form.from_bson(p['mammo_calcification'])
+        self.mammography_asymmetry_form.from_bson(p['mammography_asymmetry'])
+        self.mammography_associated_features_form.from_bson(p['mammography_associated_features'])
 
 #in mammo_arch check if validator there if it accepts if momma_arch not called... need nested validators?
 #check all patterns
