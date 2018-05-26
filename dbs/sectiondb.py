@@ -1,7 +1,6 @@
 import sys
 import pymongo
 
-
 class BsonWrapper:
     def __init__(self, bson):
         self._bson = bson
@@ -32,6 +31,11 @@ class SectionDb(object):
         self.form_class = form_class
         self.db_name = db_name
         self.collection_name = collection_name
+
+    def get_from_request (self, request_data, folder_number):
+        form = self.form_class(request_data)
+        form.fld_folder_number.data = folder_number
+        return form
 
     def connect(self):
         # Connect to database

@@ -9,31 +9,8 @@ from flask_wtf import FlaskForm
 from datetime import datetime
 from schema_forms import form_utilities
 from db_dict.common_dict import CommonDict
+from schema_forms.form_utilities import BaseForm
 
-
-class BaseForm(FlaskForm):
-    class Meta:
-        csrf = False
-
-    def to_bson(self):
-        bson = form_utilities.to_bson(self)
-        return bson
-
-    def from_bson(self, p):
-        form_utilities.from_bson(self, p)
-
-    @classmethod
-    def append_field(cls, name, field):
-        setattr(cls, name, field)
-        return cls
-
-    @classmethod
-    def append_select_fields(cls, fields):
-        for field in fields:
-            setattr(cls, field[0], SelectField(field[1][0], choices=field[1][1]))
-            setattr(cls, field[0] + "_other", StringField("Other"))     
-
-        return cls
 
 class MammoArchDistortionsForm(BaseForm):
     pass

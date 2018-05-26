@@ -34,7 +34,7 @@ mammo_db.connect()
 app = Flask(__name__)
 Bootstrap(app)
 
-mammo_crudprint = construct_crudprint(MammographyForm, mammo_db)
+mammo_crudprint = construct_crudprint(mammo_db)
 app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
 
 

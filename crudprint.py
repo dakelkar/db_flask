@@ -5,16 +5,15 @@ from create_hash import decodex
 
 ######################
 # Section Blueprint
-def construct_crudprint(form_class, section_db):
+def construct_crudprint(section_db):
     crudprint = Blueprint('crudprint', __name__, template_folder='templates')
 
     # @repeater.route('/', defaults={'page': 'index'})
     @crudprint.route('/<folder_hash>', methods=['GET', 'POST'])
     @is_logged_in
     def add_or_edit(folder_hash):
-        form = form_class(request.form)        
         folder_number = decodex(folder_hash)
-        form.fld_folder_number.data = folder_number
+        form = section_db.get_from_request(request.form, folder_number)
 
         # here we want to get the value of mode (i.e. ?mode=add)
         is_add = request.args.get('mode') == "add"
