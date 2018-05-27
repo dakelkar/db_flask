@@ -5,8 +5,8 @@ from create_hash import decodex
 
 ######################
 # Section Blueprint
-def construct_crudprint(section_db):
-    crudprint = Blueprint('crudprint', __name__, template_folder='templates')
+def construct_crudprint(name, section_db):
+    crudprint = Blueprint(name, __name__, template_folder='templates')
 
     # @repeater.route('/', defaults={'page': 'index'})
     @crudprint.route('/<folder_hash>', methods=['GET', 'POST'])

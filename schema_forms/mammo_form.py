@@ -170,8 +170,6 @@ class MammographyForm(FlaskForm):
 #check all patterns
 #how is subnesting evaluated?
 
-#$function: should find "other", if False, then new field samefield_other is hidden, but when true is seen so
-# dont need new subform, registers as on change function
 
 #figure out how to get user passed to this form...
 

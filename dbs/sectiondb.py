@@ -16,20 +16,19 @@ class BsonWrapper:
         
     def __getitem__(self, key):
         if key in self._bson.keys():
-            self._bson[key]
-
+            return self._bson[key]
         return None
 
 class SectionDb(object):
     # This class wraps the DB access for patients
     key = "folder_number"
 
-    def __init__(self, logger, form_class, db_name, collection_name):
+    def __init__(self, logger, form_class, collection_name):
         # Setup logging
         self.log = logger
         self.db = None
         self.form_class = form_class
-        self.db_name = db_name
+        self.db_name = 'patients'
         self.collection_name = collection_name
 
     def get_from_request (self, request_data, folder_number):
@@ -53,6 +52,7 @@ class SectionDb(object):
         
         form = self.form_class()
         form.from_bson(BsonWrapper(db_entry))
+        form.fld_folder_number.data = folder_number
         return form
 
     def add_item(self, form):
