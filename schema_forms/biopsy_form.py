@@ -7,6 +7,10 @@ from schema_forms.form_utilities import BaseForm
 
 
 class BiopsyForm (BaseForm):
+    def get_summary(self):
+        return self.fld_biopsy_tumour_diagnosis.data
+
+    fld_pk = HiddenField()
     fld_folder_number = HiddenField()
     fld_consent_stat_biopsy = SelectField('Has consent been taken from patient?', choices=BiopsyDict.consent_stat_choice)
     fld_consent_form_biopsy = SelectField('Is consent form with signature present in file ?',

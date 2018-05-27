@@ -1,5 +1,6 @@
 import sys
 import pymongo
+import uuid
 
 class BsonWrapper:
     def __init__(self, bson):
@@ -21,7 +22,7 @@ class BsonWrapper:
 
 class SectionDb(object):
     # This class wraps the DB access for patients
-    key = "folder_number"
+    key = "pk"
 
     def __init__(self, logger, form_class, collection_name):
         # Setup logging
@@ -31,9 +32,8 @@ class SectionDb(object):
         self.db_name = 'patients'
         self.collection_name = collection_name
 
-    def get_from_request (self, request_data, folder_number):
+    def get_from_request(self, request_data):
         form = self.form_class(request_data)
-        form.fld_folder_number.data = folder_number
         return form
 
     def connect(self):
@@ -45,26 +45,39 @@ class SectionDb(object):
         except:
             self.log.get_logger().error("Error connecting to database %s: %s" % (self.form_class, sys.exc_info()))
 
-    def get_item(self, folder_number):
-        db_entry = self.db.find_one({self.key: folder_number})
+    def get_folder_items(self, folder_number):
+        db_entries = self.db.find({"folder_number": folder_number})
+        if db_entries is None:
+            return None
+
+        forms = []        
+        for db_entry in db_entries:
+            form = self.form_class()
+            form.from_bson(BsonWrapper(db_entry))
+            forms.append(form)
+
+        return forms
+
+    def get_item(self, pk):
+        db_entry = self.db.find_one({self.key: pk})
         if db_entry is None:
             return None
         
         form = self.form_class()
         form.from_bson(BsonWrapper(db_entry))
-        form.fld_folder_number.data = folder_number
         return form
 
     def add_item(self, form):
         db_entry = form.to_bson()
+        db_entry[self.key] = uuid.uuid4().hex
         self.db.insert_one(db_entry)
-        return True, None
+        return True, db_entry[self.key]
 
     def update_item(self, form):
-        self.db.update_one({self.key: form.fld_folder_number.data}, {"$set": form.to_bson()})
-        return True, None
+        self.db.update_one({self.key: form.fld_pk.data}, {"$set": form.to_bson()})
+        return True, form.fld_pk.data
 
-    def delete_item(self, folder_number):
+    def delete_item(self, pk):
         # try:
-        self.db.delete_one({self.key: folder_number})
+        self.db.delete_one({self.key: pk})
         return True, None

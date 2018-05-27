@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Patient Folder: {{folder_number}}</h1>
+    <h1>Information Folder: {{folder_number}}</h1>
     <small>Welcome {{session.name}}</small>
     <div></div>
     <hr>
@@ -15,13 +15,44 @@
             <th></th>
         </tr>
         {% for folder_section in folder_sections %}
+            {% if not folder_section.is_list %}
             <tr>
                 <td>{{folder_section.name}}</td>
-                <td>{{folder_section.status}}</td>
-                <td>{{folder_section.last_modified_by}}</td>
-                <td>{{folder_section.last_modified_on}}</td>
-                <td><a href="/{{folder_section.name}}/{{folder_hash}}?mode={{folder_section.action}}" class="btn btn-primary pullright">{{folder_section.action}}</a></td>
+                <td>{{folder_section.status[0]}}</td>
+                <td>{{folder_section.last_modified_by[0]}}</td>
+                <td>{{folder_section.last_modified_on[0]}}</td>
+                <td>
+                    {% if folder_section.action == "edit" %}
+                        <a href="/{{folder_section.name}}/edit/{{folder_hash}}/{{folder_section.pks[0]}}" class="btn btn-primary pullright">edit</a>
+                    {% else %}
+                        <a href="/{{folder_section.name}}/add/{{folder_hash}}" class="btn btn-primary pullright">add</a>
+                    {% endif %}
+                </td>
             </tr>
+            {% else %}
+            <tr>
+                <td>{{folder_section.name}}</td>
+                <td colspan="3">
+                    <table>
+                        {% for pk_set in folder_section.pks: %}
+                        {% set pk = pk_set[0] %}
+                        <tr>
+                            <td>
+                                {{pk_set[1]}}
+                            </td>
+                            <td>
+                                <a href="/{{folder_section.name}}/edit/{{folder_hash}}/{{pk}}" class="btn btn-secondary pullright">edit</a>
+                            </td>
+                            <td>
+                                <a href="/{{folder_section.name}}/delete/{{folder_hash}}/{{pk}}" class="btn btn-secondary pullright">delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td><a href="/{{folder_section.name}}/add/{{folder_hash}}" class="btn btn-primary pullright">add</a></td>
+            </tr>
+            {% endif %}
         {% endfor %}
     </table>
 {% endblock %}

@@ -7,7 +7,7 @@ from dbs.patientsdb import PatientsDb
 from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
-from schema_forms.mammo_form import MammographyForm, MammoMassRepeaterForm
+from schema_forms.mammo_form import MammographyForm, MammoMassForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
@@ -29,6 +29,8 @@ users_db.connect()
 #Initialize section DBs
 mammo_db = SectionDb(log, MammographyForm, 'mammographies')
 mammo_db.connect()
+mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
+mammo_mass_db.connect()
 biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
 biopsy_db.connect()
 
@@ -37,6 +39,9 @@ Bootstrap(app)
 
 mammo_crudprint = construct_crudprint('mammo', mammo_db)
 app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
+
+mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db)
+app.register_blueprint(mammo_mass_crudprint, url_prefix="/mammo_mass")
 
 biopsy_crudprint = construct_crudprint('biopsy', biopsy_db)
 app.register_blueprint(biopsy_crudprint, url_prefix="/biopsy")
@@ -191,26 +196,30 @@ def delete_patient(folder_hash):
 def view_folder(folder_hash):
     folder_number = decodex(folder_hash)
     folder_sections = []
-    section = create_folder_section(folder_number, "biopsy", biopsy_db.get_item)
+    section = create_folder_section(folder_number, "biopsy", biopsy_db.get_folder_items)
     folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo", mammo_db.get_item)
+    section = create_folder_section(folder_number, "mammo", mammo_db.get_folder_items)
     folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo_mass", mammo_db.get_item)
+    section = create_folder_section(folder_number, "mammo_mass", mammo_mass_db.get_folder_items, is_list=True)
     folder_sections.append(section)
 
     return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number,
                            folder_sections=folder_sections)
 
-def create_folder_section(folder_number, section_name, db_get):
-    section_object = db_get(folder_number)
+def create_folder_section(folder_number, section_name, db_get, is_list=False):
+    section_objects = db_get(folder_number)
     action = "add"
-    status = "To be filled"
-    last_modified_on = datetime.datetime.today().strftime('%Y-%m-%d')
-    if section_object is not None:
+    status = ["To be filled"]
+    last_modified_on = [datetime.datetime.today().strftime('%Y-%m-%d')]
+    pks = None
+    if section_objects is not None and len(section_objects) > 0:
         action = "edit"
-        status = section_object.fld_form_status.data
-        last_modified_on = section_object.last_update.data
-    section = FolderSection(section_name, action, status, last_modified_on = last_modified_on, last_modified_by="Who Knows", )
+        status = [x.fld_form_status.data for x in section_objects]
+        last_modified_on = [x.last_update.data for x in section_objects]
+        pks = [(x.fld_pk.data, x.get_summary()) for x in section_objects]
+
+    section = FolderSection(section_name, action, status, last_modified_on = last_modified_on, 
+                            last_modified_by="Who Knows", pks=pks, is_list=is_list)
     return section
 
 
