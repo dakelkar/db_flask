@@ -14,8 +14,8 @@ from schema_forms.form_utilities import BaseForm, SectionForm
 
 class MammoMassForm(SectionForm):
     def get_summary(self):
-        return self.fld_loc_right_breast.data
-
+        return "fld-number: " + str(self.fld_number.data)
+    fld_number = IntegerField("Mass number", default=1)
     fld_loc_right_breast = SelectField("Location of mass in Right Breast", choices = MammographyDict.mammo_mass_location_right_breast_choice)
     fld_loc_right_breast_other = StringField("Other")
     fld_loc_left_breast = SelectField("Location of mass in Left Breast", choices=MammographyDict.mammo_mass_location_left_breast_choice)
@@ -42,8 +42,7 @@ class MammoMassForm(SectionForm):
 class MammoCalcificationForm(SectionForm):
     def get_summary(self):
         return "fld-number: " + str(self.fld_number.data)
-
-    fld_number = IntegerField("Group of calcification", [validators.optional()])
+    fld_number = IntegerField("Group of calcification", default = 1)
     fld_loc_right_breast = SelectField("Location of calcification in Right Breast", choices=MammographyDict.mammo_calc_location_right_breast_choice)
     fld_loc_right_breast_other = StringField("Other")
     fld_loc_left_breast = SelectField("Location of calcification in Left Breast", choices=MammographyDict.mammo_calc_location_left_breast_choice)
@@ -89,18 +88,6 @@ class MammographyForm(FlaskForm):
     fld_mammo_breast_density = SelectField("Breast Density in Mammography",
                                            choices=MammographyDict.mammo_breast_density_choice)
 
-    # fld_mammo_calcification_form_present = SelectField("Are there any calcifications detected?",
-    #                                               choices=MammographyDict.mammo_calcification_present_choice)
-    # mammo_calcification_form = FormField(
-    #     MammoCalcificationForm.append_select_fields([
-    #         ("fld_loc_right_breast", ("Location of calcification in Right Breast", MammographyDict.mammo_calc_location_right_breast_choice)),
-    #         ("fld_loc_left_breast", ("Location of calcification in Left Breast", MammographyDict.mammo_calc_location_left_breast_choice)),
-    #         ("fld_depth", ("Depth of Calcification", MammographyDict.mammo_calc_depth_choice)),
-    #         ("fld_dist", ("Distance of calcification from nipple", MammographyDict.mamo_calc_dist_choice)),
-    #         ("fld_type", ("Calcification Type", MammographyDict.mammo_calcification_type_choice)),
-    #         ("fld_diagnosis", ("Calcification Diagnosis", MammographyDict.mammo_calcification_diagnosis_choice)),
-    #     ])
-    # )
 
     fld_mammography_architectural_distortions_form_present = SelectField("Are Architectural Distortions present",
                                                                     choices=MammographyDict.mammo_arch_present_choice)
@@ -171,7 +158,6 @@ class MammographyForm(FlaskForm):
         bson['mammo_date'] =  datetime.combine(self.mammo_date.data, datetime.min.time())
         #spl stuff for subforms
         bson['mammography_architectural_distortions'] = self.mammography_architectural_distortions_form.to_bson()
-        bson['mammo_calcification'] = self.mammo_calcification_form.to_bson()
         bson['mammography_asymmetry']= self.mammography_asymmetry_form.to_bson()
         bson['mammography_associated_features']= self.mammography_associated_features_form.to_bson()
         # spl stuff for subforms
@@ -185,14 +171,5 @@ class MammographyForm(FlaskForm):
         self.mammo_date.data = p.get_date('mammo_date')
         #spl stuff for subforms
         self.mammography_architectural_distortions_form.from_bson(p['mammography_architectural_distortions'])
-        self.mammo_calcification_form.from_bson(p['mammo_calcification'])
         self.mammography_asymmetry_form.from_bson(p['mammography_asymmetry'])
         self.mammography_associated_features_form.from_bson(p['mammography_associated_features'])
-
-#in mammo_arch check if validator there if it accepts if momma_arch not called... need nested validators?
-#check all patterns
-#how is subnesting evaluated?
-
-
-#figure out how to get user passed to this form...
-
