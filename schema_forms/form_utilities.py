@@ -51,3 +51,8 @@ class BaseForm(FlaskForm):
             setattr(cls, field[0], SelectField(field[1][0], choices=field[1][1]))
             setattr(cls, field[0] + "_other", StringField("Other"))
         return cls
+
+
+class SectionForm(BaseForm):
+    pass
+    

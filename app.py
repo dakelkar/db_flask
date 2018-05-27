@@ -7,7 +7,7 @@ from dbs.patientsdb import PatientsDb
 from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
-from schema_forms.mammo_form import MammographyForm, MammoMassForm
+from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
@@ -31,6 +31,8 @@ mammo_db = SectionDb(log, MammographyForm, 'mammographies')
 mammo_db.connect()
 mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
 mammo_mass_db.connect()
+mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
+mammo_calcification_db.connect()
 biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
 biopsy_db.connect()
 
@@ -42,6 +44,9 @@ app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
 
 mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db)
 app.register_blueprint(mammo_mass_crudprint, url_prefix="/mammo_mass")
+
+mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db)
+app.register_blueprint(mammo_calcification_crudprint, url_prefix="/mammo_calcification")
 
 biopsy_crudprint = construct_crudprint('biopsy', biopsy_db)
 app.register_blueprint(biopsy_crudprint, url_prefix="/biopsy")
@@ -201,6 +206,8 @@ def view_folder(folder_hash):
     section = create_folder_section(folder_number, "mammo", mammo_db.get_folder_items)
     folder_sections.append(section)
     section = create_folder_section(folder_number, "mammo_mass", mammo_mass_db.get_folder_items, is_list=True)
+    folder_sections.append(section)
+    section = create_folder_section(folder_number, "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True)
     folder_sections.append(section)
 
     return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number,

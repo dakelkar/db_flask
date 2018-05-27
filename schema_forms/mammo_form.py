@@ -9,31 +9,10 @@ from flask_wtf import FlaskForm
 from datetime import datetime
 from schema_forms import form_utilities
 from db_dict.common_dict import CommonDict
-from schema_forms.form_utilities import BaseForm
+from schema_forms.form_utilities import BaseForm, SectionForm
 
 
-class MammoArchDistortionsForm(BaseForm):
-    # def __iter__(self):
-    #     fields = []
-    #     cls = MammoArchDistortionsForm
-    #     for name in dir(cls):
-    #         if not name.startswith('_'):
-    #             unbound_field = getattr(cls, name)
-    #             if hasattr(unbound_field, '_formfield'):
-    #                 fields.append((name, unbound_field))
-    #     print([x[1] for x in fields])
-    #     print(self._fields.values())
-    #     print(self._fields)
-    #     attributes = inspect.getmembers(MammoArchDistortionsForm, lambda a:not(inspect.isroutine(a)))
-    #     members = [a for a in attributes if a[0]=='_unbound_fields']
-    #     flds = members[0][1]
-    #     ordered = sorted(flds, key=lambda x: x[0])
-    #     print(ordered)
-    #     return iter(self._fields.values())
-    #     #return iter()
-    pass
-
-class MammoMassForm(BaseForm):
+class MammoMassForm(SectionForm):
     def get_summary(self):
         return self.fld_loc_right_breast.data
 
@@ -60,19 +39,41 @@ class MammoMassForm(BaseForm):
     fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
     submit_button = SubmitField('Submit Form')
 
-class MammoCalcificationForm(BaseForm):
-    fld_number = IntegerField("Group of calcification", [validators.optional()])
-    pass
+class MammoCalcificationForm(SectionForm):
+    def get_summary(self):
+        return "fld-number: " + str(self.fld_number.data)
 
+    fld_number = IntegerField("Group of calcification", [validators.optional()])
+    fld_loc_right_breast = SelectField("Location of calcification in Right Breast", choices=MammographyDict.mammo_calc_location_right_breast_choice)
+    fld_loc_right_breast_other = StringField("Other")
+    fld_loc_left_breast = SelectField("Location of calcification in Left Breast", choices=MammographyDict.mammo_calc_location_left_breast_choice)
+    fld_loc_left_breast_other = StringField("Other")
+    fld_depth = SelectField("Depth of Calcification", choices=MammographyDict.mammo_calc_depth_choice)
+    fld_depth_other = StringField("Other")
+    fld_dist = SelectField("Distance of calcification from nipple", choices=MammographyDict.mamo_calc_dist_choice)
+    fld_dist_other = StringField("Other")
+    fld_type = SelectField("Calcification Type", choices=MammographyDict.mammo_calcification_type_choice)
+    fld_type_other = StringField("Other")
+    fld_diagnosis = SelectField("Calcification Diagnosis", choices=MammographyDict.mammo_calcification_diagnosis_choice)
+    fld_diagnosis_other = StringField("Other")
+    # common fields
+    fld_pk = HiddenField()
+    fld_folder_number = HiddenField()
+    last_update = HiddenField()
+    fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
+    submit_button = SubmitField('Submit Form')
+
+
+class MammoArchDistortionsForm(BaseForm):
+    pass
 
 class MammoAssymetryForm(BaseForm):
     pass
 
-
 class AssoFeatureForm(BaseForm):
     pass
 
-
+# TODO make this a section form
 class MammographyForm(FlaskForm):
     class Meta:
         csrf = False
@@ -88,18 +89,18 @@ class MammographyForm(FlaskForm):
     fld_mammo_breast_density = SelectField("Breast Density in Mammography",
                                            choices=MammographyDict.mammo_breast_density_choice)
 
-    fld_mammo_calcification_form_present = SelectField("Are there any calcifications detected?",
-                                                  choices=MammographyDict.mammo_calcification_present_choice)
-    mammo_calcification_form = FormField(
-        MammoCalcificationForm.append_select_fields([
-            ("fld_loc_right_breast", ("Location of calcification in Right Breast", MammographyDict.mammo_calc_location_right_breast_choice)),
-            ("fld_loc_left_breast", ("Location of calcification in Left Breast", MammographyDict.mammo_calc_location_left_breast_choice)),
-            ("fld_depth", ("Depth of Calcification", MammographyDict.mammo_calc_depth_choice)),
-            ("fld_dist", ("Distance of calcification from nipple", MammographyDict.mamo_calc_dist_choice)),
-            ("fld_type", ("Calcification Type", MammographyDict.mammo_calcification_type_choice)),
-            ("fld_diagnosis", ("Calcification Diagnosis", MammographyDict.mammo_calcification_diagnosis_choice)),
-        ])
-    )
+    # fld_mammo_calcification_form_present = SelectField("Are there any calcifications detected?",
+    #                                               choices=MammographyDict.mammo_calcification_present_choice)
+    # mammo_calcification_form = FormField(
+    #     MammoCalcificationForm.append_select_fields([
+    #         ("fld_loc_right_breast", ("Location of calcification in Right Breast", MammographyDict.mammo_calc_location_right_breast_choice)),
+    #         ("fld_loc_left_breast", ("Location of calcification in Left Breast", MammographyDict.mammo_calc_location_left_breast_choice)),
+    #         ("fld_depth", ("Depth of Calcification", MammographyDict.mammo_calc_depth_choice)),
+    #         ("fld_dist", ("Distance of calcification from nipple", MammographyDict.mamo_calc_dist_choice)),
+    #         ("fld_type", ("Calcification Type", MammographyDict.mammo_calcification_type_choice)),
+    #         ("fld_diagnosis", ("Calcification Diagnosis", MammographyDict.mammo_calcification_diagnosis_choice)),
+    #     ])
+    # )
 
     fld_mammography_architectural_distortions_form_present = SelectField("Are Architectural Distortions present",
                                                                     choices=MammographyDict.mammo_arch_present_choice)
