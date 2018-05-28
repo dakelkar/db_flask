@@ -85,17 +85,21 @@ class SectionForm(BaseForm):
     def get_summary(self):
         return self.fld_form_status.data
     
-    def to_bson(self):
+    def to_bson(self, update_by):
         bson = super().to_bson()
         bson['last_update'] = datetime.today()
+        bson['update_by'] = update_by
         return bson
 
     def from_bson(self, p):
         super().from_bson(p)
         self.last_update.data = p.get_date('last_update')
+        self.update_by.data = p['update_by']
+
     
     fld_pk = HiddenField()
     fld_folder_number = HiddenField()
     last_update = HiddenField()
+    update_by = HiddenField()
     fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
     pass

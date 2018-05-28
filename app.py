@@ -218,15 +218,17 @@ def create_folder_section(folder_number, section_name, db_get, is_list=False):
     action = "add"
     status = ["To be filled"]
     last_modified_on = [datetime.datetime.today().strftime('%Y-%m-%d')]
+    update_by = [""]
     pks = None
     if section_objects is not None and len(section_objects) > 0:
         action = "edit"
         status = [x.fld_form_status.data for x in section_objects]
         last_modified_on = [x.last_update.data for x in section_objects]
         pks = [(x.fld_pk.data, x.get_summary()) for x in section_objects]
+        update_by = [x.update_by.data for x in section_objects]
 
     section = FolderSection(section_name, action, status, last_modified_on = last_modified_on, 
-                            last_modified_by="Who Knows", pks=pks, is_list=is_list)
+                            last_modified_by=update_by, pks=pks, is_list=is_list)
     return section
 
 
