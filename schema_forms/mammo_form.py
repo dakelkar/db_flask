@@ -31,17 +31,13 @@ class MammoMassForm(SectionForm):
     fld_margin_other = StringField("Other")
     fld_density = SelectField("Density of mass", choices=MammographyDict.mammo_mass_density_choice)
     fld_density_other = StringField("Other")
-
-    # common fields
-    fld_pk = HiddenField()
-    fld_folder_number = HiddenField()
-    last_update = HiddenField()
-    fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
     submit_button = SubmitField('Submit Form')
+
 
 class MammoCalcificationForm(SectionForm):
     def get_summary(self):
         return "fld-number: " + str(self.fld_number.data)
+        
     fld_number = IntegerField("Group of calcification", default = 1)
     fld_loc_right_breast = SelectField("Location of calcification in Right Breast", choices=MammographyDict.mammo_calc_location_right_breast_choice)
     fld_loc_right_breast_other = StringField("Other")
@@ -55,11 +51,6 @@ class MammoCalcificationForm(SectionForm):
     fld_type_other = StringField("Other")
     fld_diagnosis = SelectField("Calcification Diagnosis", choices=MammographyDict.mammo_calcification_diagnosis_choice)
     fld_diagnosis_other = StringField("Other")
-    # common fields
-    fld_pk = HiddenField()
-    fld_folder_number = HiddenField()
-    last_update = HiddenField()
-    fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
     submit_button = SubmitField('Submit Form')
 
 
@@ -72,16 +63,13 @@ class MammoAssymetryForm(BaseForm):
 class AssoFeatureForm(BaseForm):
     pass
 
-# TODO make this a section form
-class MammographyForm(FlaskForm):
-    class Meta:
-        csrf = False
+class MammographyForm(SectionForm):
     def get_summary(self):
         return self.fld_mammo_location.data
 
     fld_mammo_location = SelectField('Mammography Diagnosis at', choices=MammographyDict.mammo_location_choice)
     fld_mammo_details = SelectField("Is this the first mammography?", choices=MammographyDict.mammo_details_choice)
-    mammo_date = DateField("Date of mammography")
+    fld_mammo_date = DateField("Date of mammography")
     fld_mammo_accesion = StringField("Accession number of mammography")
     fld_mammo_number = StringField("Number of previous mammographies undergone")
     fld_mammo_report_previous = TextAreaField("Report of previous mammography if available")
@@ -143,33 +131,5 @@ class MammographyForm(FlaskForm):
     )
 
     fld_mammo_birad = SelectField("BI-RAD classification (if available)", choices=MammographyDict.mammo_birad_choice)
-    
-    # common fields
-    fld_pk = HiddenField()
-    fld_folder_number = HiddenField()
-    last_update = HiddenField()
-    fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
     submit_button = SubmitField('Submit Form')
 
-    def to_bson(self):
-        bson = form_utilities.to_bson(self)
-        # spl stuff for datetime
-        bson['last_update'] = datetime.today()
-        bson['mammo_date'] =  datetime.combine(self.mammo_date.data, datetime.min.time())
-        #spl stuff for subforms
-        bson['mammography_architectural_distortions'] = self.mammography_architectural_distortions_form.to_bson()
-        bson['mammography_asymmetry']= self.mammography_asymmetry_form.to_bson()
-        bson['mammography_associated_features']= self.mammography_associated_features_form.to_bson()
-        # spl stuff for subforms
-
-        return bson
-
-    def from_bson(self, p):
-        form_utilities.from_bson(self, p)
-        #spl stuff for dates
-        self.last_update.data = p.get_date('last_update')
-        self.mammo_date.data = p.get_date('mammo_date')
-        #spl stuff for subforms
-        self.mammography_architectural_distortions_form.from_bson(p['mammography_architectural_distortions'])
-        self.mammography_asymmetry_form.from_bson(p['mammography_asymmetry'])
-        self.mammography_associated_features_form.from_bson(p['mammography_associated_features'])
