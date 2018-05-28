@@ -23,7 +23,7 @@
                 <td>{{folder_section.last_modified_on[0]}}</td>
                 <td>
                     {% if folder_section.action == "edit" %}
-                        <a href="/{{folder_section.name}}/edit/{{folder_hash}}/{{folder_section.pks[0]}}" class="btn btn-primary pullright">edit</a>
+                        <a href="/{{folder_section.name}}/edit/{{folder_hash}}/{{folder_section.pks[0][0]}}" class="btn btn-primary pullright">edit</a>
                     {% else %}
                         <a href="/{{folder_section.name}}/add/{{folder_hash}}" class="btn btn-primary pullright">add</a>
                     {% endif %}
