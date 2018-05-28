@@ -1,11 +1,15 @@
 from create_hash import encodex
 class FolderSection:
-    def __init__(self, name, action, status, last_modified_by, last_modified_on):
+    def __init__(self, name, action, status, last_modified_by, last_modified_on, pks, is_list):
         self.name = name
         self.action = action
         self.status = status
         self.last_modified_by = last_modified_by
         self.last_modified_on = last_modified_on
+        if pks is None:
+            pks = []
+        self.pks = pks
+        self.is_list = is_list
 
 
 class Patient_bio_info_Info:

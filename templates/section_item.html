@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block body %}
-<h1>Folder Number {{form.fld_folder_number.data}}</h1>
+<h1>Folder: {{form.fld_folder_number.data}}</h1>
 <div class="panel panel-primary">
-  <div class="panel-heading">Mammography Information</div>
+  <div class="panel-heading">{{Information}}</div>
   <div class="panel-body">
     {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
   </div>
@@ -13,33 +13,32 @@
 <script>
 
   function toggleSubForm(selectorFieldId, name) {
-    
     var selection = $(selectorFieldId).val() == "Y";
     console.log("toggle state of [%s] to [%s]", name, selection)
     $("label[for=" + name + "]").parent().parent().toggle(selection)
-   }
+  }
 
-
-  function registerSubForm(name)
-  {
+  function registerSubForm(name) {
+    name = name.substring('fld_'.length, name.length - '_present'.length)
     var selectorFieldId = '#fld_'+name+'_present'
+    
     toggleSubForm(selectorFieldId, name)
-    $(selectorFieldId).on('change',function(){
-    toggleSubForm(selectorFieldId, name)
+    
+    $(selectorFieldId).on('change',function() {
+      toggleSubForm(selectorFieldId, name)
     });
-   }
+  }
 
  function toggleOther(selectorFieldId, otherFieldId) {
+    var selection = $(selectorFieldId).val() == "other";
+    otherField = $(otherFieldId)
+    if(typeof otherField != 'undefined') {
+    console.log("toggle state of [%s] to [%s]", otherFieldId, selection)
+    otherField.parent().toggle(selection)
+    }
+  }
 
-   var selection = $(selectorFieldId).val() == "other";
-   otherField = $(otherFieldId)
-   if(typeof otherField != 'undefined') {
-   console.log("toggle state of [%s] to [%s]", otherFieldId, selection)
-   otherField.parent().toggle(selection)
-     }
-   }
-
-  function registerOtherHandler(name, otherName){
+  function registerOtherHandler(name, otherName) {
     // toggle on load..
     var selectorFieldId = '#'+name
     var otherFieldId = '#'+otherName
@@ -50,7 +49,7 @@
       });
   }
 
-  function registerOtherHandlers(){
+  function registerOtherHandlers() {
     otherFields = $("[id$=_other]");
     for (var i = 0; i < otherFields.length; i++) {
       otherFieldId = otherFields[i].id
@@ -59,12 +58,16 @@
     }    
   }
 
-  registerOtherHandlers()
-  registerSubForm('mammography_architectural_distortions')
-  registerSubForm('mammo_mass')
-  registerSubForm('mammo_calcification')
-  registerSubForm('mammography_asymmetry')
-  registerSubForm('mammography_associated_features')
+  function registerFormHandlers() {
+    formFields = $("[id$=_form_present]");
+    for (var i = 0; i < formFields.length; i++) {
+      formFieldId = formFields[i].id
+      registerSubForm(formFieldId)
+    }    
+  }
 
+  registerFormHandlers()
+  registerOtherHandlers()
+  
 </script>
 {% endblock %}
