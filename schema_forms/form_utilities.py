@@ -62,6 +62,10 @@ class BaseForm(FlaskForm):
     def from_bson(self, p):
         from_bson(self, p)
 
+    @property
+    def title(self):
+        return type(self).__name__
+
     @classmethod
     def append_fields(cls, fields):
         for field in fields:
@@ -80,7 +84,16 @@ class BaseForm(FlaskForm):
 class SectionForm(BaseForm):
     def get_summary(self):
         return self.fld_form_status.data
+    
+    def to_bson(self):
+        bson = super().to_bson()
+        bson['last_update'] = datetime.today()
+        return bson
 
+    def from_bson(self, p):
+        super().from_bson(p)
+        self.last_update.data = p.get_date('last_update')
+    
     fld_pk = HiddenField()
     fld_folder_number = HiddenField()
     last_update = HiddenField()
