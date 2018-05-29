@@ -107,7 +107,11 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade show active" id="current_tab" role="tabpanel">
-                {{view_sections(folder_sections)}}
+                {% if folder_sections|length > 0 %}
+                    {{view_sections(folder_sections)}}
+                {% else %}
+                    <h5>No Sections Here Yet!!</h5>
+                {% endif %}
             </div>
         </div>
     </div>

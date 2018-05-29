@@ -200,13 +200,18 @@ def delete_patient(folder_hash):
 @is_logged_in
 def view_folder(folder_hash):
     # currently only works for Radiology sections!
-    active_tab_id = "Radiology"
-    folder_sections = [
-        create_folder_section(folder_hash, "biopsy", "biopsy", biopsy_db.get_folder_items),
-        create_folder_section(folder_hash, "mammo", "mammo", mammo_db.get_folder_items),
-        create_folder_section(folder_hash, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
-        create_folder_section(folder_hash, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
-    ]
+    active_tab_id = request.args.get('active_tab')
+    if active_tab_id is None:
+        active_tab_id = "Radiology"
+
+    folder_sections = []
+    if active_tab_id == "Radiology":
+        folder_sections = [
+            create_folder_section(folder_hash, "biopsy", "biopsy", biopsy_db.get_folder_items),
+            create_folder_section(folder_hash, "mammo", "mammo", mammo_db.get_folder_items),
+            create_folder_section(folder_hash, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
+            create_folder_section(folder_hash, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
+        ]
 
     folder_tabs = [
         ("Patient History", "PatientHistory"),
