@@ -13,12 +13,12 @@
 {% macro show_add_data_card(folder_section) -%}
     <div class="card">
         <div class="card-header" id="headingOne">
-            <h5 class="mb-0">
             <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{folder_section.id}}">
-                    {{folder_section.name}} 
+                    <h5>{{folder_section.name}}</h5> 
             </button>
-            </h5>
-            <a href="/{{folder_section.name}}/add/{{folder_hash}}" class="btn btn-primary pullright">add</a>
+            <span class="float-right">
+                <a href="/{{folder_section.name}}/add/{{folder_section.folder_hash}}" class="btn btn-primary pullright">add</a>
+            </span>
         </div>          
         <div id="collapse{{folder_section.id}}" class="collapse"  data-parent="#accordion">
             <div class="card-body">
@@ -36,12 +36,12 @@
             </button>
             {% if folder_section.is_list %}
                 <span class="float-right">
-                    <a href="/{{folder_section.name}}/add/{{folder_hash}}" class="btn btn-primary pullright">add</a>
+                    <a href="/{{folder_section.name}}/add/{{folder_section.folder_hash}}" class="btn btn-primary pullright">add</a>
                 </span>                
                 <small>Entry Count: [{{folder_section.count}}]</small>
             {% else %}
                     <span class="float-right">
-                        <a href="/{{folder_section.name}}/edit/{{folder_hash}}/{{folder_section.pks[0][0]}}" class="btn btn-primary pullright">edit</a>
+                        <a href="/{{folder_section.name}}/edit/{{folder_section.folder_hash}}/{{folder_section.pks[0][0]}}" class="btn btn-primary pullright">edit</a>
                     </span>                
                     <small>Status: [{{folder_section.status[0]}}] Last modified on {{folder_section.last_modified_on[0]}} by {{folder_section.last_modified_by[0]}}</small>                    
             {% endif %}

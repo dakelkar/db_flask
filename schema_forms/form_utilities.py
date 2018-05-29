@@ -67,13 +67,6 @@ class BaseForm(FlaskForm):
         return type(self).__name__
 
     @classmethod
-    def append_fields(cls, fields):
-        for field in fields:
-            setattr(cls, field[0], SelectField(field[1][0], choices=field[1][1]))
-            setattr(cls, field[0] + "_other", StringField("Other"))
-        return cls
-
-    @classmethod
     def append_select_fields(cls, fields):
         for field in fields:
             setattr(cls, field[0], SelectField(field[1][0], choices=field[1][1]))

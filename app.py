@@ -1,13 +1,14 @@
 import datetime
-from flask import Flask, render_template, flash, redirect, url_for, session, request
+from flask import Flask, render_template, flash, redirect, url_for, session, request, abort
 from passlib.hash import sha256_crypt
 from log import Log
-from create_hash import decodex
+from create_hash import decodex, encodex
 from dbs.patientsdb import PatientsDb
 from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
+from schema_forms.patient_history import PatientHistoryForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
@@ -27,35 +28,40 @@ users_db = UserDb(log)
 users_db.connect()
 
 #Initialize section DBs
-mammo_db = SectionDb(log, MammographyForm, 'mammographies')
-mammo_db.connect()
-mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
-mammo_mass_db.connect()
-mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
-mammo_calcification_db.connect()
-biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
-biopsy_db.connect()
-
 app = Flask(__name__)
 Bootstrap(app)
 
+mammo_db = SectionDb(log, MammographyForm, 'mammographies')
+mammo_db.connect()
 mammo_crudprint = construct_crudprint('mammo', mammo_db)
 app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
 
+mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
+mammo_mass_db.connect()
 mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db)
 app.register_blueprint(mammo_mass_crudprint, url_prefix="/mammo_mass")
 
+mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
+mammo_calcification_db.connect()
 mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db)
 app.register_blueprint(mammo_calcification_crudprint, url_prefix="/mammo_calcification")
 
+biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
+biopsy_db.connect()
 biopsy_crudprint = construct_crudprint('biopsy', biopsy_db)
 app.register_blueprint(biopsy_crudprint, url_prefix="/biopsy")
+
+patient_history_db = SectionDb(log, PatientHistoryForm, 'patient_history')
+patient_history_db.connect()
+patient_history_crudprint = construct_crudprint('patient_history', patient_history_db)
+app.register_blueprint(patient_history_crudprint, url_prefix="/patient_history")
+
+
 #########################################################
 # Login, registration and index
 @app.route('/')
 def index():
     return render_template('home.html')
-
 
 @app.route('/about')
 def about():
@@ -194,6 +200,16 @@ def delete_patient(folder_hash):
 
     return redirect(url_for('dashboard'))
 
+@app.route('/search', methods=['POST'])
+@is_logged_in
+def search_folder():
+    folder_number = request.form['query']
+    patient = db.get_patient(folder_number)
+    if patient is None:
+        abort(404)
+    folder_hash = encodex(folder_number) 
+    return redirect(url_for('view_folder', folder_hash=folder_hash))
+ 
 ######################
 # Folder
 @app.route('/folder/<folder_hash>', methods=['GET'])
@@ -202,29 +218,41 @@ def view_folder(folder_hash):
     # currently only works for Radiology sections!
     active_tab_id = request.args.get('active_tab')
     if active_tab_id is None:
-        active_tab_id = "Radiology"
+        if 'active_tab' in session:
+            active_tab_id = session['active_tab']
+    if active_tab_id is None:        
+        active_tab_id = "PatientHistory"
+    session['active_tab'] = active_tab_id
 
     folder_sections = []
     if active_tab_id == "Radiology":
         folder_sections = [
-            create_folder_section(folder_hash, "biopsy", "biopsy", biopsy_db.get_folder_items),
             create_folder_section(folder_hash, "mammo", "mammo", mammo_db.get_folder_items),
             create_folder_section(folder_hash, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
             create_folder_section(folder_hash, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
         ]
+    elif active_tab_id == "Biopsy":
+        folder_sections = [
+            create_folder_section(folder_hash, "biopsy", "biopsy", biopsy_db.get_folder_items),
+        ]        
+    elif active_tab_id == "PatientHistory":
+        folder_sections = [
+            create_folder_section(folder_hash, "patient_history", "patient_history", patient_history_db.get_folder_items),
+        ]        
+                
 
-    folder_tabs = [
-        ("Patient History", "PatientHistory"),
-        ("Clinical Exam", "ClinicalExam"),
+    folder_tabs = [        
+        ("PatientHistory", "Patient History"),
+        ("ClinicalExam", "Clinical Exam"),
         ("Radiology", "Radiology"),
         ("Biopsy", "Biopsy"),
-        ("NeoAdjuvant Chemotherapy", "NAC"),
-        ("Surgery Block", "SurgeryBlock"),
+        ("NACT", "NeoAdjuvant Chemotherapy"),
+        ("SurgeryBlock", "Surgery Block"),
         ("Surgery", "Surgery"),
-        ("Adjuvant Chemotherapy", "AdjuvantChemo"),
+        ("AdjuvantChemo", "Adjuvant Chemotherapy"),
         ("Radiotherapy", "Radiotherapy"),
-        ("LongTerm Therapy", "LongTermTherapy"),
-        ("Follow-up", "FollowUp"),
+        ("LongTermTherapy", "LongTerm Therapy"),
+        ("FollowUp", "Follow-up"),
     ]
 
     folder_number = decodex(folder_hash)
