@@ -199,35 +199,49 @@ def delete_patient(folder_hash):
 @app.route('/folder/<folder_hash>', methods=['GET'])
 @is_logged_in
 def view_folder(folder_hash):
+    # currently only works for Radiology sections!
+    active_tab_id = "Radiology"
+    folder_sections = [
+        create_folder_section(folder_hash, "biopsy", "biopsy", biopsy_db.get_folder_items),
+        create_folder_section(folder_hash, "mammo", "mammo", mammo_db.get_folder_items),
+        create_folder_section(folder_hash, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
+        create_folder_section(folder_hash, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
+    ]
+
+    folder_tabs = [
+        ("Patient History", "PatientHistory"),
+        ("Clinical Exam", "ClinicalExam"),
+        ("Radiology", "Radiology"),
+        ("Biopsy", "Biopsy"),
+        ("NeoAdjuvant Chemotherapy", "NAC"),
+        ("Surgery Block", "SurgeryBlock"),
+        ("Surgery", "Surgery"),
+        ("Adjuvant Chemotherapy", "AdjuvantChemo"),
+        ("Radiotherapy", "Radiotherapy"),
+        ("LongTerm Therapy", "LongTermTherapy"),
+        ("Follow-up", "FollowUp"),
+    ]
+
     folder_number = decodex(folder_hash)
-    folder_sections = []
-    section = create_folder_section(folder_number, "biopsy", biopsy_db.get_folder_items)
-    folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo", mammo_db.get_folder_items)
-    folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo_mass", mammo_mass_db.get_folder_items, is_list=True)
-    folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True)
-    folder_sections.append(section)
+    return render_template('folder_tabs.html', folder_number=folder_number, folder_sections=folder_sections, 
+                            folder_tabs=folder_tabs, active_tab_id=active_tab_id)
 
-    return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number,
-                           folder_sections=folder_sections)
-
-def create_folder_section(folder_number, section_name, db_get, is_list=False):
-    section_objects = db_get(folder_number)
+def create_folder_section(folder_hash, id, section_name, db_get, is_list=False):
+    folder_number = decodex(folder_hash)
+    forms = db_get(folder_number)
     action = "add"
     status = ["To be filled"]
     last_modified_on = [datetime.datetime.today().strftime('%Y-%m-%d')]
     update_by = [""]
     pks = None
-    if section_objects is not None and len(section_objects) > 0:
+    if forms is not None and len(forms) >0:
         action = "edit"
-        status = [x.fld_form_status.data for x in section_objects]
-        last_modified_on = [x.last_update.data for x in section_objects]
-        pks = [(x.fld_pk.data, x.get_summary()) for x in section_objects]
-        update_by = [x.update_by.data for x in section_objects]
+        status = [x.fld_form_status.data for x in forms]
+        last_modified_on = [x.last_update.data for x in forms]
+        pks = [(x.fld_pk.data, x.get_summary()) for x in forms]
+        update_by = [x.update_by.data for x in forms]
 
-    section = FolderSection(section_name, action, status, last_modified_on = last_modified_on, 
+    section = FolderSection(id, section_name, action, status, forms, folder_hash, last_modified_on = last_modified_on, 
                             last_modified_by=update_by, pks=pks, is_list=is_list)
     return section
 
