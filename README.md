@@ -1,7 +1,7 @@
 flask setup
 ```
 conda env create -f conda.yml
-activate db_flask
+activate flask_b4
 git clone --branch bootstrap-v4 https://github.com/rakelkar/flask-bootstrap/bootstrap-v4
 cd flask-bootstrap
 pip install -e .
