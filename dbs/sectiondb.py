@@ -47,6 +47,7 @@ class SectionDb(object):
 
     def get_folder_items(self, folder_number):
         db_entries = self.db.find({"folder_number": folder_number})
+        #, 'is_deleted':False
         if db_entries is None:
             return None
 
@@ -67,14 +68,15 @@ class SectionDb(object):
         form.from_bson(BsonWrapper(db_entry))
         return form
 
-    def add_item(self, form):
-        db_entry = form.to_bson()
+    def add_item(self, form, update_by):
+        db_entry = form.to_bson(update_by)
         db_entry[self.key] = uuid.uuid4().hex
         self.db.insert_one(db_entry)
         return True, db_entry[self.key]
 
-    def update_item(self, form):
-        self.db.update_one({self.key: form.fld_pk.data}, {"$set": form.to_bson()})
+    def update_item(self, form, update_by):
+        db_entry = form.to_bson(update_by)
+        self.db.update_one({self.key: form.fld_pk.data}, {"$set": db_entry})
         return True, form.fld_pk.data
 
     def delete_item(self, pk):

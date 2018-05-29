@@ -72,6 +72,8 @@ class PatientsDb(object):
     def get_patient(self, folder_number):
          # try:
         patient_entry = self.db.patients.find_one({ self.key: folder_number })
+        if patient_entry is None:
+            return None
         patient = self.to_patient_bio_info_info(patient_entry)
         return patient
          # except:

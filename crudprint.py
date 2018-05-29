@@ -25,7 +25,7 @@ def construct_crudprint(name, section_db):
                 abort(404)
             
         if request.method == 'POST' and form.validate():
-            success_flag, result = section_db.update_item(form)
+            success_flag, result = section_db.update_item(form, session['username'])
 
             if not success_flag:
                 flash('Error: ' + str(result), 'danger')
@@ -44,7 +44,7 @@ def construct_crudprint(name, section_db):
         form.fld_folder_number.data = folder_number
 
         if request.method == 'POST' and form.validate():
-            success_flag, result = section_db.add_item(form)
+            success_flag, result = section_db.add_item(form, session['username'])
 
             if not success_flag:
                 flash('Error: ' + str(result), 'danger')

@@ -1,0 +1,152 @@
+{% extends 'layout.html' %}
+{% macro view_sections(folder_sections) -%}
+    <div id="accordion">
+        {% for folder_section in folder_sections %}
+            {% if folder_section.forms %}
+                {{show_form_card(folder_section)}}                    
+            {% else %}
+                {{show_add_data_card(folder_section)}}
+            {% endif %}
+        {% endfor %}
+    </div>
+{%- endmacro %}
+{% macro show_add_data_card(folder_section) -%}
+    <div class="card">
+        <div class="card-header" id="headingOne">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{folder_section.id}}">
+                    <h5>{{folder_section.name}}</h5> 
+            </button>
+            <span class="float-right">
+                <a href="/{{folder_section.name}}/add/{{folder_section.folder_hash}}" class="btn btn-primary pullright">add</a>
+            </span>
+        </div>          
+        <div id="collapse{{folder_section.id}}" class="collapse"  data-parent="#accordion">
+            <div class="card-body">
+                No data found. Please click ADD to enter data for this section.
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
+{% macro show_form_card(folder_section) -%}
+    <div class="card">
+        <div class="card-header" id="{{folder_section.id}}">
+            <div>                
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{folder_section.id}}">
+                <h5>{{folder_section.name}}</h5> 
+            </button>
+            {% if folder_section.is_list %}
+                <span class="float-right">
+                    <a href="/{{folder_section.name}}/add/{{folder_section.folder_hash}}" class="btn btn-primary pullright">add</a>
+                </span>                
+                <small>Entry Count: [{{folder_section.count}}]</small>
+            {% else %}
+                    <span class="float-right">
+                        <a href="/{{folder_section.name}}/edit/{{folder_section.folder_hash}}/{{folder_section.pks[0][0]}}" class="btn btn-primary pullright">edit</a>
+                    </span>                
+                    <small>Status: [{{folder_section.status[0]}}] Last modified on {{folder_section.last_modified_on[0]}} by {{folder_section.last_modified_by[0]}}</small>                    
+            {% endif %}
+            </div>
+        </div>          
+        <div id="collapse{{folder_section.id}}" class="collapse"  data-parent="#accordion">
+            <div class="card-body">
+                {{view_forms(folder_section)}}
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
+{% macro view_forms(folder_section, form) -%}
+{% for form in folder_section.forms %}
+    Last updated by {{form.update_by.data}} on {{form.last_update.data}}
+    <div class="float-right">
+        <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#form_view_{{folder_section.id}}{{loop.index}}">View</button>
+        <a href="/{{folder_section.name}}/edit/{{folder_section.folder_hash}}/{{form.fld_pk.data}}" class="btn btn-secondary pullright">edit</a>
+        <a href="/{{folder_section.name}}/delete/{{folder_section.folder_hash}}/{{form.fld_pk.data}}" class="btn btn-warning">delete</a>
+    </div>
+    </br>
+    <div class="collapse" id="form_view_{{folder_section.id}}{{loop.index}}">
+        <div class="card card-body">
+            <table class="table">
+                <tbody>
+                    {% for field in form %}
+                    <tr>
+                        {% if not field.label.text == "Other" %}
+                            <td>{{field.label.text|safe}}</td>
+                            <td>{{field.data|safe}}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endfor %}
+{%- endmacro %}
+{% block body %}
+    <!--
+        Template interface:
+        folder_tabs - list of tabs (id, name)
+        active_tab_id - active tab id
+        folder_sections - folder sections for the active tab
+        folder_number - current folder number
+    -->
+    <h1>Information Folder: {{folder_number}}</h1>
+    <small>Welcome {{session.name}}</small>
+    <div class="d-flex flex-row mt-2">
+        <ul class="nav nav-tabs nav-tabs--vertical nav-tabs--left" role="navigation">
+        {% for folder_tab in folder_tabs %}
+            {% set tab_id = folder_tab[0] %}
+            {% set tab_name = folder_tab[1] %}
+            <li class="nav-item">
+                {% if tab_id == active_tab_id %}
+                    <a href="#current_tab" class="nav-link active" data-toggle="tab" role="tab">{{tab_name}}</a>
+                {% else %}
+                    <a href="?active_tab={{tab_id}}" class="nav-link" role="tab">{{tab_name}}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="current_tab" role="tabpanel">
+                {% if folder_sections|length > 0 %}
+                    {{view_sections(folder_sections)}}
+                {% else %}
+                    <h5>No Sections Here Yet!!</h5>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <style class="cp-pen-styles">
+        .nav-tabs--vertical {
+            border-bottom: none;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-flow: column nowrap;
+        }
+        .nav-tabs--left {
+            margin: 0 15px;
+        }
+        .nav-tabs--left .nav-item + .nav-item {
+            margin-top: .25rem;
+        }
+        .nav-tabs--left .nav-link {
+            transition: border-color .125s ease-in;
+            white-space: nowrap;
+        }
+        .nav-tabs--left .nav-link:hover {
+            background-color: #f7f7f7;
+            border-color: transparent;
+        }
+        .nav-tabs--left .nav-link.active {
+            border-bottom-color: #ddd;
+            border-right-color: #fff;
+            border-bottom-left-radius: 0.25rem;
+            border-top-right-radius: 0;
+            margin-right: -1px;
+        }
+        .nav-tabs--left .nav-link.active:hover {
+            background-color: #fff;
+            border-color: #0275d8 #fff #0275d8 #0275d8;
+        }
+    </style>
+            
+{% endblock %}

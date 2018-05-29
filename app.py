@@ -1,13 +1,14 @@
 import datetime
-from flask import Flask, render_template, flash, redirect, url_for, session, request
+from flask import Flask, render_template, flash, redirect, url_for, session, request, abort
 from passlib.hash import sha256_crypt
 from log import Log
-from create_hash import decodex
+from create_hash import decodex, encodex
 from dbs.patientsdb import PatientsDb
 from dbs.userdb import UserDb
 from schema_forms.patient_bio_info_form import PatientBioInfoForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
+from schema_forms.patient_history import PatientHistoryForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
@@ -27,35 +28,40 @@ users_db = UserDb(log)
 users_db.connect()
 
 #Initialize section DBs
-mammo_db = SectionDb(log, MammographyForm, 'mammographies')
-mammo_db.connect()
-mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
-mammo_mass_db.connect()
-mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
-mammo_calcification_db.connect()
-biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
-biopsy_db.connect()
-
 app = Flask(__name__)
 Bootstrap(app)
 
+mammo_db = SectionDb(log, MammographyForm, 'mammographies')
+mammo_db.connect()
 mammo_crudprint = construct_crudprint('mammo', mammo_db)
 app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
 
+mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
+mammo_mass_db.connect()
 mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db)
 app.register_blueprint(mammo_mass_crudprint, url_prefix="/mammo_mass")
 
+mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
+mammo_calcification_db.connect()
 mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db)
 app.register_blueprint(mammo_calcification_crudprint, url_prefix="/mammo_calcification")
 
+biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
+biopsy_db.connect()
 biopsy_crudprint = construct_crudprint('biopsy', biopsy_db)
 app.register_blueprint(biopsy_crudprint, url_prefix="/biopsy")
+
+patient_history_db = SectionDb(log, PatientHistoryForm, 'patient_history')
+patient_history_db.connect()
+patient_history_crudprint = construct_crudprint('patient_history', patient_history_db)
+app.register_blueprint(patient_history_crudprint, url_prefix="/patient_history")
+
+
 #########################################################
 # Login, registration and index
 @app.route('/')
 def index():
     return render_template('home.html')
-
 
 @app.route('/about')
 def about():
@@ -194,39 +200,82 @@ def delete_patient(folder_hash):
 
     return redirect(url_for('dashboard'))
 
+@app.route('/search', methods=['POST'])
+@is_logged_in
+def search_folder():
+    folder_number = request.form['query']
+    patient = db.get_patient(folder_number)
+    if patient is None:
+        abort(404)
+    folder_hash = encodex(folder_number) 
+    return redirect(url_for('view_folder', folder_hash=folder_hash))
+ 
 ######################
 # Folder
 @app.route('/folder/<folder_hash>', methods=['GET'])
 @is_logged_in
 def view_folder(folder_hash):
-    folder_number = decodex(folder_hash)
+    # currently only works for Radiology sections!
+    active_tab_id = request.args.get('active_tab')
+    if active_tab_id is None:
+        if 'active_tab' in session:
+            active_tab_id = session['active_tab']
+    if active_tab_id is None:        
+        active_tab_id = "PatientHistory"
+    session['active_tab'] = active_tab_id
+
     folder_sections = []
-    section = create_folder_section(folder_number, "biopsy", biopsy_db.get_folder_items)
-    folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo", mammo_db.get_folder_items)
-    folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo_mass", mammo_mass_db.get_folder_items, is_list=True)
-    folder_sections.append(section)
-    section = create_folder_section(folder_number, "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True)
-    folder_sections.append(section)
+    if active_tab_id == "Radiology":
+        folder_sections = [
+            create_folder_section(folder_hash, "mammo", "mammo", mammo_db.get_folder_items),
+            create_folder_section(folder_hash, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
+            create_folder_section(folder_hash, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
+        ]
+    elif active_tab_id == "Biopsy":
+        folder_sections = [
+            create_folder_section(folder_hash, "biopsy", "biopsy", biopsy_db.get_folder_items),
+        ]        
+    elif active_tab_id == "PatientHistory":
+        folder_sections = [
+            create_folder_section(folder_hash, "patient_history", "patient_history", patient_history_db.get_folder_items),
+        ]        
+                
 
-    return render_template('folder.html', folder_hash=folder_hash, folder_number=folder_number,
-                           folder_sections=folder_sections)
+    folder_tabs = [        
+        ("PatientHistory", "Patient History"),
+        ("ClinicalExam", "Clinical Exam"),
+        ("Radiology", "Radiology"),
+        ("Biopsy", "Biopsy"),
+        ("NACT", "NeoAdjuvant Chemotherapy"),
+        ("SurgeryBlock", "Surgery Block"),
+        ("Surgery", "Surgery"),
+        ("AdjuvantChemo", "Adjuvant Chemotherapy"),
+        ("Radiotherapy", "Radiotherapy"),
+        ("LongTermTherapy", "LongTerm Therapy"),
+        ("FollowUp", "Follow-up"),
+    ]
 
-def create_folder_section(folder_number, section_name, db_get, is_list=False):
-    section_objects = db_get(folder_number)
+    folder_number = decodex(folder_hash)
+    return render_template('folder_tabs.html', folder_number=folder_number, folder_sections=folder_sections, 
+                            folder_tabs=folder_tabs, active_tab_id=active_tab_id)
+
+def create_folder_section(folder_hash, id, section_name, db_get, is_list=False):
+    folder_number = decodex(folder_hash)
+    forms = db_get(folder_number)
     action = "add"
     status = ["To be filled"]
     last_modified_on = [datetime.datetime.today().strftime('%Y-%m-%d')]
+    update_by = [""]
     pks = None
-    if section_objects is not None and len(section_objects) > 0:
+    if forms is not None and len(forms) >0:
         action = "edit"
-        status = [x.fld_form_status.data for x in section_objects]
-        last_modified_on = [x.last_update.data for x in section_objects]
-        pks = [(x.fld_pk.data, x.get_summary()) for x in section_objects]
+        status = [x.fld_form_status.data for x in forms]
+        last_modified_on = [x.last_update.data for x in forms]
+        pks = [(x.fld_pk.data, x.get_summary()) for x in forms]
+        update_by = [x.update_by.data for x in forms]
 
-    section = FolderSection(section_name, action, status, last_modified_on = last_modified_on, 
-                            last_modified_by="Who Knows", pks=pks, is_list=is_list)
+    section = FolderSection(id, section_name, action, status, forms, folder_hash, last_modified_on = last_modified_on, 
+                            last_modified_by=update_by, pks=pks, is_list=is_list)
     return section
 
 

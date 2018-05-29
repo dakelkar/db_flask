@@ -1,10 +1,11 @@
 {% extends 'layout.html' %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block body %}
-<h1>Folder: {{form.fld_folder_number.data}}</h1>
-<div class="panel panel-primary">
-  <div class="panel-heading">{{Information}}</div>
-  <div class="panel-body">
+</p>
+<div class="card border-dark mb-3">
+  <div class="card-header">Folder: {{form.fld_folder_number.data}}{{Information}}</div>
+  <div class="card-body text-dark">
+    <h5 class="card-title">{{form.title}}</h5>
     {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
   </div>
 </div>

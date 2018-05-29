@@ -3,15 +3,13 @@ from db_dict.common_dict import CommonDict
 from wtforms import StringField, validators, IntegerField, SelectField, SubmitField, HiddenField
 from wtforms.fields.html5 import DateField
 from db_dict.biopsy import BiopsyDict
-from schema_forms.form_utilities import BaseForm
+from schema_forms.form_utilities import BaseForm, SectionForm
 
 
-class BiopsyForm (BaseForm):
+class BiopsyForm (SectionForm):
     def get_summary(self):
         return self.fld_biopsy_tumour_diagnosis.data
 
-    fld_pk = HiddenField()
-    fld_folder_number = HiddenField()
     fld_consent_stat_biopsy = SelectField('Has consent been taken from patient?', choices=BiopsyDict.consent_stat_choice)
     fld_consent_form_biopsy = SelectField('Is consent form with signature present in file ?',
                                          choices=BiopsyDict.consent_form_choice)
@@ -52,6 +50,5 @@ class BiopsyForm (BaseForm):
     fld_fnac_location_other = StringField("Other")
     fld_fnac_diagnosis = SelectField("FNAC Diagnosis", choices=BiopsyDict.fnac_diagnosis_choice)
     fld_fnac_diagnosis_other = StringField("Other")
-    fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
-    last_update = HiddenField()
     submit_button = SubmitField('Submit Form')
+    
