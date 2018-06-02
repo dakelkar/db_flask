@@ -26,9 +26,13 @@ class CommonDict():
     distance_from_nipple_dict = {'tbd':"To be filled",'NA':"Not Present", '<.5': "<0.5 cm", '>0.5': ">0.5 cm", 'other': "Other"}
     yes_no_dict = {'tbd':"To be filled","N": "No", "Y": "Yes", 'other': "Other"}
     absent_present_dict = {'tbd':"To be filled",'absent':'Absent', 'present':'Present', 'other':"Other"}
+    folder_status_dict = {'Empty':"Empty", 'All fields are not filled':"All fields are not filled",
+                        'Requires additional data from specialist':"Requires additional data from specialist",
+                        "Requires Follow up":'Requires Follow up','Complete':"Complete"}
     breast_location_choice = generate_choice(breast_location_dict)
     birad_choice = generate_choice(birad_dict)
     yes_no_choice = generate_choice(yes_no_dict)
     distance_from_nipple_choice = generate_choice(distance_from_nipple_dict)
     absent_present_choice = generate_choice(absent_present_dict)
     form_status_choice = generate_choice(form_status_dict)
+    folder_status_choice = generate_choice(folder_status_dict)

@@ -3,24 +3,25 @@ from flask import Flask, render_template, flash, redirect, url_for, session, req
 from passlib.hash import sha256_crypt
 from log import Log
 from create_hash import decodex, encodex
-from dbs.patientsdb import PatientsDb
+from dbs.foldersdb import FoldersDb
 from dbs.userdb import UserDb
-from schema_forms.patient_bio_info_form import PatientBioInfoForm
+from schema_forms.patient_history import PatientHistoryForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
-from schema_forms.patient_history import PatientHistoryForm
+from schema_forms.folder_form import FoldersForm
 from wtforms import Form, StringField, PasswordField, validators
 from functools import wraps
 from schema_forms.models import FolderSection
 from flask_bootstrap import Bootstrap
 from isloggedin import is_logged_in
 from crudprint import construct_crudprint
+from crudprint_folder import construct_crudprint_folder
 from dbs.sectiondb import SectionDb
 
 # Initialize logging
 log = Log()
 # Initialize DB
-db = PatientsDb(log)
+db = FoldersDb(log, FoldersForm)
 db.connect()
 
 # Initialize User DB
@@ -30,6 +31,11 @@ users_db.connect()
 #Initialize section DBs
 app = Flask(__name__)
 Bootstrap(app)
+
+folder_db = FoldersDb(log, FoldersForm)
+folder_db.connect()
+folder_crudprint = construct_crudprint_folder(folder_db)
+app.register_blueprint(folder_crudprint, url_prefix="/folder")
 
 mammo_db = SectionDb(log, MammographyForm, 'mammographies')
 mammo_db.connect()
@@ -130,76 +136,19 @@ def logout():
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    patient_list = db.get_patients()
-    if patient_list:
-        return render_template('dashboard.html', patients = patient_list)
+    folder_list = db.get_folders()
+    if folder_list:
+        return render_template('dashboard.html', folders = folder_list)
     else:
         msg = 'No data found'
         return render_template('dashboard.html', msg = msg)
 
 #########################################################
-# Patient CRUD
-@app.route('/add_patient', methods=['GET', 'POST'])
-@is_logged_in
-def add_patient():
-    form = PatientBioInfoForm(request.form)
-    if request.method == 'POST' and not form.validate():
-        errs = ""
-        for fieldName, errorMessages in form.errors.items():
-            for err in errorMessages:
-                errs = errs + err + " "
-        flash('Error adding patient: ' + errs, 'danger')
+    # Folder CRUD
 
-    if request.method == 'POST' and form.validate():
-        patient = form.to_model()
-        success_flag, error = db.add_patient(patient)
-        if not success_flag:
-            flash('Error adding patient: ' + str(error), 'danger')
-        else:
-            flash('Patient Added', 'success')
-
-        return redirect(url_for('dashboard'))
-    return render_template('patient_bio_info_add.html', form=form)
-
-@app.route('/edit_patient/<folder_hash>', methods=['GET', 'POST'])
-@is_logged_in
-def edit_patient(folder_hash):
-    form = PatientBioInfoForm(request.form)
-
-    if request.method == 'GET':
-        folder_number = decodex(folder_hash)
-        patient = db.get_patient(folder_number)
-        if patient is not None:
-            form.from_model(patient)
-        else:
-            flash('Patient not found for folder: ' + folder_number, 'danger')
-
-    if request.method == 'POST' and form.validate():
-        patient = form.to_model()
-        success_flag, error = db.update_patient(patient)
-
-        if not success_flag:
-            flash('Error updating patient: ' + str(error), 'danger')
-        else:
-            flash('Patient Updated', 'success')
-
-        return redirect(url_for('dashboard'))
-
-    return render_template('patient_bio_info_edit.html', form=form)
-
-@app.route('/delete_patient/<folder_hash>', methods=['POST'])
-@is_logged_in
-def delete_patient(folder_hash):
-    folder_number = decodex(folder_hash)
-    success_flag, error = db.delete_patient(folder_number)
-
-    if not success_flag:
-        flash('Error deleting patient: ' + str(error), 'danger')
-    else:
-        flash('Patient Deleted', 'success')
-
-    return redirect(url_for('dashboard'))
-
+ 
+######################
+# Folder
 @app.route('/search', methods=['POST'])
 @is_logged_in
 def search_folder():
@@ -207,11 +156,10 @@ def search_folder():
     patient = db.get_patient(folder_number)
     if patient is None:
         abort(404)
-    folder_hash = encodex(folder_number) 
+    folder_hash = encodex(folder_number)
     return redirect(url_for('view_folder', folder_hash=folder_hash))
- 
-######################
-# Folder
+
+
 @app.route('/folder/<folder_hash>', methods=['GET'])
 @is_logged_in
 def view_folder(folder_hash):
@@ -220,7 +168,7 @@ def view_folder(folder_hash):
     if active_tab_id is None:
         if 'active_tab' in session:
             active_tab_id = session['active_tab']
-    if active_tab_id is None:        
+    if active_tab_id is None:
         active_tab_id = "PatientHistory"
     session['active_tab'] = active_tab_id
 
