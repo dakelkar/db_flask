@@ -1,24 +1,7 @@
 import sys
 import pymongo
 import uuid
-
-class BsonWrapper:
-    def __init__(self, bson):
-        self._bson = bson
-        
-    def keys(self):
-        return self._bson.keys()
-
-    def get_date(self, key):
-        value = self[key]
-        if value is not None:
-            return value.date()        
-        return None
-        
-    def __getitem__(self, key):
-        if key in self._bson.keys():
-            return self._bson[key]
-        return None
+from schema_forms.form_utilities import BsonWrapper
 
 class SectionDb(object):
     # This class wraps the DB access for patients

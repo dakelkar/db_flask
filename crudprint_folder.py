@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, abort
 from flask import Flask, flash, redirect, url_for, session, request
 from isloggedin import is_logged_in
-from create_hash import decodex_str, encodex
 import uuid
 
 ######################
@@ -18,7 +17,7 @@ def construct_crudprint_folder(folder_db):
     @crudprint_folder.route('/edit/<folder_hash>/<pk>', methods=['GET', 'POST'])
     @is_logged_in
     def edit(folder_hash):
-        folder_number = decodex_str(folder_hash)
+        folder_number = folder_hash
         print('haha_edit')
         form = folder_db.get_from_request(request.form)
 
@@ -78,7 +77,7 @@ def construct_crudprint_folder(folder_db):
     @crudprint_folder.route('/view_folder/<folder_hash>/<pk>', methods=['GET'])
     @is_logged_in
     def view(folder_hash):
-        folder_number = decodex_str(folder_hash)
+        folder_number = folder_hash
         form = folder_db.get_item(folder_number)
         return render_template('folder_add.html', form = form)
 

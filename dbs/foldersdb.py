@@ -1,6 +1,6 @@
 import sys
 import pymongo
-from schema_forms.folder_form import FoldersForm
+from schema_forms.form_utilities import BsonWrapper
 import uuid
 
 class FoldersDb(object):
@@ -31,7 +31,7 @@ class FoldersDb(object):
         if folder_entry is None:
             return None
         folder = self.FoldersForm()
-        folder.from_bson(folder_entry)
+        folder.from_bson(BsonWrapper(folder_entry))
         return folder
 
     def get_folder_by_number(self, folder_number):
@@ -39,7 +39,7 @@ class FoldersDb(object):
         if folder_entry is None:
             return None
         folder = self.FoldersForm()
-        folder.from_bson(folder_entry)
+        folder.from_bson(BsonWrapper(folder_entry))
         return folder
 
     def add_item(self, form, username):
