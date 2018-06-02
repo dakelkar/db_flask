@@ -160,10 +160,21 @@ def search_folder():
     return redirect(url_for('view_folder', folder_hash=folder_hash))
 
 
-@app.route('/folder/<folder_hash>', methods=['GET'])
+@app.route('/folder/<folder_pk>', methods=['GET'])
 @is_logged_in
-def view_folder(folder_hash):
-    # currently only works for Radiology sections!
+def view_folder(folder_pk):
+    # to check if folder has been marked deleted or missing
+    folder_form = folder_db.get_item(folder_pk)
+    is_missing = False
+    if folder_form is None:
+        is_missing = True
+    is_delete = folder_form.fld_is_delete.data
+    if is_delete or is_missing:
+        flash(folder_pk + ' not found', 'danger')
+        return redirect(url_for('dashboard'))
+    folder_number = folder_form.fld_folder_number.data
+
+    # select active tab
     active_tab_id = request.args.get('active_tab')
     if active_tab_id is None:
         if 'active_tab' in session:
@@ -172,20 +183,21 @@ def view_folder(folder_hash):
         active_tab_id = "PatientHistory"
     session['active_tab'] = active_tab_id
 
+    # set up sections
     folder_sections = []
     if active_tab_id == "Radiology":
         folder_sections = [
-            create_folder_section(folder_hash, "mammo", "mammo", mammo_db.get_folder_items),
-            create_folder_section(folder_hash, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
-            create_folder_section(folder_hash, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "mammo", "mammo", mammo_db.get_folder_items),
+            create_folder_section(folder_pk, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
         ]
     elif active_tab_id == "Biopsy":
         folder_sections = [
-            create_folder_section(folder_hash, "biopsy", "biopsy", biopsy_db.get_folder_items),
+            create_folder_section(folder_pk, "biopsy", "biopsy", biopsy_db.get_folder_items),
         ]        
     elif active_tab_id == "PatientHistory":
         folder_sections = [
-            create_folder_section(folder_hash, "patient_history", "patient_history", patient_history_db.get_folder_items),
+            create_folder_section(folder_pk, "patient_history", "patient_history", patient_history_db.get_folder_items),
         ]        
                 
 
@@ -203,13 +215,12 @@ def view_folder(folder_hash):
         ("FollowUp", "Follow-up"),
     ]
 
-    folder_number = decodex(folder_hash)
-    return render_template('folder_tabs.html', folder_number=folder_number, folder_sections=folder_sections, 
+    key = folder_pk
+    return render_template('folder_tabs.html', folder_number = folder_number, key = folder_pk, folder_sections=folder_sections,
                             folder_tabs=folder_tabs, active_tab_id=active_tab_id)
 
-def create_folder_section(folder_hash, id, section_name, db_get, is_list=False):
-    folder_number = decodex(folder_hash)
-    forms = db_get(folder_number)
+def create_folder_section(folder_pk, id, section_name, db_get, is_list=False):
+    forms = db_get(folder_pk)
     action = "add"
     status = ["To be filled"]
     last_modified_on = [datetime.datetime.today().strftime('%Y-%m-%d')]
@@ -222,7 +233,7 @@ def create_folder_section(folder_hash, id, section_name, db_get, is_list=False):
         pks = [(x.fld_pk.data, x.get_summary()) for x in forms]
         update_by = [x.update_by.data for x in forms]
 
-    section = FolderSection(id, section_name, action, status, forms, folder_hash, last_modified_on = last_modified_on, 
+    section = FolderSection(id, section_name, action, status, forms, folder_pk, last_modified_on = last_modified_on,
                             last_modified_by=update_by, pks=pks, is_list=is_list)
     return section
 

@@ -10,11 +10,12 @@ class FoldersForm(BaseForm):
     fld_folder_description = TextAreaField('Folder Description')
     fld_form_status = SelectField("Form Status", choices=CommonDict.folder_status_choice)
     fld_folder_pk = HiddenField()
+    fld_doc_type = HiddenField()
+    fld_is_delete = HiddenField()
     last_update = HiddenField()
     update_by = HiddenField()
-    doc_type = HiddenField()
     submit = SubmitField()
-    is_delete = HiddenField()
+
     def to_bson(self, update_by):
         bson = super().to_bson()
         bson['last_update'] = datetime.today()

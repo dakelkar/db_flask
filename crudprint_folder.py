@@ -14,31 +14,6 @@ def construct_crudprint_folder(folder_db):
     name = 'folder'
     crudprint_folder = Blueprint(name, __name__, template_folder='templates')
 
-    @crudprint_folder.route('/edit/<folder_hash>/<pk>', methods=['GET', 'POST'])
-    @is_logged_in
-    def edit(folder_hash):
-        folder_number = folder_hash
-        print('haha_edit')
-        form = folder_db.get_from_request(request.form)
-
-        if request.method == 'GET':
-            form = folder_db.get_item(folder_number)
-            if form is None:
-                print ('ugh not found!')
-                abort(404)
-            
-        if request.method == 'POST' and form.validate():
-            success_flag, result = folder_db.update_item(form, session['username'])
-
-            if not success_flag:
-                flash('Error: ' + str(result), 'danger')
-            else:
-                flash('Updated: ' + str(result), 'success')
-
-            return redirect(url_for('view_folder', folder_hash=folder_hash))
-
-        return render_template('dashboard.html', form=form)
-
     @crudprint_folder.route('/add_folder', methods=['GET', 'POST'])
     @is_logged_in
     def add_folder():
@@ -52,33 +27,45 @@ def construct_crudprint_folder(folder_db):
                 return redirect(url_for('dashboard'))
         return render_template('folder_add.html', form=form)
 
-    @crudprint_folder.route('/delete/<folder_hash>', methods=['GET', 'POST'])
+    @crudprint_folder.route('/edit/<folder_pk>/', methods=['GET', 'POST'])
     @is_logged_in
-    def delete(pk):
+    def edit(folder_pk):
+        form = folder_db.get_from_request(request.form)
         if request.method == 'GET':
-            form = folder_db.get_item(pk)
+            form = folder_db.get_item(folder_pk)
             if form is None:
-                # ugh not found!
+                print ('ugh not found!')
                 abort(404)
+            return render_template('folder_edit.html', form = form)
 
-            flash('Click Submit Form to Delete', 'danger')
-            return render_template('folder_add.html', form=form)
-
-
-        if request.method == 'POST':
-            success_flag, error = folder_db.delete_item(pk)
+        if request.method == 'POST' and form.validate():
+            success_flag, result = folder_db.update_item(form, session['username'])
             if not success_flag:
-                flash('Error deleting: ' + str(error), 'danger')
+                flash('Error: ' + str(result), 'danger')
             else:
-                flash('Deleted', 'success')
+                flash('Updated: ' + str(result), 'success')
+            return redirect(url_for('dashboard'))
 
+        return render_template('folder_edit.html')
+
+    @crudprint_folder.route('/delete/<folder_pk>', methods=['GET', 'POST'])
+    @is_logged_in
+    def delete(folder_pk):
+        if request.method == 'GET':
+            form = folder_db.get_item(folder_pk)
+            if form is None:
+                print('ugh not found!')
+                abort(404)
+            flash('Click Submit Form to Delete', 'danger')
+            return render_template('folder_edit.html', form=form)
+
+        result, message = folder_db.delete_item(folder_pk, session['username'])
+        flash('Deleted: ' + message, 'success')
         return redirect(url_for('dashboard'))
 
-    @crudprint_folder.route('/view_folder/<folder_hash>/<pk>', methods=['GET'])
+    @crudprint_folder.route('/view_folder/<folder_pk>', methods=['GET'])
     @is_logged_in
-    def view(folder_hash):
-        folder_number = folder_hash
-        form = folder_db.get_item(folder_number)
-        return render_template('folder_add.html', form = form)
+    def view(folder_pk):
+        return redirect(url_for('view_folder', folder_pk=folder_pk))
 
     return crudprint_folder
