@@ -3,7 +3,7 @@
 {% block body %}
 </p>
 <div class="card border-dark mb-3">
-  <div class="card-header">Folder: {{form.fld_folder_number.data}}{{Information}}</div>
+  <div class="card-header">Folder: {{folder_number}}{{Information}}</div>
   <div class="card-body text-dark">
     <h5 class="card-title">{{form.title}}</h5>
     {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}

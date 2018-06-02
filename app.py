@@ -39,27 +39,27 @@ app.register_blueprint(folder_crudprint, url_prefix="/folder")
 
 mammo_db = SectionDb(log, MammographyForm, 'mammographies')
 mammo_db.connect()
-mammo_crudprint = construct_crudprint('mammo', mammo_db)
+mammo_crudprint = construct_crudprint('mammo', mammo_db, folder_db)
 app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
 
 mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
 mammo_mass_db.connect()
-mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db)
+mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db, folder_db)
 app.register_blueprint(mammo_mass_crudprint, url_prefix="/mammo_mass")
 
 mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
 mammo_calcification_db.connect()
-mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db)
+mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db, folder_db)
 app.register_blueprint(mammo_calcification_crudprint, url_prefix="/mammo_calcification")
 
 biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
 biopsy_db.connect()
-biopsy_crudprint = construct_crudprint('biopsy', biopsy_db)
+biopsy_crudprint = construct_crudprint('biopsy', biopsy_db, folder_db)
 app.register_blueprint(biopsy_crudprint, url_prefix="/biopsy")
 
 patient_history_db = SectionDb(log, PatientHistoryForm, 'patient_history')
 patient_history_db.connect()
-patient_history_crudprint = construct_crudprint('patient_history', patient_history_db)
+patient_history_crudprint = construct_crudprint('patient_history', patient_history_db, folder_db)
 app.register_blueprint(patient_history_crudprint, url_prefix="/patient_history")
 
 
@@ -153,28 +153,23 @@ def dashboard():
 @is_logged_in
 def search_folder():
     folder_number = request.form['query']
-    patient = db.get_patient(folder_number)
-    if patient is None:
-        abort(404)
-    folder_hash = encodex(folder_number)
-    return redirect(url_for('view_folder', folder_hash=folder_hash))
+    folder = folder_db.get_folder_by_number(folder_number, is_delete=False)
+    if folder is None:
+        flash(folder_number + ' not found', 'danger')
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('view_folder', folder_pk=folder.fld_folder_pk.data))
 
 
 @app.route('/folder/<folder_pk>', methods=['GET'])
 @is_logged_in
 def view_folder(folder_pk):
-    # to check if folder has been marked deleted or missing
-    folder_form = folder_db.get_item(folder_pk)
-    is_missing = False
-    if folder_form is None:
-        is_missing = True
-    is_delete = folder_form.fld_is_delete.data
-    if is_delete or is_missing:
+    folder_number = folder_db.folder_check(folder_pk)
+
+    if folder_number is None:
         flash(folder_pk + ' not found', 'danger')
         return redirect(url_for('dashboard'))
-    folder_number = folder_form.fld_folder_number.data
 
-    # select active tab
+# select active tab
     active_tab_id = request.args.get('active_tab')
     if active_tab_id is None:
         if 'active_tab' in session:

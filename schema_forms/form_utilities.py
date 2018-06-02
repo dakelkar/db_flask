@@ -109,10 +109,10 @@ class SectionForm(BaseForm):
         self.last_update.data = p.get_date('last_update')
         self.update_by.data = p['update_by']
 
-    
     fld_pk = HiddenField()
-    fld_folder_number = HiddenField()
+    fld_form_status = SelectField("Form Status", choices=CommonDict.form_status_choice)
+    fld_doc_type = HiddenField()
+    fld_is_delete = HiddenField()
+    fld_folder_pk = HiddenField()
     last_update = HiddenField()
     update_by = HiddenField()
-    fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
-    pass

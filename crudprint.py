@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, abort
 from flask import Flask, flash, redirect, url_for, session, request
 from isloggedin import is_logged_in
-from create_hash import decodex
 
 ######################
 # Section Blueprint
@@ -10,12 +9,16 @@ def redirect_url(default='index'):
            request.referrer or \
            url_for(default)
            
-def construct_crudprint(name, section_db):
+def construct_crudprint(name, section_db, folder_db):
     crudprint = Blueprint(name, __name__, template_folder='templates')
 
-    @crudprint.route('/edit/<folder_hash>/<pk>', methods=['GET', 'POST'])
+    @crudprint.route('/edit/<folder_pk>/<pk>', methods=['GET', 'POST'])
     @is_logged_in
-    def edit(folder_hash, pk):
+    def edit(folder_pk, pk):
+        folder_number = folder_db.folder_check(folder_pk)
+        if folder_number is None:
+            flash(folder_pk + ' not found', 'danger')
+            return redirect(url_for('dashboard'))
         form = section_db.get_from_request(request.form)
 
         if request.method == 'GET':
@@ -32,16 +35,22 @@ def construct_crudprint(name, section_db):
             else:
                 flash('Updated: ' + str(result), 'success')
 
-            return redirect(url_for('view_folder', folder_hash=folder_hash))
+            return redirect(url_for('view_folder', folder_pk=folder_pk))
 
-        return render_template('section_item.html', form=form)
+        return render_template('section_item.html', form=form, folder_number = folder_number)
 
-    @crudprint.route('/add/<folder_hash>', methods=['GET', 'POST'])
+
+
+    @crudprint.route('/add/<folder_pk>', methods=['GET', 'POST'])
     @is_logged_in
-    def add(folder_hash):
-        folder_number = decodex(folder_hash)
+    def add(folder_pk):
+        folder_number = folder_db.folder_check(folder_pk)
+        if folder_number is None:
+            flash(folder_pk + ' not found', 'danger')
+            return redirect(url_for('dashboard'))
+
         form = section_db.get_from_request(request.form)
-        form.fld_folder_number.data = folder_number
+        form.fld_folder_pk.data = folder_pk
 
         if request.method == 'POST' and form.validate():
             success_flag, result = section_db.add_item(form, session['username'])
@@ -51,31 +60,25 @@ def construct_crudprint(name, section_db):
             else:
                 flash('Created: ' + str(result), 'success')
 
-            return redirect(url_for('view_folder', folder_hash=folder_hash))
+            return redirect(url_for('view_folder', folder_pk=folder_pk))
 
-        return render_template('section_item.html', form=form)
+        return render_template('section_item.html', form=form, folder_number = folder_number)
 
-    @crudprint.route('/delete/<folder_hash>/<pk>', methods=['GET', 'POST'])
+    @crudprint.route('/delete/<folder_pk>/<pk>', methods=['GET', 'POST'])
     @is_logged_in
-    def delete(folder_hash, pk):
+    def delete(folder_pk, pk):
         if request.method == 'GET':
             form = section_db.get_item(pk)
             if form is None:
-                # ugh not found!
-                abort(404)
+                flash('Item not found, already deleted', 'success')
+                return redirect(url_for('view_folder', folder_pk=folder_pk))
 
             flash('Click Submit Form to Delete', 'danger')
             return render_template('section_item.html', form=form)
 
-
-        if request.method == 'POST':
-            success_flag, error = section_db.delete_item(pk)
-            if not success_flag:
-                flash('Error deleting: ' + str(error), 'danger')
-            else:
-                flash('Deleted', 'success')
-
-        return redirect(url_for('view_folder', folder_hash=folder_hash))
+        result, message = section_db.delete_item(pk, session['username'])
+        flash('Deleted: ' + message, 'success')
+        return redirect(url_for('view_folder', folder_pk=folder_pk))
 
     return crudprint
 

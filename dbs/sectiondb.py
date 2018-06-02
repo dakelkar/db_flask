@@ -12,8 +12,9 @@ class SectionDb(object):
         self.log = logger
         self.db = None
         self.form_class = form_class
-        self.db_name = 'patients'
+        self.db_name = 'folders'
         self.collection_name = collection_name
+        self.doc_type = collection_name
 
     def get_from_request(self, request_data):
         form = self.form_class(request_data)
@@ -28,9 +29,8 @@ class SectionDb(object):
         except:
             self.log.get_logger().error("Error connecting to database %s: %s" % (self.form_class, sys.exc_info()))
 
-    def get_folder_items(self, folder_number):
-        db_entries = self.db.find({"folder_number": folder_number})
-        #, 'is_deleted':False
+    def get_folder_items(self, folder_pk):
+        db_entries = self.db.find({'$and':[{"folder_pk": folder_pk}, {'is_delete':False}, {'doc_type' : self.doc_type}]})
         if db_entries is None:
             return None
 
@@ -52,6 +52,8 @@ class SectionDb(object):
         return form
 
     def add_item(self, form, update_by):
+        form.fld_doc_type.data = self.doc_type
+        form.fld_is_delete.data = False
         db_entry = form.to_bson(update_by)
         db_entry[self.key] = uuid.uuid4().hex
         self.db.insert_one(db_entry)
@@ -62,7 +64,12 @@ class SectionDb(object):
         self.db.update_one({self.key: form.fld_pk.data}, {"$set": db_entry})
         return True, form.fld_pk.data
 
-    def delete_item(self, pk):
-        # try:
-        self.db.delete_one({self.key: pk})
-        return True, None
+    def delete_item(self, pk, update_by):
+        status = 'Item not found'
+        form = self.get_item(pk)
+        if form is not None:
+            status = form.fld_pk.data
+            form.fld_is_delete.data = True
+            #TODO set only is_delete as True rest form remain same
+            self.update_item(form, update_by)
+        return True, status

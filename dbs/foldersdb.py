@@ -26,6 +26,18 @@ class FoldersDb(object):
         folders = self.db.find({'is_delete':False})
         return folders
 
+    def folder_check(self, folder_pk):
+        # to check if folder has been marked deleted or missing
+        folder_form = self.get_item(folder_pk)
+        is_missing = False
+        if folder_form is None:
+            is_missing = True
+        is_delete = folder_form.fld_is_delete.data
+        folder_number = None
+        if not is_delete and not is_missing:
+            folder_number = folder_form.fld_folder_number.data
+        return folder_number
+
     def get_item(self, folder_pk):
         folder_entry = self.db.find_one({ self.key: folder_pk })
         if folder_entry is None:
