@@ -17,48 +17,54 @@ from isloggedin import is_logged_in
 from crudprint import construct_crudprint
 from crudprint_folder import construct_crudprint_folder
 from dbs.sectiondb import SectionDb
+import os
 
 # Initialize logging
 log = Log()
 # Initialize DB
+url = os.getenv('BCDB_URL')
+if url is None:
+    url = 'mongodb://localhost:27017'
+print('Using db at: '+url)
+
 db = FoldersDb(log, FoldersForm)
-db.connect()
+db.connect(url)
 
 # Initialize User DB
 users_db = UserDb(log)
-users_db.connect()
+users_db.connect(url)
 
 #Initialize section DBs
 app = Flask(__name__)
 Bootstrap(app)
 
 folder_db = FoldersDb(log, FoldersForm)
-folder_db.connect()
+folder_db.connect(url)
 folder_crudprint = construct_crudprint_folder(folder_db)
 app.register_blueprint(folder_crudprint, url_prefix="/folder")
 
 mammo_db = SectionDb(log, MammographyForm, 'mammographies')
-mammo_db.connect()
+mammo_db.connect(url)
 mammo_crudprint = construct_crudprint('mammo', mammo_db, folder_db)
 app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
 
 mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
-mammo_mass_db.connect()
+mammo_mass_db.connect(url)
 mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db, folder_db)
 app.register_blueprint(mammo_mass_crudprint, url_prefix="/mammo_mass")
 
 mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
-mammo_calcification_db.connect()
+mammo_calcification_db.connect(url)
 mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db, folder_db)
 app.register_blueprint(mammo_calcification_crudprint, url_prefix="/mammo_calcification")
 
 biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
-biopsy_db.connect()
+biopsy_db.connect(url)
 biopsy_crudprint = construct_crudprint('biopsy', biopsy_db, folder_db)
 app.register_blueprint(biopsy_crudprint, url_prefix="/biopsy")
 
 patient_history_db = SectionDb(log, PatientHistoryForm, 'patient_history')
-patient_history_db.connect()
+patient_history_db.connect(url)
 patient_history_crudprint = construct_crudprint('patient_history', patient_history_db, folder_db)
 app.register_blueprint(patient_history_crudprint, url_prefix="/patient_history")
 

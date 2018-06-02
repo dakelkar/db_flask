@@ -17,9 +17,10 @@ class FoldersDb(object):
         form = self.FoldersForm(request_data)
         return form
 
-    def connect(self):
-        client = pymongo.MongoClient("localhost", 27017)
-        self.db = client.folders.folders
+    def connect(self, url):
+        client = pymongo.MongoClient(url)
+
+        self.db = client.bcdb.folders
         self.log.get_logger().info("Connection to folders database opened.")
 
     def get_folders(self):
@@ -29,12 +30,11 @@ class FoldersDb(object):
     def folder_check(self, folder_pk):
         # to check if folder has been marked deleted or missing
         folder_form = self.get_item(folder_pk)
-        is_missing = False
         if folder_form is None:
-            is_missing = True
+            return None
         is_delete = folder_form.fld_is_delete.data
         folder_number = None
-        if not is_delete and not is_missing:
+        if not is_delete:
             folder_number = folder_form.fld_folder_number.data
         return folder_number
 

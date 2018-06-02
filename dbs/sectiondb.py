@@ -12,18 +12,18 @@ class SectionDb(object):
         self.log = logger
         self.db = None
         self.form_class = form_class
-        self.db_name = 'folders'
-        self.collection_name = collection_name
+        self.db_name = 'bcdb'
+        self.collection_name = 'folders'
         self.doc_type = collection_name
 
     def get_from_request(self, request_data):
         form = self.form_class(request_data)
         return form
 
-    def connect(self):
+    def connect(self, url):
         # Connect to database
         try:
-            client = pymongo.MongoClient("localhost", 27017)
+            client = pymongo.MongoClient(url)
             self.db = client.get_database(self.db_name).get_collection(self.collection_name)
             self.log.get_logger().info("Connection to %s.%s for %s opened." % (self.db_name, self.collection_name, self.form_class))
         except:
