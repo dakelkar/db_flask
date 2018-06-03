@@ -1,16 +1,14 @@
 import datetime
-from flask import Flask, render_template, flash, redirect, url_for, session, request, abort
+from flask import Flask, render_template, flash, redirect, url_for, session, request
 from passlib.hash import sha256_crypt
 from log import Log
-from create_hash import decodex, encodex
 from dbs.foldersdb import FoldersDb
 from dbs.userdb import UserDb
-from schema_forms.patient_history import PatientHistoryForm
+from schema_forms.patient_history import PatientHistoryForm, PhysicalActivityForm, NutritionalSupplementsForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
 from schema_forms.folder_form import FoldersForm
 from wtforms import Form, StringField, PasswordField, validators
-from functools import wraps
 from schema_forms.models import FolderSection
 from flask_bootstrap import Bootstrap
 from isloggedin import is_logged_in
@@ -43,14 +41,14 @@ folder_db.connect(url)
 folder_crudprint = construct_crudprint_folder(folder_db)
 app.register_blueprint(folder_crudprint, url_prefix="/folder")
 
-mammo_db = SectionDb(log, MammographyForm, 'mammographies')
+mammo_db = SectionDb(log, MammographyForm, 'mammography')
 mammo_db.connect(url)
-mammo_crudprint = construct_crudprint('mammo', mammo_db, folder_db)
+mammo_crudprint = construct_crudprint('mammography', mammo_db, folder_db)
 app.register_blueprint(mammo_crudprint, url_prefix="/mammo")
 
 mammo_mass_db = SectionDb(log, MammoMassForm, 'mammo_mass')
 mammo_mass_db.connect(url)
-mammo_mass_crudprint = construct_crudprint('mammo_mass', mammo_mass_db, folder_db)
+mammo_mass_crudprint = construct_crudprint('mammography_mass', mammo_mass_db, folder_db)
 app.register_blueprint(mammo_mass_crudprint, url_prefix="/mammo_mass")
 
 mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcification')
@@ -68,6 +66,15 @@ patient_history_db.connect(url)
 patient_history_crudprint = construct_crudprint('patient_history', patient_history_db, folder_db)
 app.register_blueprint(patient_history_crudprint, url_prefix="/patient_history")
 
+patient_history_phys_act_db = SectionDb(log, PhysicalActivityForm, 'physical_activity')
+patient_history_phys_act_db.connect(url)
+patient_history_phys_act_crudprint = construct_crudprint('physical_activity', patient_history_phys_act_db, folder_db)
+app.register_blueprint(patient_history_phys_act_crudprint, url_prefix="/physical_activity")
+
+patient_history_nut_supp_db = SectionDb(log, NutritionalSupplementsForm, 'nutritional_supplements')
+patient_history_nut_supp_db.connect(url)
+patient_history_nut_supp_crudprint = construct_crudprint('nutritional_supplements', patient_history_nut_supp_db, folder_db)
+app.register_blueprint(patient_history_nut_supp_crudprint, url_prefix="/nutritional_supplements")
 
 #########################################################
 # Login, registration and index
@@ -199,8 +206,11 @@ def view_folder(folder_pk):
     elif active_tab_id == "PatientHistory":
         folder_sections = [
             create_folder_section(folder_pk, "patient_history", "patient_history", patient_history_db.get_folder_items),
-        ]        
-                
+            create_folder_section(folder_pk, "physical_activity", "physical_activity",
+                                  patient_history_phys_act_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "nutritional_supplements", "nutritional_supplements",
+                                  patient_history_nut_supp_db.get_folder_items, is_list=True),
+        ]
 
     folder_tabs = [        
         ("PatientHistory", "Patient History"),

@@ -1,13 +1,7 @@
-from wtforms import StringField, TextAreaField, IntegerField, SelectField, FloatField, RadioField, FormField, \
-    SubmitField, HiddenField, BooleanField, SelectMultipleField, FieldList
-from wtforms.fields.core import UnboundField
-
-from wtforms import validators
+from wtforms import StringField, TextAreaField, IntegerField, SelectField, FormField, \
+    SubmitField
 from wtforms.fields.html5 import DateField
 from db_dict.mammography import MammographyDict
-from flask_wtf import FlaskForm
-from datetime import datetime
-from schema_forms import form_utilities
 from db_dict.common_dict import CommonDict
 from schema_forms.form_utilities import BaseForm, SectionForm
 

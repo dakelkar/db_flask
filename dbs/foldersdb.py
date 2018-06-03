@@ -1,4 +1,3 @@
-import sys
 import pymongo
 from schema_forms.form_utilities import BsonWrapper
 import uuid
@@ -24,7 +23,7 @@ class FoldersDb(object):
         self.log.get_logger().info("Connection to folders database opened.")
 
     def get_folders(self):
-        folders = self.db.find({'is_delete':False})
+        folders = self.db.find({'$and':[{ 'doc_type': 'folder'}, { 'is_delete': False }]})
         return folders
 
     def folder_check(self, folder_pk):

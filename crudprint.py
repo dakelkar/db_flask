@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, abort
-from flask import Flask, flash, redirect, url_for, session, request
+from flask import flash, redirect, url_for, session, request
 from isloggedin import is_logged_in
 
 ######################

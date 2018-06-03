@@ -14,7 +14,7 @@ class UserDb(object):
         # Connect to database
         try:
             client = pymongo.MongoClient(url)
-            self.db = client.patients.users
+            self.db = client.bcdb.users
             self.log.get_logger().info("Connection to patients database opened.")
         except:
             self.log.get_logger().error("Error connecting to database patients: %s", sys.exc_info())
