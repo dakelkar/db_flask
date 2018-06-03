@@ -11,5 +11,8 @@ install:
 script:
   - bash docker_build_push
 
+branches:
+  only:
+  - master
 
 # sadly, travis doesn't cache docker builds yet, so each build will take a while
