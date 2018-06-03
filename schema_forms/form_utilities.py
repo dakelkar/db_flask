@@ -40,6 +40,11 @@ def to_bson(form, prefix = 'fld_'):
         value = form[field].data
         o = getattr(form, field)
         # handle dates!
+        if key == 'is_delete':
+            result = False
+            if value == 'True' or value == True:
+                result = True
+            value = result
         if o.type  == "DateField":
             value = datetime.combine(value, datetime.min.time())
         bson[key] = value
