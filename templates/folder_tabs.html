@@ -17,7 +17,7 @@
                     <h5>{{folder_section.name}}</h5> 
             </button>
             <span class="float-right">
-                <a href="/{{folder_section.name}}/add/{{folder_section.folder_hash}}" class="btn btn-primary pullright">add</a>
+                <a href="/{{folder_section.name}}/add/{{folder_section.folder_pk}}" class="btn btn-primary pullright">add</a>
             </span>
         </div>          
         <div id="collapse{{folder_section.id}}" class="collapse"  data-parent="#accordion">
@@ -36,12 +36,12 @@
             </button>
             {% if folder_section.is_list %}
                 <span class="float-right">
-                    <a href="/{{folder_section.name}}/add/{{folder_section.folder_hash}}" class="btn btn-primary pullright">add</a>
+                    <a href="/{{folder_section.name}}/add/{{folder_section.folder_pk}}" class="btn btn-primary pullright">add</a>
                 </span>                
                 <small>Entry Count: [{{folder_section.count}}]</small>
             {% else %}
                     <span class="float-right">
-                        <a href="/{{folder_section.name}}/edit/{{folder_section.folder_hash}}/{{folder_section.pks[0][0]}}" class="btn btn-primary pullright">edit</a>
+                        <a href="/{{folder_section.name}}/edit/{{folder_section.folder_pk}}/{{folder_section.pks[0][0]}}" class="btn btn-secondary pullright">edit</a>
                     </span>                
                     <small>Status: [{{folder_section.status[0]}}] Last modified on {{folder_section.last_modified_on[0]}} by {{folder_section.last_modified_by[0]}}</small>                    
             {% endif %}
@@ -59,8 +59,8 @@
     Last updated by {{form.update_by.data}} on {{form.last_update.data}}
     <div class="float-right">
         <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#form_view_{{folder_section.id}}{{loop.index}}">View</button>
-        <a href="/{{folder_section.name}}/edit/{{folder_section.folder_hash}}/{{form.fld_pk.data}}" class="btn btn-secondary pullright">edit</a>
-        <a href="/{{folder_section.name}}/delete/{{folder_section.folder_hash}}/{{form.fld_pk.data}}" class="btn btn-warning">delete</a>
+        <a href="/{{folder_section.name}}/edit/{{folder_section.folder_pk}}/{{form.fld_pk.data}}" class="btn btn-secondary pullright">edit</a>
+        <a href="/{{folder_section.name}}/delete/{{folder_section.folder_pk}}/{{form.fld_pk.data}}" class="btn btn-warning">delete</a>
     </div>
     </br>
     <div class="collapse" id="form_view_{{folder_section.id}}{{loop.index}}">

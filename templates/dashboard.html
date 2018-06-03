@@ -1,38 +1,29 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Patient Information</h1>
+    <h1>Folder Information</h1>
     <small>Welcome {{session.name}}</small>
     <div></div>
-    <a class="btn btn-success" href="/add_patient">Register New Patient</a>
+    <a class="btn btn-success" href="folder/add_folder">Register New Folder</a>
     <hr>
 
     <table class="table table-striped">
         <tr>
             <th>Folder Number</th>
-            <th>Patient Name</th>
-            <th>Date of Birth</th>
+            <th>Folder Description</th>
             <th>Form Status</th>
             <th>Last Update</th>
             <th></th>
-            <th></th>
-            <th></th>
         </tr>
-        {% for patient in patients %}
+        {% for folder in folders %}
             <tr>
-                <td>{{patient.folder_number}}</td>
-                <td>{{patient.name}}</td>
-                <td>{{patient.date_of_birth}}</td>
-                <td>{{patient.form_status}}</td>
-                <td>{{patient.last_update}}</td>
-                <td><a href="edit_patient/{{patient.folder_hash}}" class="btn btn-secondary pullright">Edit Bio</a></td>
-                <td><a href="folder/{{patient.folder_hash}}" class="btn btn-primary pullright">View Folder</a></td>
-                <td>
-                    <form action="{{url_for('delete_patient', folder_hash=patient.folder_hash)}}" method="post">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <input type="submit" value="Delete" class="btn btn-danger">
-                    </form>
-                </td>
+                <td data-toggle="tooltip" title={{folder.folder_pk}}>{{folder.folder_number}}</td>
+                <td>{{folder.folder_description}}</td>
+                <td>{{folder.form_status}}</td>
+                <td>{{folder.last_update}}</td>
+                <td><a href="folder/view_folder/{{folder.folder_pk}}" class="btn btn-primary pullright">View</a>
+                    <a href="folder/edit/{{folder.folder_pk}}" class="btn btn-secondary pullright">Edit</a>
+                    <a href="folder/delete/{{folder.folder_pk}}" class="btn btn-warning pullright">Delete</a></td>
             </tr>
         {% endfor %}
     </table>

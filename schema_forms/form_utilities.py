@@ -4,6 +4,26 @@ from wtforms import StringField, TextAreaField, IntegerField, SelectField, Float
 from datetime import datetime
 from db_dict.common_dict import CommonDict
 
+
+class BsonWrapper:
+    def __init__(self, bson):
+        self._bson = bson
+
+    def keys(self):
+        return self._bson.keys()
+
+    def get_date(self, key):
+        value = self[key]
+        if value is not None:
+            return value.date()
+        return None
+
+    def __getitem__(self, key):
+        if key in self._bson.keys():
+            return self._bson[key]
+        return None
+
+
 def to_bson(form, prefix = 'fld_'):
     
     # handle 'other' fields (_other suffix)
@@ -89,10 +109,10 @@ class SectionForm(BaseForm):
         self.last_update.data = p.get_date('last_update')
         self.update_by.data = p['update_by']
 
-    
     fld_pk = HiddenField()
-    fld_folder_number = HiddenField()
+    fld_form_status = SelectField("Form Status", choices=CommonDict.form_status_choice)
+    fld_doc_type = HiddenField()
+    fld_is_delete = HiddenField()
+    fld_folder_pk = HiddenField()
     last_update = HiddenField()
     update_by = HiddenField()
-    fld_form_status = SelectField("Form Status",  choices= CommonDict.form_status_choice)
-    pass

@@ -10,11 +10,11 @@ class UserDb(object):
         self.db = None
 
 
-    def connect(self):
+    def connect(self, url):
         # Connect to database
         try:
-            client = pymongo.MongoClient("localhost", 27017)
-            self.db = client.patients.users
+            client = pymongo.MongoClient(url)
+            self.db = client.bcdb.users
             self.log.get_logger().info("Connection to patients database opened.")
         except:
             self.log.get_logger().error("Error connecting to database patients: %s", sys.exc_info())
