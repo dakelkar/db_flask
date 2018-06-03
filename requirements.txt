@@ -1,0 +1,6 @@
+pylint
+flask
+pymongo
+passlib
+flask-wtf
+Flask-Bootstrap
