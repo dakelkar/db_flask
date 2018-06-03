@@ -23,7 +23,12 @@ log = Log()
 url = os.getenv('BCDB_URL')
 if url is None:
     url = 'mongodb://localhost:27017'
+url = url.replace('"', '')
 print('Using db at: '+url)
+
+port = os.getenv('BCDB_PORT')
+if port is None:
+    port = 5666
 
 db = FoldersDb(log, FoldersForm)
 db.connect(url)
@@ -253,4 +258,4 @@ def create_folder_section(folder_pk, id, section_name, db_get, is_list=False):
 # MAIN
 if __name__ == '__main__':
     app.secret_key = 'secret123'
-    app.run(host='0.0.0.0', port=5666, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)

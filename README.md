@@ -1,4 +1,10 @@
-flask setup
+build
+```
+docker build -t docdk/bcdb:latest .
+
+```
+
+dev setup
 ```
 conda env create -f conda.yml
 activate flask_b4
