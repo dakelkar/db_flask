@@ -1,4 +1,9 @@
 #!/bin/bash
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 docker build -t docdk/bcdb:latest .
-docker push docdk/bcdb:latest
+if [ "$TRAVIS_BRANCH" == "master" ]
+then
+    docker push docdk/bcdb:latest
+else
+    docker push docdk/bcdb:$TRAVIS_BRANCH
+fi
