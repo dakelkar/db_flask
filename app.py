@@ -7,6 +7,7 @@ from dbs.userdb import UserDb
 from schema_forms.patient_history import PatientHistoryForm, PhysicalActivityForm, NutritionalSupplementsForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
+from schema_forms.other_radiology import TomosynthesisForm
 from schema_forms.folder_form import FoldersForm
 from wtforms import Form, StringField, PasswordField, validators
 from schema_forms.models import FolderSection
@@ -60,6 +61,12 @@ mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcifica
 mammo_calcification_db.connect(url)
 mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db, folder_db)
 app.register_blueprint(mammo_calcification_crudprint, url_prefix="/mammo_calcification")
+
+tomosynthesis_db = SectionDb(log, TomosynthesisForm, 'tomosynthesis')
+tomosynthesis_db.connect(url)
+tomosynthesis_crudprint = construct_crudprint('tomosynthesis', mammo_calcification_db, folder_db)
+app.register_blueprint(tomosynthesis_crudprint, url_prefix="/tomosynthesis")
+
 
 biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
 biopsy_db.connect(url)
@@ -203,6 +210,7 @@ def view_folder(folder_pk):
             create_folder_section(folder_pk, "mammo", "mammo", mammo_db.get_folder_items),
             create_folder_section(folder_pk, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
             create_folder_section(folder_pk, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "tomosynthesis", "tomosynthesis", tomosynthesis_db.get_folder_items),
         ]
     elif active_tab_id == "Biopsy":
         folder_sections = [

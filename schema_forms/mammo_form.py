@@ -125,5 +125,30 @@ class MammographyForm(SectionForm):
     )
 
     fld_mammo_birad = SelectField("BI-RAD classification (if available)", choices=MammographyDict.mammo_birad_choice)
+    fld_mammography_architectural_distortions_form_present = SelectField("Is 3D Tomosynthesis Form present?",
+                                                                         choices=MammographyDict.mammo_arch_present_choice)
     submit_button = SubmitField('Submit Form')
 
+    class TomosynthesisForm(SectionForm):
+        fld_tomo = SelectField("3D digital Tomosynthesis done",
+                               choices=CommonDict.absent_present_choice)
+        fld_tomo_date = DateField("Date of Tomosynthesis examination", default=None)
+        fld_tomo_acc = StringField("Accession number of Tomosynthesis")
+        fld_tomo_commments = TextAreaField("Comments/Notes for Tomosynthesis")
+        submit_button = SubmitField('Submit Form')
+
+    class AbvsForm(SectionForm):
+        fld_abvs = SelectField("ABVS Done", choices=CommonDict.absent_present_choice)
+        fld_abvs_date = DateField("Date of examination of ABVS", default=None)
+        fld_abvs_acc = StringField("Accession number of ABVS")
+        fld_abvs_right_breast_lesion = SelectField("Location of lesion in right breast",
+                                                   choices=CommonDict.breast_location_choice)
+        fld_abvs_right_breast_lesion_other = StringField("Other")
+        fld_abvs_left_breast_lesion = SelectField("Location of lesion in left breast",
+                                                  choices=CommonDict.breast_location_choice)
+        fld_abvs_left_breast_lesion = StringField("Other")
+        fld_abvs_size = StringField("Size of lesion")
+        fld_abvs_dist = StringField("Distance from Skin (cm)")
+        fld_abvs_pect = StringField("Distance from Pectoralis Major (cm)")
+        fld_abvs_diagnosis = SelectField("ABVS Diagnosis", choices=abvs_diagnois_choice)
+        submit_button = SubmitField('Submit Form')
