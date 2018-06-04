@@ -26,7 +26,7 @@ if url is None:
 url = url.replace('"', '')
 print('Using db at: '+url)
 
-port = os.getenv('BCDB_PORT')
+port = os.getenv('PORT')
 if port is None:
     port = 5666
 
