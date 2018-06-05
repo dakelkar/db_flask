@@ -6,7 +6,7 @@ class MammographyDict():
 
 
     def generate_choice(dict_):
-        choices_all = []
+       choices_all = []
         keys = []
         for key in dict_:
             keys.append(key)
@@ -50,6 +50,8 @@ class MammographyDict():
     mammo_intra_mammary_lymph_nodes_dict = {'tbd':"To be filled","N":"Intra-mammary lymph nodes absent",
                                             "Y":"Intra-mammary lymph nodes present"}
     mammo_lesion_dict = {'tbd':"To be filled","N":"Skin Lesion not present", "Y":"Skin Lesion present"}
+    abvs_diagnois_dict = {'follow_up':'Not Present in Report','normal':"Normal", 'benign':"Benign",
+                          'suspicious':"Suspicious", 'cancer':"Diagnostic for Cancer"}
     mammo_location_choice = generate_choice(mammo_location_dict)
     mammo_details_choice = CommonDict.yes_no_choice
     mammo_breast_density_choice = generate_choice(mammo_breast_density_dict)
@@ -85,3 +87,4 @@ class MammographyDict():
     mammo_lesion_left_breast_choice =  CommonDict.breast_location_choice
     mammo_birad_choice =  CommonDict.birad_choice
     mammo_status_choice = CommonDict.form_status_choice
+    abvs_diagnois_choice= generate_choice(abvs_diagnois_dict)
