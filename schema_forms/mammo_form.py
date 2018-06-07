@@ -4,7 +4,7 @@ from wtforms.fields.html5 import DateField
 from db_dict.mammography import MammographyDict
 from db_dict.common_dict import CommonDict
 from schema_forms.form_utilities import BaseForm, SectionForm
-
+from schema_forms.usg import TomosynthesisForm, AbvsForm
 
 class MammoMassForm(SectionForm):
     def get_summary(self):
@@ -49,13 +49,47 @@ class MammoCalcificationForm(SectionForm):
 
 
 class MammoArchDistortionsForm(BaseForm):
-    pass
+    fld_loc_right_breast = SelectField("Location of Architectural Distortion on Right Breast",
+                                       choices=MammographyDict.mammo_arch_location_right_breast_choice)
+    fld_loc_right_breast_other = StringField("Other")
+    fld_loc_left_breast = SelectField("Location of Architectural Distortion on Left Breast",
+                                      choices=MammographyDict.mammo_arch_location_left_breast_choice)
+    fld_loc_left_breast_other = StringField("Other")
+    fld_depth = SelectField("Depth of Architectural Distortion", choices=MammographyDict.mammo_arch_depth_choice)
+    fld_depth_other = StringField("Other")
+    fld_dist = StringField("Distance of Architectural Distortion from nipple (cm)")
 
 class MammoAssymetryForm(BaseForm):
-    pass
+    fld_location_right_breast = SelectField("Location of asymmetries on Right Breast",
+                                            choices=MammographyDict.mammo_assym_location_right_breast_choice)
+    fld_location_right_breast_other = StringField("Other")
+    fld_location_left_breast = SelectField("Location of asymmetries on Left Breast",
+                                           choices=MammographyDict.mammo_assym_location_left_breast_choice)
+    fld_location_left_breast_other = StringField("Other")
+    fld_depth = SelectField("Depth of asymmetry", choices=MammographyDict.mammo_assym_depth_choice)
+    fld_depth_other = StringField("Other")
+    fld_type_right_breast = SelectField("Type of asymmetry on Right Breast",
+                                        choices=MammographyDict.mammo_assym_type_right_breast_choice)
+    fld_type_right_breast_other = StringField("Other")
+    fld_left_breast = SelectField("Type of asymmetry on Left Breast",
+                                  choices=MammographyDict.mammo_assym_type_left_breast_choice)
+    fld_left_breast_other = StringField("Other")
 
 class AssoFeatureForm(BaseForm):
-    pass
+    fld_skin_retraction = SelectField("Skin Retraction", choices=CommonDict.absent_present_choice)
+    fld_skin_retraction_other = StringField("Other")
+    fld_nipple_retraction = SelectField("Nipple Retraction", choices=CommonDict.absent_present_choice)
+    fld_nipple_retraction_other = StringField("Other")
+    fld_skin_thickening = SelectField("Skin Thickening", choices=CommonDict.absent_present_choice)
+    fld_skin_thickening_other = StringField("Other")
+    fld_trabecular_thickening = SelectField("Trabecular Thickening", choices=CommonDict.absent_present_choice)
+    fld_trabecular_thickening_other = StringField("Other")
+    fld_axillary_adenopathy = SelectField("Axillary Adenopathy", choices=CommonDict.absent_present_choice)
+    fld_axillary_adenopathy_other = StringField("Other")
+    fld_architectural_distortion = SelectField("Architectural Distortion", choices=CommonDict.absent_present_choice)
+    fld_architectural_distortion_other = StringField("Other")
+    fld_calcifications_other = StringField("Other")
+    fld_calcifications = SelectField("Calcification", choices=CommonDict.absent_present_choice)
 
 class MammographyForm(SectionForm):
     def get_summary(self):
@@ -69,38 +103,11 @@ class MammographyForm(SectionForm):
     fld_mammo_report_previous = TextAreaField("Report of previous mammography if available")
     fld_mammo_breast_density = SelectField("Breast Density in Mammography",
                                            choices=MammographyDict.mammo_breast_density_choice)
-
-
     fld_mammography_architectural_distortions_form_present = SelectField("Are Architectural Distortions present",
-                                                                    choices=MammographyDict.mammo_arch_present_choice)
-    mammography_architectural_distortions_form = FormField(
-            MammoArchDistortionsForm.append_select_fields([
-            ("fld_loc_right_breast", (
-                "Location of Architectural Distortion on Right Breast",
-                MammographyDict.mammo_arch_location_right_breast_choice)),
-            ("fld_loc_left_breast", (
-                "Location of Architectural Distortion on Left Breast",
-                MammographyDict.mammo_arch_location_left_breast_choice)),
-            ("fld_depth",  (
-                "Depth of Architectural Distortion", 
-                MammographyDict.mammo_arch_depth_choice)),
-            ("fld_dist", (
-                "Distance of Architectural Distortion from nipple", 
-                MammographyDict.mammo_arch_dist_choice)),
-        ])
-    )
-
-    fld_mammography_asymmetry_form_present = SelectField("Are Asymmetries present", choices=MammographyDict.mammo_assym_present_choice)
-    mammography_asymmetry_form = FormField(
-        MammoAssymetryForm.append_select_fields([
-            ("fld_location_right_breast", ("Location of asymmetries on Right Breast", MammographyDict.mammo_assym_location_right_breast_choice)),
-            ("fld_location_left_breast", ("Location of asymmetries on Left Breast", MammographyDict.mammo_assym_location_left_breast_choice)),
-            ("fld_depth", ("Depth of asymmetry", MammographyDict.mammo_assym_depth_choice)),
-            ("fld_type_right_breast", ("Type of asymmetry on Right Breast", MammographyDict.mammo_assym_type_right_breast_choice)),
-            ("fld_left_breast", ("Type of asymmetry on Left Breast", MammographyDict.mammo_assym_type_left_breast_choice)),
-        ])
-    )
-
+                                                                         choices=CommonDict.form_yes_no_choice)
+    mammography_architectural_distortions_form = FormField(MammoArchDistortionsForm)
+    fld_mammography_asymmetry_form_present = SelectField("Are Asymmetries present", choices=CommonDict.form_yes_no_choice)
+    mammography_asymmetry_form = FormField(MammoAssymetryForm)
     fld_mammo_intra_mammary_lymph_nodes_present = SelectField("Are intra-mammary lymph nodes present",
                                                               choices=MammographyDict.mammo_intra_mammary_lymph_nodes_choice)
     fld_mammo_intra_mammary_lymph_nodes_description = TextAreaField("Description of intra-mammary lymph nodes")
@@ -111,44 +118,13 @@ class MammographyForm(SectionForm):
     fld_mammo_lesion_left_breast = SelectField("Location of skin lesion on left breast",
                                                choices=MammographyDict.mammo_lesion_left_breast_choice)
     fld_mammography_associated_features_form_present = SelectField("Are associated features present?",
-                                                              choices = CommonDict.yes_no_choice)
-    mammography_associated_features_form = FormField(
-        AssoFeatureForm.append_select_fields([
-            ("fld_skin_retraction", ("Skin Retraction", CommonDict.absent_present_choice)),
-            ("fld_nipple_retraction", ("Nipple Retraction", CommonDict.absent_present_choice)),
-            ("fld_skin_thickening", ("Skin Thickening", CommonDict.absent_present_choice)),
-            ("fld_trabecular_thickening", ("Trabecular Thickening", CommonDict.absent_present_choice)),
-            ("fld_axillary_adenopathy", ("Axillary Adenopathy", CommonDict.absent_present_choice)),
-            ("fld_architectural_distortion", ("Architectural Distortion", CommonDict.absent_present_choice)),
-            ("fld_calicifications", ("Calcification", CommonDict.absent_present_choice)),
-        ])
-    )
-
+                                                                   choices=CommonDict.form_yes_no_choice)
+    mammography_associated_features_form = FormField(AssoFeatureForm)
+    fld_mammography_tomosynthesis_form_present = SelectField("Has 3D Tomosynthesis been done for the patient?",
+                                                                         choices=CommonDict.form_yes_no_choice)
+    mammography_tomosynthesis_form = FormField(TomosynthesisForm)
     fld_mammo_birad = SelectField("BI-RAD classification (if available)", choices=MammographyDict.mammo_birad_choice)
-    fld_mammography_architectural_distortions_form_present = SelectField("Is 3D Tomosynthesis Form present?",
-                                                                         choices=MammographyDict.mammo_arch_present_choice)
+    fld_mammography_abvs_form_present = SelectField("Has ABVS been done for the patient?",
+                                                    choices=CommonDict.form_yes_no_choice)
+    mammography_abvs_form = FormField(AbvsForm)
     submit_button = SubmitField('Submit Form')
-
-    class TomosynthesisForm(SectionForm):
-        fld_tomo = SelectField("3D digital Tomosynthesis done",
-                               choices=CommonDict.absent_present_choice)
-        fld_tomo_date = DateField("Date of Tomosynthesis examination", default=None)
-        fld_tomo_acc = StringField("Accession number of Tomosynthesis")
-        fld_tomo_commments = TextAreaField("Comments/Notes for Tomosynthesis")
-        submit_button = SubmitField('Submit Form')
-
-    class AbvsForm(SectionForm):
-        fld_abvs = SelectField("ABVS Done", choices=CommonDict.absent_present_choice)
-        fld_abvs_date = DateField("Date of examination of ABVS", default=None)
-        fld_abvs_acc = StringField("Accession number of ABVS")
-        fld_abvs_right_breast_lesion = SelectField("Location of lesion in right breast",
-                                                   choices=CommonDict.breast_location_choice)
-        fld_abvs_right_breast_lesion_other = StringField("Other")
-        fld_abvs_left_breast_lesion = SelectField("Location of lesion in left breast",
-                                                  choices=CommonDict.breast_location_choice)
-        fld_abvs_left_breast_lesion = StringField("Other")
-        fld_abvs_size = StringField("Size of lesion")
-        fld_abvs_dist = StringField("Distance from Skin (cm)")
-        fld_abvs_pect = StringField("Distance from Pectoralis Major (cm)")
-        fld_abvs_diagnosis = SelectField("ABVS Diagnosis", choices=abvs_diagnois_choice)
-        submit_button = SubmitField('Submit Form')

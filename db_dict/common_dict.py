@@ -3,7 +3,6 @@ class CommonDict():
         self.key = key
         self.value = value
 
-
     def generate_choice(dict_):
         choices_all = []
         keys = []
@@ -13,6 +12,7 @@ class CommonDict():
             choices = (index, dict_.get(index))
             choices_all = choices_all+ [(choices)]
         return tuple(choices_all)
+
     form_status_dict = {'Empty':"Empty", 'All fields are not filled':"All fields are not filled",
                         'Requires additional data from specialist':"Requires additional data from specialist",
                         "Data to be obtained from Patient":'Data to be obtained from Patient','Complete':"Complete"}
@@ -25,10 +25,14 @@ class CommonDict():
                   'ivc': "IVC: High suspicion for malignancy",'v':"V:  Highly Suggestive of Malignancy", 'other': "Other"}
     distance_from_nipple_dict = {'tbd':"To be filled",'NA':"Not Present", '<.5': "<0.5 cm", '>0.5': ">0.5 cm", 'other': "Other"}
     yes_no_dict = {'tbd':"To be filled","N": "No", "Y": "Yes", 'other': "Other"}
+    form_yes_no_dict ={'tbd':"To be filled",'na':'Not available in report',"N": "No", "Y": "Yes"}
+
     absent_present_dict = {'tbd':"To be filled",'absent':'Absent', 'present':'Present', 'other':"Other"}
     folder_status_dict = {'Empty':"Empty", 'All fields are not filled':"All fields are not filled",
                         'Requires additional data from specialist':"Requires additional data from specialist",
                         "Requires Follow up":'Requires Follow up','Complete':"Complete"}
+    breast_dict ={'tbd':"To be filled",'no':"Not present",'right': "Right Breast", 'left':"Left Breast", 'both':"Both Breast", 'other':"Other"}
+    normal_abnormal_dict = {'tbd':"To be filled",'no':'Not Present in Report','normal':"Normal", 'abnormal':"Abnormal"}
     breast_location_choice = generate_choice(breast_location_dict)
     birad_choice = generate_choice(birad_dict)
     yes_no_choice = generate_choice(yes_no_dict)
@@ -36,3 +40,6 @@ class CommonDict():
     absent_present_choice = generate_choice(absent_present_dict)
     form_status_choice = generate_choice(form_status_dict)
     folder_status_choice = generate_choice(folder_status_dict)
+    form_yes_no_choice = generate_choice(form_yes_no_dict)
+    breast_choice = generate_choice(breast_dict)
+    normal_abnormal_choice = generate_choice(normal_abnormal_dict)
