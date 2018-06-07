@@ -16,7 +16,7 @@ class PatientHistoryDict():
 
     diet_dict = {'veg':"Vegetarian", 'non-veg':"Non-Vegetarian", 'egg':"Ovo-Vegetarian", 'other':"Other"}
     diet_choice = generate_choice(diet_dict)
-    tobacco_dict =  {'no':'No exposure', 'passive':'Passive','active':'Active', 'pa':'Passive and Active'}
+    tobacco_dict =  {'passive':'Passive','active':'Active', 'pa':'Passive and Active'}
     tobacco_choice = generate_choice(tobacco_dict)
     tobacco_type_passive_dict = {'no':'No exposure','home':"Home", 'work':"Work", 'commute':"Commute",
                                  'social':"Social Interactions", 'other':'Other'}
@@ -26,3 +26,9 @@ class PatientHistoryDict():
                          'other':"Other"}
     tobacco_type_choice = generate_choice(tobacco_type_dict)
     yes_no_dict = {'tbd': "To be filled", "N": "No", "Y": "Yes", 'other': "Other"}
+
+    #family_repro details
+    menstruation_dict = {'tbd': "To be filled",'pre':"Pre-menopausal", 'peri': "Peri-menopausal", 'post':"Post-Menopausal", 'other':"Other"}
+    menstruation_type_dict = {'tbd': "To be filled",'regular':"Regular", 'irregular':"Irregular", 'other':"Other"}
+    menstruation_choice = generate_choice(menstruation_dict)
+    menstruation_type_choice=generate_choice(menstruation_type_dict)

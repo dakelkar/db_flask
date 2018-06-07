@@ -4,7 +4,7 @@ from wtforms.fields.html5 import DateField
 from db_dict.mammography import MammographyDict
 from db_dict.common_dict import CommonDict
 from schema_forms.form_utilities import BaseForm, SectionForm
-from schema_forms.usg import TomosynthesisForm, AbvsForm
+from schema_forms.radiology.usg import TomosynthesisForm, AbvsForm
 
 class MammoMassForm(SectionForm):
     def get_summary(self):

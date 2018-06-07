@@ -4,10 +4,11 @@ from passlib.hash import sha256_crypt
 from log import Log
 from dbs.foldersdb import FoldersDb
 from dbs.userdb import UserDb
-from schema_forms.patient_history import PatientHistoryForm, PhysicalActivityForm, NutritionalSupplementsForm
+from schema_forms.patient_details.patient_history import PatientInformationHabitsForm, PhysicalActivityForm, \
+    NutritionalSupplementsForm, FamilyReproductiveDetails
 from schema_forms.biopsy_form import BiopsyForm
-from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
-from schema_forms.usg import SonoMammographyForm, SonoMammoMassForm
+from schema_forms.radiology.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
+from schema_forms.radiology.usg import SonoMammographyForm, SonoMammoMassForm
 from schema_forms.folder_form import FoldersForm
 from wtforms import Form, StringField, PasswordField, validators
 from schema_forms.models import FolderSection
@@ -79,7 +80,7 @@ biopsy_db.connect(url)
 biopsy_crudprint = construct_crudprint('biopsy', biopsy_db, folder_db)
 app.register_blueprint(biopsy_crudprint, url_prefix="/biopsy")
 
-patient_history_db = SectionDb(log, PatientHistoryForm, 'patient_history')
+patient_history_db = SectionDb(log, PatientInformationHabitsForm,'patient_history')
 patient_history_db.connect(url)
 patient_history_crudprint = construct_crudprint('patient_history', patient_history_db, folder_db)
 app.register_blueprint(patient_history_crudprint, url_prefix="/patient_history")
@@ -94,6 +95,10 @@ patient_history_nut_supp_db.connect(url)
 patient_history_nut_supp_crudprint = construct_crudprint('nutritional_supplements', patient_history_nut_supp_db, folder_db)
 app.register_blueprint(patient_history_nut_supp_crudprint, url_prefix="/nutritional_supplements")
 
+family_details_db = SectionDb(log, FamilyReproductiveDetails, 'family_details')
+family_details_db.connect(url)
+family_details_crudprint = construct_crudprint('family_details', family_details_db, folder_db)
+app.register_blueprint(family_details_crudprint, url_prefix="/family_details")
 #########################################################
 # Login, registration and index
 @app.route('/')
@@ -220,15 +225,18 @@ def view_folder(folder_pk):
             create_folder_section(folder_pk,  "usg_mass","USG Mass/Lesion", usg_mass_db.get_folder_items, is_list=True), ]
     elif active_tab_id == "Biopsy":
         folder_sections = [
-            create_folder_section(folder_pk, "biopsy", "biopsy", biopsy_db.get_folder_items),
-        ]        
+            create_folder_section(folder_pk, "biopsy", "Biopsy Report", biopsy_db.get_folder_items),
+        ]
     elif active_tab_id == "PatientHistory":
         folder_sections = [
-            create_folder_section(folder_pk, "patient_history", "patient_history", patient_history_db.get_folder_items),
-            create_folder_section(folder_pk, "physical_activity", "physical_activity",
+            create_folder_section(folder_pk, "patient_history", "Patient Information and Habits", patient_history_db.get_folder_items),
+            create_folder_section(folder_pk, "physical_activity", "Physical Activity Habits",
                                   patient_history_phys_act_db.get_folder_items, is_list=True),
-            create_folder_section(folder_pk, "nutritional_supplements", "nutritional_supplements",
+            create_folder_section(folder_pk, "nutritional_supplements", "Nutritional Supplements Intake",
                                   patient_history_nut_supp_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "family_details", "Patient Family and Reproductive Details",
+                                  family_details_db.get_folder_items),
+
         ]
 
     folder_tabs = [        
