@@ -1,4 +1,3 @@
-from create_hash import encodex
 class FolderSection:
     def __init__(self, id, name, action, status, forms, folder_pk, last_modified_by, last_modified_on, pks, is_list):
         self.id = id

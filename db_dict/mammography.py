@@ -22,7 +22,6 @@ class MammographyDict():
                                  "fibroglandular density", 'c': "c. The breasts are heterogeneously dense, which may "
                                  "obscure small masses", 'd': "d. The breasts are extremely dense which lowers the "
                                  "sensitivity of mammography", 'other': "Other"}
-    #this data has to actually repeat over n times n being mass number
     mammo_mass_depth_dict = {'tbd':"To be filled",'NA':"Not Present",'anterior':"Anterior",'middle':"Middle",
                              'posterior':"Posterior",
                              'other':"Other"}
@@ -50,6 +49,38 @@ class MammographyDict():
     mammo_intra_mammary_lymph_nodes_dict = {'tbd':"To be filled","N":"Intra-mammary lymph nodes absent",
                                             "Y":"Intra-mammary lymph nodes present"}
     mammo_lesion_dict = {'tbd':"To be filled","N":"Skin Lesion not present", "Y":"Skin Lesion present"}
+    abvs_diagnosis_dict = {'tbd':"To be filled",'follow_up':'Not Present in Report','normal':"Normal", 'benign':"Benign",
+                          'suspicious':"Suspicious", 'cancer':"Diagnostic for Cancer"}
+    sonomammo_tissue_dict = {'tbd':"To be filled", 'a': "a. Homogeneous background echotexture – fat",
+                        'b':"b. Homogeneous background echotexture – fibroglandular",
+                        'c': "c. Heterogeneous background echotexture", 'na':"Not available in Report",
+                        'other': 'Other'}
+    sonomammo_calc_dict = {'tbd':"To be filled",'no':"Not Present",'mass':"Calcifications in a mass", 'outside':"Calcifications outside of a mass",
+                           'intra':"Intraductal calcifications", 'other':'Other'}
+    sonomammo_skin_dict = {'tbd':"To be filled", 'na':"Not in Report", 'no':"No Skin Changes", 'thick':"Skin thickening", 'retract':"Skin retraction"}
+    sonomammo_vascularity_dict = {'tbd':"To be filled",'na':"Not in Report", 'no':"Absent", 'internal':"Internal vascularity",
+                                  'rim':"Vessels in rim", 'other':"Other"}
+    sonomammo_elast_dict = {'tbd':"To be filled",'na':"Not in report", 'soft':"Soft", 'intermediate': "Intermediate", 'hard':"Hard",
+                            'other':"Other"}
+    sonomammo_hilum_dict  = {'tbd':"To be filled",'normal':'Normal Lymph Node','na':'Not in report','lost':"Lost", 'thin':"Thin",
+                             'preserved':"Preserved", 'other':"Other"}
+
+    sonomammo_lymph_ax_vasc_dict = {'tbd':"To be filled",'normal':'Normal Lymph Node','na':'Not in report', 'ventral':"Ventral",
+                                    'peri':"Peripheral", 'other':"Other"}
+    sonomammo_other_findings_dict = {'tbd':"To be filled",'no':"No other findings",'na':"Not mentioned in report",
+                                     'cyst':"Simple cyst", 'microcyst':"Clustered microcysts",'complex':"Complicated cyst",
+                                     'mass':"Mass in or on skin",'foriegn':"Foreign body including implants",
+                                     'vasc':"Vascular abnormalities",'avm':"AVMs (arteriovenous malformations/pseudoaneurysms)",
+                                     'mondor':"Mondor disease",'fluid':"Postsurgical ﬂuid collection",'fat':"Fat necrosis",
+                                     'other':"Other"}
+    sono_mass_shape_dict = {'tbd':"To be filled",'oval':"Oval", 'round':"Round", 'irregular':"Irregular", 'other':"Other"}
+    sono_orientation_dict= {'tbd':"To be filled",'na':'Not in report','parallel':"Parallel", 'not':"Not parallel"}
+    sono_mass_margin_dict = {'tbd':"To be filled", 'cirumc':"Circumscribed", 'not':"Not circumscribed",'indistinct':"Indistinct",
+                             'angular':"Angular", 'micro':"Microlobulated", 'spiculated':"Spiculated"}
+    sono_mass_echo_dict = {'tbd':"To be filled", 'anechoic':"Anechoic",'hyper':"Hyperechoic",'complex':"Complex cystic and solid",
+                           'hypo':"Hypoechoic",'iso':"Isoechoic", 'hetero':"Heterogeneous", 'other':"Other"}
+    sono_posterior_dict = {'tbd':"To be filled", 'no': "No posterior features", 'enhance':"Enhancement", 'shadow':"Shadowing",
+                           'combinde':"Combined pattern", 'other':"Other"}
     mammo_location_choice = generate_choice(mammo_location_dict)
     mammo_details_choice = CommonDict.yes_no_choice
     mammo_breast_density_choice = generate_choice(mammo_breast_density_dict)
@@ -85,3 +116,17 @@ class MammographyDict():
     mammo_lesion_left_breast_choice =  CommonDict.breast_location_choice
     mammo_birad_choice =  CommonDict.birad_choice
     mammo_status_choice = CommonDict.form_status_choice
+    abvs_diagnosis_choice = generate_choice(abvs_diagnosis_dict)
+    sonomammo_tissue_choice = generate_choice(sonomammo_tissue_dict)
+    sonomammo_calc_choice = generate_choice(sonomammo_calc_dict)
+    sonomammo_skin_choice = generate_choice(sonomammo_skin_dict)
+    sonomammo_vascularity_choice=generate_choice(sonomammo_vascularity_dict)
+    sonomammo_elast_choice = generate_choice(sonomammo_elast_dict)
+    sonomammo_hilum_choice = generate_choice(sonomammo_hilum_dict)
+    sonomammo_lymph_ax_vasc_choice = generate_choice(sonomammo_lymph_ax_vasc_dict)
+    sonomammo_other_findings_choice = generate_choice(sonomammo_other_findings_dict)
+    sono_mass_shape_choice = generate_choice(sono_mass_shape_dict)
+    sono_orientation_choice= generate_choice(sono_orientation_dict)
+    sono_mass_margin_choice=generate_choice(sono_mass_margin_dict)
+    sono_mass_echo_choice = generate_choice(sono_mass_echo_dict)
+    sono_posterior_choice = generate_choice(sono_posterior_dict)

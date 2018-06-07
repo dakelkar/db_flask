@@ -39,12 +39,13 @@ def to_bson(form, prefix = 'fld_'):
         key = field[len(prefix):]
         value = form[field].data
         o = getattr(form, field)
-        # handle dates!
+        # setting is_delete to boolean everytime form is submitted
         if key == 'is_delete':
             result = False
             if value == 'True' or value == True:
                 result = True
             value = result
+        # handle dates!
         if o.type  == "DateField":
             value = datetime.combine(value, datetime.min.time())
         bson[key] = value
@@ -121,3 +122,4 @@ class SectionForm(BaseForm):
     fld_folder_pk = HiddenField()
     last_update = HiddenField()
     update_by = HiddenField()
+    fld_comments= TextAreaField("Any additional comments for data in this form?")

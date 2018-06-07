@@ -7,6 +7,7 @@ from dbs.userdb import UserDb
 from schema_forms.patient_history import PatientHistoryForm, PhysicalActivityForm, NutritionalSupplementsForm
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
+from schema_forms.usg import SonoMammographyForm, SonoMammoMassForm
 from schema_forms.folder_form import FoldersForm
 from wtforms import Form, StringField, PasswordField, validators
 from schema_forms.models import FolderSection
@@ -21,12 +22,14 @@ import os
 log = Log()
 # Initialize DB
 url = os.getenv('BCDB_URL')
+#url = None
 if url is None:
     url = 'mongodb://localhost:27017'
 url = url.replace('"', '')
 print('Using db at: '+url)
 
 port = os.getenv('PORT')
+#port = None
 if port is None:
     port = 5666
 
@@ -60,6 +63,16 @@ mammo_calcification_db = SectionDb(log, MammoCalcificationForm, 'mammo_calcifica
 mammo_calcification_db.connect(url)
 mammo_calcification_crudprint = construct_crudprint('mammo_calcification', mammo_calcification_db, folder_db)
 app.register_blueprint(mammo_calcification_crudprint, url_prefix="/mammo_calcification")
+
+usg_db = SectionDb(log, SonoMammographyForm, 'sono_mammography')
+usg_db.connect(url)
+usg_crudprint = construct_crudprint('sonomammography', usg_db, folder_db)
+app.register_blueprint(usg_crudprint, url_prefix="/usg")
+
+usg_mass_db = SectionDb(log, SonoMammoMassForm, 'sonomammography_mass')
+usg_mass_db.connect(url)
+usg_mass_crudprint = construct_crudprint('sonomammography_mass', usg_mass_db, folder_db)
+app.register_blueprint(usg_mass_crudprint, url_prefix="/usg_mass")
 
 biopsy_db = SectionDb(log, BiopsyForm, 'biopsies')
 biopsy_db.connect(url)
@@ -200,10 +213,11 @@ def view_folder(folder_pk):
     folder_sections = []
     if active_tab_id == "Radiology":
         folder_sections = [
-            create_folder_section(folder_pk, "mammo", "mammo", mammo_db.get_folder_items),
-            create_folder_section(folder_pk, "mammo_mass", "mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
-            create_folder_section(folder_pk, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
-        ]
+            create_folder_section(folder_pk, "mammo","Mammography", mammo_db.get_folder_items),
+            create_folder_section(folder_pk,  "mammo_mass","Mammography Mass/Lesion", mammo_mass_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "mammo_calcification", "Mammography Calcification", mammo_calcification_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "usg", "USG", usg_db.get_folder_items),
+            create_folder_section(folder_pk,  "usg_mass","USG Mass/Lesion", usg_mass_db.get_folder_items, is_list=True), ]
     elif active_tab_id == "Biopsy":
         folder_sections = [
             create_folder_section(folder_pk, "biopsy", "biopsy", biopsy_db.get_folder_items),
