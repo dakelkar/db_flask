@@ -19,11 +19,14 @@ class CommonDict():
     breast_location_dict = {'tbd':"To be filled",'NA': "Not present in this breast", 'uoq':"UOQ", 'uiq':"UIQ",
                             'ucq':"UCQ",'loq': "LOQ", 'liq':"LIQ",'lcq':"LCQ", 'coq': "COQ",'ciq':"CIQ",'ccq':"CCQ",
                             'other': "Other"}
-    birad_dict = {'tbd':"To be filled",'NA': "Information not available in this report","0":"0: Incomplete – Need Additional Imaging Evaluation",
+    birad_dict = {'tbd':"To be filled",'NA': "Information not available in this report",
+                  "0":"0: Incomplete – Need Additional Imaging Evaluation",
                   "i":"I: Negative",'ii':"II: Benign", 'iii':"III: Probably Benign",'iv':"IV: Suspicious",
                   'iva': "IVA: Low suspicion for malignancy",'ivb': "IVB: Moderate suspicion for malignancy",
-                  'ivc': "IVC: High suspicion for malignancy",'v':"V:  Highly Suggestive of Malignancy", 'other': "Other"}
-    distance_from_nipple_dict = {'tbd':"To be filled",'NA':"Not Present", '<.5': "<0.5 cm", '>0.5': ">0.5 cm", 'other': "Other"}
+                  'ivc': "IVC: High suspicion for malignancy",'v':"V:  Highly Suggestive of Malignancy",
+                  'other': "Other"}
+    distance_from_nipple_dict = {'tbd':"To be filled",'NA':"Not Present", '<.5': "<0.5 cm", '>0.5': ">0.5 cm",
+                                 'other': "Other"}
     yes_no_dict = {'tbd':"To be filled","N": "No", "Y": "Yes", 'other': "Other"}
     form_yes_no_dict ={'tbd':"To be filled",'na':'Not available in report',"N": "No", "Y": "Yes"}
 
@@ -31,7 +34,8 @@ class CommonDict():
     folder_status_dict = {'Empty':"Empty", 'All fields are not filled':"All fields are not filled",
                         'Requires additional data from specialist':"Requires additional data from specialist",
                         "Requires Follow up":'Requires Follow up','Complete':"Complete"}
-    breast_dict ={'tbd':"To be filled",'no':"Not present",'right': "Right Breast", 'left':"Left Breast", 'both':"Both Breast", 'other':"Other"}
+    breast_dict ={'tbd':"To be filled",'no':"Not present",'right': "Right Breast", 'left':"Left Breast",
+                  'both':"Both Breast", 'other':"Other"}
     normal_abnormal_dict = {'tbd':"To be filled",'no':'Not Present in Report','normal':"Normal", 'abnormal':"Abnormal"}
     breast_location_choice = generate_choice(breast_location_dict)
     birad_choice = generate_choice(birad_dict)

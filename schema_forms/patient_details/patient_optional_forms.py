@@ -1,4 +1,4 @@
-from wtforms import StringField, IntegerField, FloatField, SubmitField, SelectField, SelectMultipleField
+from wtforms import StringField, IntegerField, FloatField, SubmitField, SelectField, SelectMultipleField, RadioField
 from schema_forms.form_utilities import SectionForm, BaseForm, FormField
 from db_dict.patient_details_dict import PatientHistoryDict
 from db_dict.common_dict import CommonDict
@@ -23,3 +23,23 @@ class TobaccoConsumption (BaseForm):
     fld_tobacco_quant = StringField("Quantity of tobacco consumed per week")
     fld_tobacco_duration = StringField("Duration of tobacco consumption")
     fld_tobacco_comments = StringField("Additional comments for tobacco consumption")
+
+class BreastSymptomsForm(BaseForm):
+    fld_symptom_right = SelectMultipleField("Symptoms in right breast", choices=PatientHistoryDict.symptoms_choice)
+    fld_symptom_right_other = StringField("Other symptoms")
+    fld_symptom_right_duration = StringField("Duration of symptoms in right breast")
+    fld_symptom_left = SelectMultipleField("Symptoms in left breast", choices=PatientHistoryDict.symptoms_choice)
+    fld_symptom_left_other = StringField("Other symptoms")
+    fld_symptom_left_duration = StringField("Duration of symptoms in left breast")
+
+
+class CancerTreatmentDetailsForm(BaseForm):
+    fld_type_treat = StringField("Details of treatment taken")
+    fld_duration_treat = StringField("Duration of treatment")
+
+class CancerTreatmentOtherForm(BaseForm):
+    fld_treatment = StringField("Other treatment taken")
+    fld_type_treat = StringField("Details of treatment taken")
+    fld_duration_treat = StringField("Duration of treatment")
+
+

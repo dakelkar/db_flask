@@ -5,7 +5,7 @@ from log import Log
 from dbs.foldersdb import FoldersDb
 from dbs.userdb import UserDb
 from schema_forms.patient_details.patient_history import PatientInformationHabitsForm, PhysicalActivityForm, \
-    NutritionalSupplementsForm, FamilyReproductiveDetails
+    NutritionalSupplementsForm, FamilyReproductiveDetails, PatientMedicalHistory, PatientCancerHistory
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.radiology.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
 from schema_forms.radiology.usg import SonoMammographyForm, SonoMammoMassForm
@@ -22,15 +22,15 @@ import os
 # Initialize logging
 log = Log()
 # Initialize DB
-url = os.getenv('BCDB_URL')
-#url = None
+#url = os.getenv('BCDB_URL')
+url = None
 if url is None:
     url = 'mongodb://localhost:27017'
 url = url.replace('"', '')
 print('Using db at: '+url)
 
-port = os.getenv('PORT')
-#port = None
+#port = os.getenv('PORT')
+port = None
 if port is None:
     port = 5666
 
@@ -99,6 +99,17 @@ family_details_db = SectionDb(log, FamilyReproductiveDetails, 'family_details')
 family_details_db.connect(url)
 family_details_crudprint = construct_crudprint('family_details', family_details_db, folder_db)
 app.register_blueprint(family_details_crudprint, url_prefix="/family_details")
+
+patient_medical_db = SectionDb(log, PatientMedicalHistory, 'patient_medical')
+patient_medical_db.connect(url)
+patient_medical_crudprint = construct_crudprint('patient_medical', patient_medical_db, folder_db)
+app.register_blueprint(patient_medical_crudprint, url_prefix="/patient_medical")
+
+patient_former_cancer_db = SectionDb(log, PatientCancerHistory, 'patient_former_cancer')
+patient_former_cancer_db.connect(url)
+patient_former_cancer_crudprint = construct_crudprint('patient_former_cancer', patient_former_cancer_db, folder_db)
+app.register_blueprint(patient_former_cancer_crudprint, url_prefix="/patient_former_cancer")
+
 #########################################################
 # Login, registration and index
 @app.route('/')
@@ -236,8 +247,11 @@ def view_folder(folder_pk):
                                   patient_history_nut_supp_db.get_folder_items, is_list=True),
             create_folder_section(folder_pk, "family_details", "Patient Family and Reproductive Details",
                                   family_details_db.get_folder_items),
-
-        ]
+            create_folder_section(folder_pk, "patient_medical", "Patient Medical History",
+                                  patient_medical_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "patient_former_cancer", "Patient Cancer History",
+                                  patient_former_cancer_db.get_folder_items, is_list=True)
+            ]
 
     folder_tabs = [        
         ("PatientHistory", "Patient History"),

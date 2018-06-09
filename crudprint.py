@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, abort
 from flask import flash, redirect, url_for, session, request
 from isloggedin import is_logged_in
+from werkzeug.datastructures import MultiDict
 
 ######################
 # Section Blueprint
@@ -81,4 +82,39 @@ def construct_crudprint(name, section_db, folder_db):
         return redirect(url_for('view_folder', folder_pk=folder_pk))
 
     return crudprint
+
+# see commit on git named by rakelkar 'first attempt at repeater '
+#TODO complete test of making treatment as a table that can be filled in. also check class TreatmentForm in
+#TODO patient_history and find template mentioned in this code.
+
+def construct_table_crudprint (name, section_db, folder_db):
+
+    crudprint = Blueprint(name, __name__, template_folder='templates')
+
+    @crudprint.route('/cancer_treatment/<folder_hash>', methods=['GET', 'POST'])
+    @ is_logged_in
+    def edit(folder_pk, pk):
+        folder_number = folder_db.folder_check(folder_pk)
+        if folder_number is None:
+            flash(folder_pk + ' not found', 'danger')
+            return redirect(url_for('dashboard'))
+        form = section_db.get_from_request(request.form)
+
+        if request.method == 'GET':
+            form = section_db.get_item(pk)
+            if form is None:
+                # ugh not found!
+                abort(404)
+
+        if request.method == 'POST' and form.validate():
+            success_flag, result = section_db.update_item(form, session['username'])
+
+            if not success_flag:
+                flash('Error: ' + str(result), 'danger')
+            else:
+                flash('Updated: ' + str(result), 'success')
+
+            return redirect(url_for('view_folder', folder_pk=folder_pk))
+
+        return render_template('repeater.html', form=form, folder_number=folder_number)
 

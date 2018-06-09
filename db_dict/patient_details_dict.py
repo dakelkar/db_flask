@@ -32,3 +32,8 @@ class PatientHistoryDict():
     menstruation_type_dict = {'tbd': "To be filled",'regular':"Regular", 'irregular':"Irregular", 'other':"Other"}
     menstruation_choice = generate_choice(menstruation_dict)
     menstruation_type_choice=generate_choice(menstruation_type_dict)
+    del_habits_dict = {'tbd':"To be filled",'na':'Not available in report',"N": "No", "other": "Yes"}
+    del_habits_choice= generate_choice(del_habits_dict)
+    symptoms_dict = {'pain':"Pain or tenderness", 'lumps':"Lumps", 'discharge':"Nipple Discharge", 'retract':"Nipple Retraction", 'dimpling':"Dimpling",
+                     'discolour':"Discolouration", 'ulceration':"Ulceration", 'eczema':"Eczema", 'other': 'Other'}
+    symptoms_choice = generate_choice(symptoms_dict)
