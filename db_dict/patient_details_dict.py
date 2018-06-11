@@ -13,8 +13,12 @@ class PatientHistoryDict():
             choices_all = choices_all + [(choices)]
         return tuple(choices_all)
 
-
-    diet_dict = {'veg':"Vegetarian", 'non-veg':"Non-Vegetarian", 'egg':"Ovo-Vegetarian", 'other':"Other"}
+    gender_dict = {'f':"Female", 'm':"Male", 'other':"Other"}
+    gender_choice = generate_choice(gender_dict)
+    family_income_dict= {'tbd':'To be filled',"1":"0-2.5 Lacks","2":"2.5-5 Lacks", '3':"5-10 Lacks",
+                         '4':">10 Lacks", "no":'Not Known','na':'Data not in report'}
+    family_income_choice = generate_choice(family_income_dict)
+    diet_dict = {'tbd':'To be Filled','veg':"Vegetarian", 'non-veg':"Non-Vegetarian", 'egg':"Ovo-Vegetarian", 'other':"Other"}
     diet_choice = generate_choice(diet_dict)
     tobacco_dict =  {'passive':'Passive','active':'Active', 'pa':'Passive and Active'}
     tobacco_choice = generate_choice(tobacco_dict)
@@ -37,3 +41,5 @@ class PatientHistoryDict():
     symptoms_dict = {'pain':"Pain or tenderness", 'lumps':"Lumps", 'discharge':"Nipple Discharge", 'retract':"Nipple Retraction", 'dimpling':"Dimpling",
                      'discolour':"Discolouration", 'ulceration':"Ulceration", 'eczema':"Eczema", 'other': 'Other'}
     symptoms_choice = generate_choice(symptoms_dict)
+    family_degree_dict = {'0':"Immediate Family", 'm':"Maternal Family", 'p':"Paternal Family"}
+    family_degree_choice = generate_choice(family_degree_dict)

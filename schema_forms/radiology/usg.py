@@ -5,27 +5,6 @@ from db_dict.common_dict import CommonDict
 from schema_forms.form_utilities import BaseForm, SectionForm
 
 tbd = 'To be filled'
-class TomosynthesisForm(BaseForm):
-    fld_tomo = SelectField("3D digital Tomosynthesis done",
-                           choices=CommonDict.absent_present_choice)
-    fld_tomo_date = DateField("Date of Tomosynthesis examination", default=None)
-    fld_tomo_acc = StringField("Accession number of Tomosynthesis")
-    fld_tomo_commments = TextAreaField("Comments/Notes for Tomosynthesis")
-
-class AbvsForm(BaseForm):
-    fld_abvs_date = DateField("Date of examination of ABVS", default=None)
-    fld_abvs_acc = StringField("Accession number of ABVS")
-    fld_abvs_right_breast_lesion = SelectField("Location of lesion in right breast",
-                                               choices=CommonDict.breast_location_choice)
-    fld_abvs_right_breast_lesion_other = StringField("Other")
-    fld_abvs_left_breast_lesion = SelectField("Location of lesion in left breast",
-                                              choices=CommonDict.breast_location_choice)
-    fld_abvs_left_breast_lesion_other = StringField("Other")
-    fld_abvs_size = StringField("Size of lesion")
-    fld_abvs_dist = StringField("Distance from Skin (cm)")
-    fld_abvs_pect = StringField("Distance from Pectoralis Major (cm)")
-    fld_abvs_diagnosis = SelectField("ABVS Diagnosis", choices=MammographyDict.abvs_diagnosis_choice)
-
 
 class SonoMammographyForm(SectionForm):
     fld_sonomammography_acc = StringField("Accession number of Sono-Mammography", default=tbd)

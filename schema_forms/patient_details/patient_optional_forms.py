@@ -33,13 +33,12 @@ class BreastSymptomsForm(BaseForm):
     fld_symptom_left_duration = StringField("Duration of symptoms in left breast")
 
 
-class CancerTreatmentDetailsForm(BaseForm):
-    fld_type_treat = StringField("Details of treatment taken")
-    fld_duration_treat = StringField("Duration of treatment")
+class MetastasisSymptomsForm(BaseForm):
+    fld_bone_pain = SelectField(" Bone Pain", choices=CommonDict.absent_present_choice)
+    fld_cough = SelectField("Cough", choices=CommonDict.absent_present_choice)
+    fld_jaundice = SelectField("Jaundice", choices=CommonDict.absent_present_choice)
+    fld_headache = SelectField("Headache",choices=CommonDict.absent_present_choice)
+    fld_weightloss = SelectField("Weight Loss", choices=CommonDict.absent_present_choice)
 
-class CancerTreatmentOtherForm(BaseForm):
-    fld_treatment = StringField("Other treatment taken")
-    fld_type_treat = StringField("Details of treatment taken")
-    fld_duration_treat = StringField("Duration of treatment")
 
 

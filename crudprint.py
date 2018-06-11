@@ -87,7 +87,7 @@ def construct_crudprint(name, section_db, folder_db):
 #TODO complete test of making treatment as a table that can be filled in. also check class TreatmentForm in
 #TODO patient_history and find template mentioned in this code.
 
-def construct_table_crudprint (name, section_db, folder_db):
+def construct_radio_button (name, section_db, folder_db):
 
     crudprint = Blueprint(name, __name__, template_folder='templates')
 
@@ -116,5 +116,5 @@ def construct_table_crudprint (name, section_db, folder_db):
 
             return redirect(url_for('view_folder', folder_pk=folder_pk))
 
-        return render_template('repeater.html', form=form, folder_number=folder_number)
+        return render_template('form_with_inline_radio.html', form=form, folder_number=folder_number)
 
