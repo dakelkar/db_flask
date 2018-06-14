@@ -52,11 +52,9 @@ folder_db.connect(url)
 folder_crudprint = construct_crudprint_folder(folder_db)
 app.register_blueprint(folder_crudprint, url_prefix="/folder")
 
-#Patient CRUD
-
-patient_history_db = SectionDb(log, PatientInformationHabitsForm,'patient_history')
+patient_history_db = SectionDb(log, PatientInformationHabitsForm, 'patient_history')
 patient_history_db.connect(url)
-patient_history_crudprint = construct_crudprint('patient_history', patient_history_db, folder_db)
+patient_history_crudprint = construct_crudprint('patient_history', patient_history_db , folder_db)
 app.register_blueprint(patient_history_crudprint, url_prefix="/patient_history")
 
 patient_history_phys_act_db = SectionDb(log, PhysicalActivityForm, 'physical_activity')
@@ -66,7 +64,8 @@ app.register_blueprint(patient_history_phys_act_crudprint, url_prefix="/physical
 
 patient_history_nut_supp_db = SectionDb(log, NutritionalSupplementsForm, 'nutritional_supplements')
 patient_history_nut_supp_db.connect(url)
-patient_history_nut_supp_crudprint = construct_crudprint('nutritional_supplements', patient_history_nut_supp_db, folder_db)
+patient_history_nut_supp_crudprint = construct_crudprint('nutritional_supplements', patient_history_nut_supp_db,
+                                                         folder_db)
 app.register_blueprint(patient_history_nut_supp_crudprint, url_prefix="/nutritional_supplements")
 
 family_details_db = SectionDb(log, FamilyReproductiveDetails, 'family_details')
@@ -89,7 +88,10 @@ family_cancer_db.connect(url)
 family_cancer_crudprint = construct_crudprint('family_cancer', family_cancer_db, folder_db)
 app.register_blueprint(family_cancer_crudprint, url_prefix="/family_cancer")
 
+
 #Radiology CRUD
+
+
 
 mammo_db = SectionDb(log, MammographyForm, 'mammography')
 mammo_db.connect(url)

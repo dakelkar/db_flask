@@ -8,7 +8,7 @@ from schema_forms.patient_details.patient_optional_forms import AlcoholConsumpti
 
 tbd = "To be Filled"
 class PatientInformationHabitsForm(SectionForm):
-    fld_gender = SelectField("Gender", PatientHistoryDict.gender_choice)
+    fld_gender = SelectField("Gender", choices=PatientHistoryDict.gender_choice, default=tbd)
     fld_gender_other = StringField("Other")
     fld_age_diagnosis = IntegerField('Age at diagnosis (yrs)', default=tbd)
     fld_place_birth = StringField('Place of Birth', default=tbd)
