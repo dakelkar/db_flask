@@ -33,6 +33,8 @@ class CommonDict():
                         "Requires Follow up":'Requires Follow up','Complete':"Complete"}
     breast_dict ={'tbd':"To be filled",'no':"Not present",'right': "Right Breast", 'left':"Left Breast", 'both':"Both Breast", 'other':"Other"}
     normal_abnormal_dict = {'tbd':"To be filled",'no':'Not Present in Report','normal':"Normal", 'abnormal':"Abnormal"}
+    postive_negative_dict = {'tbd':"To be filled","pos":"Positive", "neg": "Negative", 'report': 'Not mentioned in Report',
+                                  'other': 'Other'}
     breast_location_choice = generate_choice(breast_location_dict)
     birad_choice = generate_choice(birad_dict)
     yes_no_choice = generate_choice(yes_no_dict)
@@ -43,3 +45,4 @@ class CommonDict():
     form_yes_no_choice = generate_choice(form_yes_no_dict)
     breast_choice = generate_choice(breast_dict)
     normal_abnormal_choice = generate_choice(normal_abnormal_dict)
+    postive_negative_choice = generate_choice(postive_negative_dict)

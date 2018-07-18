@@ -16,7 +16,7 @@ class BiopsyDict():
     consent_form_dict = {'tbd':"To be filled","Y":"Consent form with signature present in folder",
                          "N":"Completed consent form not present in folder"}
     biopsy_type_dict ={'tbd':"To be filled","direct":"Direct", "usg_guided":"USG Guided", "vab":"VAB",
-                       "truecut":"True-cut", "stereo":"Steriotactic", "other":"Other"}
+                       "trucut":"Tru-cut", "stereo":"Steriotactic", "other":"Other"}
     tumour_diagnosis_dict ={'tbd':"To be filled",'benign':'Benign',
                             'dcis_micro':"Ductal carcinoma in situ(DCIS) with microinvasion",
                             'dcis_no_micro':"Ductal carcinoma in situ(DCIS) without microinvasion","lcs":

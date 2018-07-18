@@ -1,20 +1,9 @@
 from db_dict.common_dict import CommonDict
+
 class MammographyDict():
     def __init__(self, key, value):
         self.key = key
         self.value = value
-
-
-    def generate_choice(dict_):
-        choices_all = []
-        keys = []
-        for key in dict_:
-            keys.append(key)
-        for index in keys:
-            choices = (index, dict_.get(index))
-            choices_all = choices_all+ [(choices)]
-        return tuple(choices_all)
-
     mammo_location_dict = {'tbd':"To be filled",'pccm':"PCCM", 'out':"Outside",'other': "Other"}
     mammo_details_dict = {'tbd':"To be filled","N": "No","Y":"Yes",}
     mammo_breast_density_dict = {'tbd':"To be filled",'NA': "Information not available in this report",
@@ -81,52 +70,52 @@ class MammographyDict():
                            'hypo':"Hypoechoic",'iso':"Isoechoic", 'hetero':"Heterogeneous", 'other':"Other"}
     sono_posterior_dict = {'tbd':"To be filled", 'no': "No posterior features", 'enhance':"Enhancement", 'shadow':"Shadowing",
                            'combinde':"Combined pattern", 'other':"Other"}
-    mammo_location_choice = generate_choice(mammo_location_dict)
+    mammo_location_choice = CommonDict.generate_choice(mammo_location_dict)
     mammo_details_choice = CommonDict.yes_no_choice
-    mammo_breast_density_choice = generate_choice(mammo_breast_density_dict)
+    mammo_breast_density_choice = CommonDict.generate_choice(mammo_breast_density_dict)
     mammo_mass_present_choice = CommonDict.yes_no_choice
     mammo_mass_location_right_breast_choice = CommonDict.breast_location_choice
     mammo_mass_location_left_breast_choice =  CommonDict.breast_location_choice
-    mammo_mass_depth_choice = generate_choice(mammo_mass_depth_dict)
+    mammo_mass_depth_choice = CommonDict.generate_choice(mammo_mass_depth_dict)
     mammo_mass_dist_choice = CommonDict.distance_from_nipple_choice
-    mammo_mass_shape_choice = generate_choice(mammo_mass_shape_dict)
-    mammo_mass_margin_choice = generate_choice(mammo_mass_margin_dict)
-    mammo_mass_density_choice = generate_choice(mammo_mass_density_dict)
+    mammo_mass_shape_choice = CommonDict.generate_choice(mammo_mass_shape_dict)
+    mammo_mass_margin_choice = CommonDict.generate_choice(mammo_mass_margin_dict)
+    mammo_mass_density_choice = CommonDict.generate_choice(mammo_mass_density_dict)
     mammo_calcification_present_choice = CommonDict.yes_no_choice
     mammo_calc_location_right_breast_choice =  CommonDict.breast_location_choice
     mammo_calc_location_left_breast_choice =  CommonDict.breast_location_choice
-    mammo_calc_depth_choice = generate_choice(mammo_mass_depth_dict)
+    mammo_calc_depth_choice = CommonDict.generate_choice(mammo_mass_depth_dict)
     mamo_calc_dist_choice = CommonDict.distance_from_nipple_choice
-    mammo_calcification_type_choice = generate_choice(mammo_calcification_type_dict)
-    mammo_calcification_diagnosis_choice = generate_choice( mammo_calcification_diagnosis_dict)
+    mammo_calcification_type_choice = CommonDict.generate_choice(mammo_calcification_type_dict)
+    mammo_calcification_diagnosis_choice = CommonDict.generate_choice( mammo_calcification_diagnosis_dict)
     mammo_arch_present_choice = CommonDict.yes_no_choice
     mammo_arch_location_right_breast_choice = CommonDict.breast_location_choice
     mammo_arch_location_left_breast_choice =  CommonDict.breast_location_choice
-    mammo_arch_depth_choice = generate_choice(mammo_mass_depth_dict)
+    mammo_arch_depth_choice = CommonDict.generate_choice(mammo_mass_depth_dict)
     mammo_arch_dist_choice = CommonDict.distance_from_nipple_choice
     mammo_assym_present_choice = CommonDict.yes_no_choice
     mammo_assym_location_right_breast_choice = CommonDict.breast_location_choice
     mammo_assym_location_left_breast_choice = CommonDict.breast_location_choice
-    mammo_assym_depth_choice = generate_choice(mammo_mass_depth_dict)
-    mammo_assym_type_right_breast_choice = generate_choice(mammo_assym_type_dict)
-    mammo_assym_type_left_breast_choice = generate_choice(mammo_assym_type_dict)
-    mammo_intra_mammary_lymph_nodes_choice = generate_choice(mammo_intra_mammary_lymph_nodes_dict)
-    mammo_lesion_choice = generate_choice(mammo_lesion_dict)
+    mammo_assym_depth_choice = CommonDict.generate_choice(mammo_mass_depth_dict)
+    mammo_assym_type_right_breast_choice = CommonDict.generate_choice(mammo_assym_type_dict)
+    mammo_assym_type_left_breast_choice = CommonDict.generate_choice(mammo_assym_type_dict)
+    mammo_intra_mammary_lymph_nodes_choice = CommonDict.generate_choice(mammo_intra_mammary_lymph_nodes_dict)
+    mammo_lesion_choice = CommonDict.generate_choice(mammo_lesion_dict)
     mammo_lesion_right_breast_choice =  CommonDict.breast_location_choice
     mammo_lesion_left_breast_choice =  CommonDict.breast_location_choice
     mammo_birad_choice =  CommonDict.birad_choice
     mammo_status_choice = CommonDict.form_status_choice
-    abvs_diagnosis_choice = generate_choice(abvs_diagnosis_dict)
-    sonomammo_tissue_choice = generate_choice(sonomammo_tissue_dict)
-    sonomammo_calc_choice = generate_choice(sonomammo_calc_dict)
-    sonomammo_skin_choice = generate_choice(sonomammo_skin_dict)
-    sonomammo_vascularity_choice=generate_choice(sonomammo_vascularity_dict)
-    sonomammo_elast_choice = generate_choice(sonomammo_elast_dict)
-    sonomammo_hilum_choice = generate_choice(sonomammo_hilum_dict)
-    sonomammo_lymph_ax_vasc_choice = generate_choice(sonomammo_lymph_ax_vasc_dict)
-    sonomammo_other_findings_choice = generate_choice(sonomammo_other_findings_dict)
-    sono_mass_shape_choice = generate_choice(sono_mass_shape_dict)
-    sono_orientation_choice= generate_choice(sono_orientation_dict)
-    sono_mass_margin_choice=generate_choice(sono_mass_margin_dict)
-    sono_mass_echo_choice = generate_choice(sono_mass_echo_dict)
-    sono_posterior_choice = generate_choice(sono_posterior_dict)
+    abvs_diagnosis_choice = CommonDict.generate_choice(abvs_diagnosis_dict)
+    sonomammo_tissue_choice = CommonDict.generate_choice(sonomammo_tissue_dict)
+    sonomammo_calc_choice = CommonDict.generate_choice(sonomammo_calc_dict)
+    sonomammo_skin_choice = CommonDict.generate_choice(sonomammo_skin_dict)
+    sonomammo_vascularity_choice=CommonDict.generate_choice(sonomammo_vascularity_dict)
+    sonomammo_elast_choice = CommonDict.generate_choice(sonomammo_elast_dict)
+    sonomammo_hilum_choice = CommonDict.generate_choice(sonomammo_hilum_dict)
+    sonomammo_lymph_ax_vasc_choice = CommonDict.generate_choice(sonomammo_lymph_ax_vasc_dict)
+    sonomammo_other_findings_choice = CommonDict.generate_choice(sonomammo_other_findings_dict)
+    sono_mass_shape_choice = CommonDict.generate_choice(sono_mass_shape_dict)
+    sono_orientation_choice= CommonDict.generate_choice(sono_orientation_dict)
+    sono_mass_margin_choice=CommonDict.generate_choice(sono_mass_margin_dict)
+    sono_mass_echo_choice = CommonDict.generate_choice(sono_mass_echo_dict)
+    sono_posterior_choice = CommonDict.generate_choice(sono_posterior_dict)
