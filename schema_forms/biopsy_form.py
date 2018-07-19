@@ -1,9 +1,7 @@
-from flask_wtf import FlaskForm
-from db_dict.common_dict import CommonDict
-from wtforms import StringField, validators, IntegerField, SelectField, SubmitField, HiddenField
+from wtforms import StringField, validators, IntegerField, SelectField, SubmitField
 from wtforms.fields.html5 import DateField
 from db_dict.biopsy import BiopsyDict
-from schema_forms.form_utilities import BaseForm, SectionForm
+from schema_forms.form_utilities import SectionForm
 
 
 class BiopsyForm (SectionForm):
@@ -14,7 +12,8 @@ class BiopsyForm (SectionForm):
     fld_consent_form_biopsy = SelectField('Is consent form with signature present in file ?',
                                          choices=BiopsyDict.consent_form_choice)
     fld_block_serial_number_biopsy = StringField('Block Serial Number', [validators.Length(min=1, max=50)])
-    fld_block_location_biopsy = StringField("to try multiple fields here since it has a format")
+    fld_block_location_biopsy = StringField("Block Location ID (Cabinet No.-Drawer No.-Column No.-Front/Back",
+                                            default='To be Filled')
     fld_block_current_location_biopsy = StringField("What is the current location of block?")
     fld_biopsy_custody_pccm = SelectField('Is the biopsy report in PCCM custody?',
                                           choices=BiopsyDict.biopsy_custody_pccm_choice)
@@ -51,4 +50,3 @@ class BiopsyForm (SectionForm):
     fld_fnac_diagnosis = SelectField("FNAC Diagnosis", choices=BiopsyDict.fnac_diagnosis_choice)
     fld_fnac_diagnosis_other = StringField("Other")
     submit_button = SubmitField('Submit Form')
-    

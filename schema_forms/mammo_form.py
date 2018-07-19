@@ -91,6 +91,7 @@ class AssoFeatureForm(BaseForm):
     fld_calcifications_other = StringField("Other")
     fld_calcifications = SelectField("Calcification", choices=CommonDict.absent_present_choice)
 
+
 class MammographyForm(SectionForm):
     def get_summary(self):
         return self.fld_mammo_location.data

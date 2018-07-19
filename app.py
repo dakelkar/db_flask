@@ -221,8 +221,9 @@ def view_folder(folder_pk):
         folder_sections = [
             create_folder_section(folder_pk, "mammo","mammo", mammo_db.get_folder_items),
             create_folder_section(folder_pk,  "mammo_mass","mammo_mass", mammo_mass_db.get_folder_items, is_list=True),
-            create_folder_section(folder_pk, "mammo_calcification", "mammo_calcification", mammo_calcification_db.get_folder_items, is_list=True),
-            create_folder_section(folder_pk, "usg", "usg", usg_db.get_folder_items),
+            create_folder_section(folder_pk,  "mammo_calcification", "mammo_calcification",
+                                  mammo_calcification_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk,  "usg", "usg", usg_db.get_folder_items),
             create_folder_section(folder_pk,  "usg_mass","usg_mass", usg_mass_db.get_folder_items, is_list=True), ]
     elif active_tab_id == "Biopsy":
         folder_sections = [

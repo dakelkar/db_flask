@@ -1,75 +1,78 @@
-from flask_wtf import FlaskForm
-from db_dict.common_dict import CommonDict
-from wtforms import StringField, validators, IntegerField, SelectField, SubmitField, HiddenField
+from wtforms import StringField, validators, IntegerField, SelectField, SubmitField, TextAreaField, HiddenField
 from wtforms.fields.html5 import DateField
 from db_dict.surgery_block import SurgeryDict
-from schema_forms.form_utilities import BaseForm, SectionForm
+from db_dict.common_dict import CommonDict
+from schema_forms.form_utilities import SectionForm
 
+tbd = 'To be filled'
 
 class SurgeryForm (SectionForm):
     def get_summary(self):
-        return self.fld_surgery_tumour_grade.data
+        return self.fld_biopsy_tumour_diagnosis.data
 
-    fld_consent_stat_biopsy = SelectField('Has consent been taken from patient?', choices=SurgeryDict.consent_stat_choice)
-    fld_consent_form_biopsy = SelectField('Is consent form with signature present in file ?',
+    fld_surgery_consent_stat = SelectField('Has consent been taken from patient?', choices=SurgeryDict.consent_stat_choice)
+    fld_surgery_consent_form = SelectField('Is consent form with signature present in file ?',
                                          choices=SurgeryDict.consent_form_choice)
-    fld_surgery_block_serial_number = StringField('Block Serial Number', [validators.Length(min=1, max=5)])
-    fld_surgery_block_location = StringField("Block Location ID (Cabinet No.-Drawer No.-Column No.-Front/Back")
-    fld_surgery_block_current_location = StringField("What is the current location of block?")
-    fld_surgery_block_id = StringField("Surgical Block ID")
-    fld_surgery_block_number = IntegerField("Number of blocks")
-    fld_surgery_path_lab_source = StringField("Pathology Lab source of blocks")
-    fld_surgery_tumour_block_reference = StringField("Tumour block reference")
-    fld_surgery_nodes_block_reference = StringField("Nodes block reference")
-    fld_surgery_adjacent_normal_block_reference = StringField("Adjacent Normal block reference")
-    fld_surgery_reduction_tissue_block_reference = StringField("Reduction Tissue block reference")
+    fld_surgery_block_serial_number = StringField('Block Serial Number', [validators.Length(min=1, max=5)], default = 0)
+    fld_surgery_block_location = StringField("Block Location ID (Cabinet No.-Drawer No.-Column No.-Front/Back", default=tbd)
+    fld_surgery_block_current_location = StringField("What is the current location of block?", default=tbd)
+    fld_surgery_block_id = StringField("Surgical Block ID", default=tbd)
+    fld_surgery_block_number = IntegerField("Number of blocks", default=tbd)
+    fld_surgery_path_lab_source = StringField("Pathology Lab source of blocks", default=tbd)
+    fld_surgery_tumour_block_reference = TextAreaField("Tumour block reference", default=tbd)
+    fld_surgery_nodes_block_reference = TextAreaField("Nodes block reference", default=tbd)
+    fld_surgery_adjacent_normal_block_reference = TextAreaField("Adjacent Normal block reference", default=tbd)
+    fld_surgery_reduction_tissue_block_reference = TextAreaField("Reduction Tissue block reference", default=tbd)
     fld_surgery_date = DateField("Date of Surgery")
-    fld_surgery_name_surgeon_id = StringField("Name of Surgeon", default = 'Dr. Koppiker')
-    fld_surgery_hospital_id = StringField("Hospital ID")
-    fld_surger_lesion_side = SelectField("Lesion Side", CommonDict.breast_choice)
+    fld_surgery_name_surgeon_id = StringField("Name of Surgeon", default='Dr. Koppiker')
+    fld_surgery_hospital_id = StringField("Hospital ID", default=tbd)
+    fld_surger_lesion_side = SelectField("Lesion Side", choices=CommonDict.breast_choice)
     fld_surger_lesion_side_other = StringField("Other")
-    fld_surgery_right_breast_type = SelectField("Type of Surgery", choices=SurgeryDict.surgery_type_choice)
+    fld_surgery_right_breast_type = SelectField("Type of Surgery for Right Breast", choices=SurgeryDict.surgery_type_choice)
     fld_surgery_right_breast_type_other = StringField("Other")
-    fld_surgery_left_breast_type = SelectField("Type of Surgery", choices=SurgeryDict.surgery_type_choice)
+    fld_surgery_left_breast_type = SelectField("Type of Surgery for Left Breast", choices=SurgeryDict.surgery_type_choice)
     fld_surgery_left_breast_type_other = StringField("Other")
-    fld_surgery_tumour_size = StringField("Tumour size")
-    fld_surgery_tumour_grade = SelectField("Tumour Grade",choices=SurgeryDict.tumour_grade_choice)
+    fld_surgery_tumour_size = StringField("Tumour size", default=tbd)
+    fld_surgery_tumour_size_unit = StringField('Unit for tumour size', default='cm')
+    fld_surgery_tumour_grade = SelectField("Tumour Grade", choices=SurgeryDict.tumour_grade_choice)
     fld_surgery_tumour_grade_other = StringField("Other")
     fld_surgery_surgery_diagnosis = SelectField("Surgery Diagnosis", choices=SurgeryDict.surgery_diagnosis_choice)
     fld_surgery_surgery_diagnosis_other = StringField("Other")
-    fld_surgery_tumour_percent = StringField("Percent DCIS")
-    fld_surgery_dcis_invasion = SelectField("DCIS Invasion", choices=SurgeryDict.dcis_choice)
+    fld_surgery_tumour_percent = StringField("Percent Tumour", default=tbd)
+    fld_surgery_tumour_invasion_percent = StringField("Percent Tumour Invasion", default=tbd)
     fld_surgery_dcis_invasion_other = StringField("Other")
-    fld_surgery_perineural_invasion = SelectField("Perineural Invasion",choices=CommonDict.absent_present_choice)
+    fld_surgery_perineural_invasion = SelectField("Perineural Invasion", choices=CommonDict.absent_present_choice)
     fld_surgery_perineural_invasion_other = StringField("Other")
     fld_surgery_necrosis = SelectField("Necrosis", choices=CommonDict.absent_present_choice)
     fld_surgery_necrosis_other = StringField("Other")
-    fld_surgery_percent_vascular_invasion = StringField("Percent Vascular invasion")
-    fld_surgery_percent_lymphocyte_invasion = StringField("Percent Lymphocyte invasion")
+    fld_surgery_percent_vascular_invasion = StringField("Percent Vascular invasion", default=tbd)
+    fld_surgery_percent_lymphocyte_invasion = StringField("Percent Lymphocyte invasion", default=tbd)
+    fld_surgery_percent_stroma = StringField("Percent Stroma", default=tbd)
     fld_surgery_margin = SelectField("Margins", choices=SurgeryDict.margin_choice)
     fld_surgery_margin_other = StringField("Other")
-    fld_surgery_percent_stroma = StringField("Percent Stroma")
-    fld_surgery_er_percent = StringField("ER Percent")
-    fld_surgery_pr_percent = StringField("PR Percent")
-    fld_surgery_her2_grade = StringField("HER2 Grade", default="0")
-    fld_surgery_ki67 = StringField("Ki67 Percent", default="0")
-    fld_surgery_er = SelectField("ER Status", choices=CommonDict.postive_negative_dict)
+    fld_pathological_complete_remission = SelectField("Was pathological complete remission or no residual tumour "
+                                                      "observed?", choices=CommonDict.yes_no_choice)
+    fld_pathological_complete_remission_other = StringField("Other")
+    fld_surgery_er = SelectField("ER Status", choices=CommonDict.postive_negative_choice)
     fld_surgery_er_other = StringField("Other")
-    fld_surgery_pr = SelectField("PR Status", choices=CommonDict.postive_negative_dict)
+    fld_surgery_er_percent = StringField("ER Percent",  default="0")
+    fld_surgery_pr = SelectField("PR Status", choices=CommonDict.postive_negative_choice)
     fld_surgery_pr_other = StringField("Other")
+    fld_surgery_pr_percent = StringField("PR Percent", default="0")
     fld_surgery_her2 = SelectField("HER2 Status", choices=SurgeryDict.tumour_her2_choice)
     fld_surgery_her2_other = StringField("Other")
-
-    fld_surgery_sentinel_node_status = SelectField("Status of node", choices=CommonDict.postive_negative_dict)
+    fld_surgery_her2_grade = StringField("HER2 Grade", default="0")
+    fld_surgery_fish = SelectField("Tumour block FISH", choices= CommonDict.postive_negative_choice)
+    fld_surgery_ki67 = StringField("Ki67 Percent", default="0")
+    fld_surgery_sentinel_node_status = SelectField("Status of Sentinel node", choices=SurgeryDict.node_choice)
     fld_surgery_sentinel_node_status_other = StringField('Other')
     fld_surgery_sentinel_node_removed = IntegerField("Number of sentinel node removed", default=0)
     fld_surgery_sentinel_node_positive = IntegerField("Number of sentinel node positive", default=0)
-    fld_surgery_axillary_node_status = SelectField("Status of node", choices=CommonDict.postive_negative_dict)
+    fld_surgery_axillary_node_status = SelectField("Status of Axillary node", choices=SurgeryDict.node_choice)
     fld_surgery_axillary_node_status_other = StringField('Other')
     fld_surgery_axillary_node_removed = IntegerField("Number of axillary node removed", default=0)
     fld_surgery_axillary_node_positive = IntegerField("Number of axillary node positive", default=0)
-    fld_surgery_axillary_node_number = HiddenField()
-    fld_surgery_apical_node_status = SelectField("Status of node", choices=CommonDict.postive_negative_dict)
+    fld_surgery_apical_node_status = SelectField("Status of Apical node", choices=SurgeryDict.node_choice)
     fld_surgery_apical_node_status_other = StringField('Other')
     fld_surgery_apical_node_removed = IntegerField("Number of apical node removed", default=0)
     fld_surgery_apical_node_positive = IntegerField("Number of apical node positive", default=0)
@@ -87,4 +90,5 @@ class SurgeryForm (SectionForm):
     fld_surgery_clinical_stage = SelectField("Select Clinical Stage based on TNM status "
                                              "(https://emedicine.medscape.com/article/2007112-overview)",
                                              choices=SurgeryDict.clinical_stage_choice)
+    fld_surgery_clinical_stage_other = StringField("Other")
     submit_button = SubmitField('Submit Form')
