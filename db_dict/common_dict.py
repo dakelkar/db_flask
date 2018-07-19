@@ -27,11 +27,13 @@ class CommonDict():
     yes_no_dict = {'tbd':"To be filled","N": "No", "Y": "Yes", 'other': "Other"}
     form_yes_no_dict ={'tbd':"To be filled",'na':'Not available in report',"N": "No", "Y": "Yes"}
 
-    absent_present_dict = {'tbd':"To be filled",'absent':'Absent', 'present':'Present', 'other':"Other"}
+    absent_present_dict = {'tbd':"To be filled",'absent':'Absent', 'present':'Present', 'na': "Not mentioned in report",
+                           'other':"Other"}
     folder_status_dict = {'Empty':"Empty", 'All fields are not filled':"All fields are not filled",
                         'Requires additional data from specialist':"Requires additional data from specialist",
                         "Requires Follow up":'Requires Follow up','Complete':"Complete"}
-    breast_dict ={'tbd':"To be filled",'no':"Not present",'right': "Right Breast", 'left':"Left Breast", 'both':"Both Breast", 'other':"Other"}
+    breast_dict ={'tbd':"To be filled",'no':"Not present",'right': "Right Breast", 'left':"Left Breast",
+                  'both':"Both Breast", 'other':"Other"}
     normal_abnormal_dict = {'tbd':"To be filled",'no':'Not Present in Report','normal':"Normal", 'abnormal':"Abnormal"}
     postive_negative_dict = {'tbd':"To be filled","pos":"Positive", "neg": "Negative", 'report': 'Not mentioned in Report',
                                   'other': 'Other'}
