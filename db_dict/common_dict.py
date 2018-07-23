@@ -25,6 +25,7 @@ class CommonDict():
                   'ivc': "IVC: High suspicion for malignancy",'v':"V:  Highly Suggestive of Malignancy", 'other': "Other"}
     distance_from_nipple_dict = {'tbd':"To be filled",'NA':"Not Present", '<.5': "<0.5 cm", '>0.5': ">0.5 cm", 'other': "Other"}
     yes_no_dict = {'tbd':"To be filled","N": "No", "Y": "Yes", 'other': "Other"}
+    yes_no_other_dict = {'tbd': "To be filled", "other": "Yes", "N": "No", 'na':'Data not available'}
     form_yes_no_dict ={'tbd':"To be filled",'na':'Not available in report',"N": "No", "Y": "Yes"}
 
     absent_present_dict = {'tbd':"To be filled",'absent':'Absent', 'present':'Present', 'na': "Not mentioned in report",
@@ -48,3 +49,4 @@ class CommonDict():
     breast_choice = generate_choice(breast_dict)
     normal_abnormal_choice = generate_choice(normal_abnormal_dict)
     postive_negative_choice = generate_choice(postive_negative_dict)
+    yes_no_other_choice = generate_choice(yes_no_other_dict)

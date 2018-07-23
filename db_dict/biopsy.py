@@ -1,17 +1,10 @@
+from db_dict.common_dict import CommonDict
+
 class BiopsyDict():
     def __init__(self, key, value):
         self.key = key
         self.value = value
 
-    def generate_choice(dict_):
-        choices_all = []
-        keys = []
-        for key in dict_:
-            keys.append(key)
-        for index in keys:
-            choices = (index, dict_.get(index))
-            choices_all = choices_all+ [(choices)]
-        return tuple(choices_all)
     consent_stat_dict = {'tbd':"To be filled","N":"No Consent", "Y":"Consent Taken"}
     consent_form_dict = {'tbd':"To be filled","Y":"Consent form with signature present in folder",
                          "N":"Completed consent form not present in folder"}
@@ -44,17 +37,17 @@ class BiopsyDict():
     fnac_diagnosis_dict = {'tbd':"To be filled", "normal":"Normal", "benign":"Benign", "malignant":"Malignant",
                            'report': 'Not mentioned in Report', 'other': 'Other'}
 
-    consent_stat_choice = generate_choice(consent_stat_dict)
-    consent_form_choice = generate_choice(consent_form_dict)
-    biopsy_type_choice = generate_choice(biopsy_type_dict)
-    tumour_diagnosis_choice = generate_choice(tumour_diagnosis_dict)
-    biopsy_custody_pccm_choice = generate_choice(biopsy_custody_pccm_dict)
-    tumour_grade_choice = generate_choice(tumour_grade_dict)
-    lymphovascular_emboli_choice = generate_choice(lymphovascular_emboli_dict)
-    dcis_biopsy_choice = generate_choice(dcis_biopsy_dict)
-    tumour_er_choice = generate_choice(tumour_er_dict)
-    tumour_pr_choice = generate_choice(tumour_pr_dict)
-    tumour_her2_choice = generate_choice(tumour_her2_dict)
-    fnac_choice = generate_choice(fnac_dict)
-    fnac_location_choice = generate_choice(fnac_location_dict)
-    fnac_diagnosis_choice = generate_choice(fnac_diagnosis_dict)
+    consent_stat_choice = CommonDict.generate_choice(consent_stat_dict)
+    consent_form_choice = CommonDict.generate_choice(consent_form_dict)
+    biopsy_type_choice = CommonDict.generate_choice(biopsy_type_dict)
+    tumour_diagnosis_choice = CommonDict.generate_choice(tumour_diagnosis_dict)
+    biopsy_custody_pccm_choice = CommonDict.generate_choice(biopsy_custody_pccm_dict)
+    tumour_grade_choice = CommonDict.generate_choice(tumour_grade_dict)
+    lymphovascular_emboli_choice = CommonDict.generate_choice(lymphovascular_emboli_dict)
+    dcis_biopsy_choice = CommonDict.generate_choice(dcis_biopsy_dict)
+    tumour_er_choice = CommonDict.generate_choice(tumour_er_dict)
+    tumour_pr_choice = CommonDict.generate_choice(tumour_pr_dict)
+    tumour_her2_choice = CommonDict.generate_choice(tumour_her2_dict)
+    fnac_choice = CommonDict.generate_choice(fnac_dict)
+    fnac_location_choice = CommonDict.generate_choice(fnac_location_dict)
+    fnac_diagnosis_choice = CommonDict.generate_choice(fnac_diagnosis_dict)

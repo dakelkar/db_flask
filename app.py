@@ -8,6 +8,7 @@ from schema_forms.patient_history import PatientHistoryForm, PhysicalActivityFor
 from schema_forms.biopsy_form import BiopsyForm
 from schema_forms.surgery_block_form import SurgeryForm
 from schema_forms.mammo_form import MammographyForm, MammoMassForm, MammoCalcificationForm
+from schema_forms.nact import NeoAdjuvantChemoDrugForm, NeoAdjuvantChemoToxicityForm, NeoAdjuvantChemoTherapyForm
 from schema_forms.usg import SonoMammographyForm, SonoMammoMassForm
 from schema_forms.folder_form import FoldersForm
 from wtforms import Form, StringField, PasswordField, validators
@@ -49,6 +50,21 @@ folder_db = FoldersDb(log, FoldersForm)
 folder_db.connect(url)
 folder_crudprint = construct_crudprint_folder(folder_db)
 app.register_blueprint(folder_crudprint, url_prefix="/folder")
+
+nact_db = SectionDb(log, NeoAdjuvantChemoTherapyForm, 'nact')
+nact_db.connect(url)
+nact_crudprint = construct_crudprint('nact', nact_db, folder_db)
+app.register_blueprint(nact_crudprint, url_prefix="/nact")
+
+nact_drug_db = SectionDb(log, NeoAdjuvantChemoDrugForm, 'nact_drug')
+nact_drug_db.connect(url)
+nact_drug_crudprint = construct_crudprint('nact_drug', nact_drug_db, folder_db)
+app.register_blueprint(nact_drug_crudprint, url_prefix="/nact_drug")
+
+nact_toxicity_db = SectionDb(log, NeoAdjuvantChemoToxicityForm, 'mammography')
+nact_toxicity_db.connect(url)
+nact_toxicity_crudprint = construct_crudprint('nact_toxicity', nact_toxicity_db, folder_db)
+app.register_blueprint(nact_toxicity_crudprint, url_prefix="/nact_toxicity")
 
 mammo_db = SectionDb(log, MammographyForm, 'mammography')
 mammo_db.connect(url)
@@ -241,6 +257,12 @@ def view_folder(folder_pk):
             create_folder_section(folder_pk, "nutritional_supplements", "nutritional_supplements",
                                   patient_history_nut_supp_db.get_folder_items, is_list=True),
         ]
+    elif active_tab_id == "NACT":
+        folder_sections = [
+            create_folder_section(folder_pk, "nact", "nact", nact_db.get_folder_items),
+            create_folder_section(folder_pk, "nact_drug", "nact_drug", nact_drug_db.get_folder_items, is_list=True),
+            create_folder_section(folder_pk, "nact_toxicity", "nact_toxicity", nact_toxicity_db.get_folder_items,
+                                  is_list=True), ]
 
     folder_tabs = [        
         ("PatientHistory", "Patient History"),
