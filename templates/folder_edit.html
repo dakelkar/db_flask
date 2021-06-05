@@ -1,11 +1,11 @@
 {% extends 'layout.html' %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/form.html" as wtf %}
 {% block body %}
 <div class="card border-dark mb-3">
   <div class="card-header">Edit folder</div>
   <div class="card-body text-dark">
     <h5 class="card-title">{{form.title}}</h5>
-    {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+    {{ wtf.render_form(form, button_map={'submit_button': 'primary'}) }}
   </div>
 </div>
 {% endblock %}
